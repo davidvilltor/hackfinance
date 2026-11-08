@@ -1,1 +1,19 @@
-
+{
+  "usuario_principal": {
+    "id": "USR-78291",
+    "nombre": "Juan Pérez",
+    "edad": 72,
+    "saldo_actual": "4.520,00 €",
+    "iban_propio": "ES91 2100 0418 5500 1234 5678",
+    "contacto_emergencia": {
+      "nombre": "María Pérez",
+      "relacion": "Hija",
+      "telefono": "+34 611 223 344",
+      "notificaciones_activas": true
+    },
+    "configuracion": {
+      "modo_accesible": true,
+      "canal_preferido": "Llamada Telefónica"
+    }
+  }
+}
