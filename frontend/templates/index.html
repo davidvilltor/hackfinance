@@ -23,7 +23,8 @@
         .card h3 { color: var(--banco-primario); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; font-size: 14px; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fdfdfd; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fdfdfd; font-family: inherit; font-size: 14px; }
+        input[type="text"]:focus { outline: none; border-color: var(--banco-secundario); }
         .btn-transfer { background: var(--banco-secundario); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
         .btn-transfer:hover:not(:disabled) { background: var(--banco-primario); }
         .btn-transfer:disabled { cursor: not-allowed; opacity: 0.9; }
@@ -60,21 +61,22 @@
             <div class="usuario-info">👤 Juan Pérez | Saldo: 4.520,00 €</div>
         </div>
     </div>
+    
     <div class="container">
-        <!-- Panel Bancario -->
+        <!-- Panel Bancario interactivo -->
         <div class="card">
             <h3>Nueva Transferencia</h3>
             <div class="form-group">
                 <label>Destinatario (IBAN)</label>
-                <input type="text" value="ES91 2100 0418 45 1234567890" disabled>
+                <input type="text" id="ibanDestino" placeholder="Ej: ES91 2100 0418...">
             </div>
             <div class="form-group">
                 <label>Importe a transferir (€)</label>
-                <input type="text" value="1.500,00 €" disabled>
+                <input type="text" id="importeTransferencia" placeholder="Ej: 700,00 €">
             </div>
             <div class="form-group">
                 <label>Concepto</label>
-                <input type="text" value="Soporte Técnico Microsoft - AnyDesk" disabled>
+                <input type="text" id="conceptoTransferencia" placeholder="Ej: Pago multa o bombilla">
             </div>
             <button class="btn-transfer" id="btnTransferencia" onclick="alert('Iniciando proceso de transferencia...')">Confirmar Transferencia</button>
             <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
@@ -87,14 +89,12 @@
             </div>
             <p style="color: #7f8c8d; font-size: 15px; margin-bottom: 20px;">Dime en voz alta o escribe lo que te están pidiendo hacer.</p>
             
-            <!-- Restauramos la caja de texto -->
             <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk..."></textarea>
             
             <div class="botones-accion">
                 <button id="btnMicrofono" class="btn-shield btn-micro" onclick="iniciarGrabacion()">
                     🎙️ Hablar
                 </button>
-                <!-- Restauramos el botón de texto -->
                 <button id="btnSimular" class="btn-shield btn-texto" onclick="procesarTexto()">
                     📝 Enviar Texto
                 </button>
@@ -102,6 +102,27 @@
 
             <div id="resultado"></div>
             <div id="medidorEstres" style="display: none; margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px;"></div>
+        </div>
+
+        <!-- Panel de Administración (Base de Datos) -->
+        <div class="card" style="min-width: 100%; margin-top: 10px; background: #eef2f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="color: #2c3e50; font-size: 16px; margin: 0; border: none; padding: 0;">📊 Log de Seguridad del Banco (Base de Datos)</h3>
+                <button onclick="limpiarBaseDatos()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s;">🗑️ Limpiar Historial</button>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: var(--banco-primario); color: white;">
+                        <th style="padding: 10px; text-align: left;">Fecha</th>
+                        <th style="padding: 10px; text-align: left;">Texto Capturado</th>
+                        <th style="padding: 10px; text-align: left;">Estrés</th>
+                        <th style="padding: 10px; text-align: center;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorial">
+                    <!-- Se rellena por JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -146,7 +167,6 @@
             };
 
             reconocimiento.onresult = function(event) {
-                // Escribimos la transcripción en la caja de texto para que el usuario la vea
                 areaTexto.value = event.results[0][0].transcript;
             };
 
@@ -157,7 +177,6 @@
 
             reconocimiento.onend = function() {
                 detenerInterfazGrabacion();
-                // Si ha captado algo de voz, lo envía automáticamente
                 if (areaTexto.value.trim() !== "") {
                     procesarTexto();
                 }
@@ -206,7 +225,6 @@
                 return;
             }
 
-            // Cambiamos el estado visual de los botones
             btnMicro.disabled = true;
             btnSimular.innerHTML = "⏳ Analizando...";
             btnSimular.style.background = "#ccc";
@@ -269,12 +287,13 @@
                 divResultado.innerText = "Error de conexión con el servidor.";
                 divResultado.className = "error";
             } finally {
-                // Restauramos los botones
                 btnMicro.disabled = false;
                 btnSimular.innerHTML = "📝 Enviar Texto";
                 btnSimular.style.background = "var(--shield-acento)";
                 btnSimular.disabled = false;
-                volumenDetectadoAlto = false; // Reseteamos el medidor para la siguiente vez
+                volumenDetectadoAlto = false;
+                
+                cargarHistorial(); 
             }
         }
 
@@ -287,6 +306,43 @@
                 btn.style.background = "#27ae60"; 
             }, 2000);
         }
+
+        async function cargarHistorial() {
+            try {
+                const response = await fetch("/historial");
+                const datos = await response.json();
+                const tbody = document.getElementById("tablaHistorial");
+                tbody.innerHTML = "";
+                
+                datos.historial.forEach(registro => {
+                    const fila = document.createElement("tr");
+                    fila.style.borderBottom = "1px solid #ccc";
+                    
+                    const badgeEstado = registro.bloqueado 
+                        ? '<span style="background:#e74c3c; color:white; padding:4px 8px; border-radius:10px; font-weight:bold;">BLOQUEADO</span>'
+                        : '<span style="background:#2ecc71; color:white; padding:4px 8px; border-radius:10px; font-weight:bold;">PERMITIDO</span>';
+
+                    fila.innerHTML = `
+                        <td style="padding: 10px;">${registro.fecha}</td>
+                        <td style="padding: 10px; font-style: italic;">"${registro.texto}"</td>
+                        <td style="padding: 10px;">${registro.estres}</td>
+                        <td style="padding: 10px; text-align: center;">${badgeEstado}</td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            } catch (error) {
+                console.log("Error cargando historial de la base de datos.");
+            }
+        }
+
+        async function limpiarBaseDatos() {
+            if (confirm("¿Estás seguro de borrar todo el historial de seguridad?")) {
+                await fetch("/limpiar-historial", { method: "DELETE" });
+                cargarHistorial();
+            }
+        }
+
+        window.onload = cargarHistorial;
     </script>
 </body>
 </html>

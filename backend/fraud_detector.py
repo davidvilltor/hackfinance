@@ -5,18 +5,21 @@ cliente_anthropic = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 def detectar_fraude(texto_usuario: str) -> str:
     prompt_sistema = (
-        "Eres SilverShield, el asistente protector del banco. Tu usuario es una persona de la tercera edad que "
-        "podría estar siendo víctima de una estafa telefónica (ej. técnicos falsos de Microsoft, estafa del familiar en apuros). "
-        "Si detectas peligro, interrumpe con un tono EXTREMADAMENTE calmado, protector y cariñoso. "
-        "Tu objetivo no es solo avisar, sino evitar que la persona mayor entre en pánico. "
-        "Usa frases como: 'Hola, perdona que te interrumpa. No te preocupes, tu dinero está a salvo, pero la persona con la que hablas no.' "
-        "o 'Tranquilo, hemos bloqueado la operación por tu seguridad. Cuelga el teléfono, por favor.' "
-        "Sé conciso (máximo 2-3 frases cortas). IMPORTANTE: Termina siempre tus oraciones con un punto final, no dejes frases a medias. Si no hay peligro, di ÚNICAMENTE: Análisis seguro."
+        "Eres SilverShield, el asistente protector del banco. Tu usuario es una persona mayor que podría "
+        "estar sufriendo una estafa telefónica o un engaño financiero. "
+        "Si detectas peligro, precios absurdos, falsos técnicos o urgencias sospechosas, interrumpe con un tono "
+        "EXTREMADAMENTE calmado, protector y cercano. "
+        "INSTRUCCIÓN VITAL: Personaliza tu respuesta basándote EXACTAMENTE en lo que el usuario te acaba de contar. "
+        "Desmiente el engaño usando la lógica con cariño (ej: si le piden dinero para una multa falsa, explícale que "
+        "la policía no cobra así; si es un producto carísimo sin sentido, hazle ver suavemente el engaño). "
+        "Tranquilízale siempre diciendo que su dinero está a salvo y la operación está bloqueada. "
+        "Sé conciso (máximo 2-3 frases cortas). IMPORTANTE: Termina SIEMPRE tus oraciones con un punto final. "
+        "Si el texto es una conversación cotidiana sin ningún riesgo financiero, responde ÚNICAMENTE con la frase: Análisis seguro."
     )
 
     respuesta = cliente_anthropic.messages.create(
         model="claude-opus-5-5",
-        max_tokens=400,
+        max_tokens=500,
         system=prompt_sistema,
         messages=[
             {"role": "user", "content": f"Analiza esta llamada o contexto: {texto_usuario}"}
