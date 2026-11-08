@@ -33,3 +33,8 @@ Sigue estos pasos para poner en marcha el proyecto en tu entorno local:
 git clone https://github.com/davidvilltor/hackfinance.git
 cd hackfinance
 ```
+
+### 2. Ejecutar el proyecto y servidor
+```bash
+python -m uvicorn backend.main:app --reload
+```
