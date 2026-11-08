@@ -1,1 +1,37 @@
-
+[
+  {
+    "id": 1,
+    "fecha": "09/11/2026 10:15:32",
+    "texto_usuario": "[Canal: Llamada Telefónica] Me ha llamado el técnico de Microsoft diciendo que mi ordenador tiene un virus y que tengo que descargar AnyDesk ahora mismo para que no me bloqueen la cuenta del banco.",
+    "nivel_estres": "Pánico / Alta Coacción",
+    "bloqueado": true
+  },
+  {
+    "id": 2,
+    "fecha": "08/11/2026 16:45:10",
+    "texto_usuario": "[Canal: WhatsApp / SMS] Mi hija María me ha escrito por WhatsApp pidiéndome que le ingrese 50 euros para la cena de hoy con sus amigos, es algo habitual.",
+    "nivel_estres": "Tranquilo",
+    "bloqueado": false
+  },
+  {
+    "id": 3,
+    "fecha": "07/11/2026 09:20:05",
+    "texto_usuario": "[Canal: Enlace Web / Smishing] He recibido un SMS de Correos diciendo que tengo un paquete retenido y debo pagar 1,50 € haciendo clic en este enlace y poniendo los datos de mi tarjeta.",
+    "nivel_estres": "Nerviosismo",
+    "bloqueado": true
+  },
+  {
+    "id": 4,
+    "fecha": "05/11/2026 11:30:00",
+    "texto_usuario": "[Canal: Llamada Telefónica] Voy a pagar la factura de la luz de este mes a Iberdrola, son 85 euros, el IBAN es el de siempre.",
+    "nivel_estres": "Tranquilo",
+    "bloqueado": false
+  },
+  {
+    "id": 5,
+    "fecha": "04/11/2026 18:05:12",
+    "texto_usuario": "[Canal: Llamada Telefónica] Me llama la policía diciendo que mi nieto ha tenido un accidente de coche y que necesitan 3.000 euros en efectivo ya mismo para la fianza o irá a la cárcel.",
+    "nivel_estres": "Pánico / Alta Coacción",
+    "bloqueado": true
+  }
+]
