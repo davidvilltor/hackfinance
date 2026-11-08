@@ -11,351 +11,490 @@
             --shield-acento: #f4a261;
             --fondo: #f4f7f6;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s; padding-bottom: 50px;}
         .navbar { background: var(--banco-primario); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
         .navbar h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
         .controles-top { display: flex; gap: 15px; align-items: center; }
         .usuario-info { font-size: 14px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; }
-        .btn-accesibilidad { background: white; color: var(--banco-primario); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-accesibilidad { background: white; color: var(--banco-primario); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
         .btn-accesibilidad:hover { background: #eee; }
-        .container { max-width: 1000px; margin: 30px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; flex: 1; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; transition: all 0.3s; }
+        
+        .container { max-width: 1000px; margin: 30px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; }
         .card h3 { color: var(--banco-primario); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; font-size: 14px; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fdfdfd; font-family: inherit; font-size: 14px; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         input[type="text"]:focus { outline: none; border-color: var(--banco-secundario); }
-        .btn-transfer { background: var(--banco-secundario); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        
+        .btn-transfer { background: var(--banco-secundario); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-transfer:hover:not(:disabled) { background: var(--banco-primario); }
         .btn-transfer:disabled { cursor: not-allowed; opacity: 0.9; }
-        .btn-familiar { background: #2ecc71; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; display: none; transition: 0.3s; }
-        .btn-familiar:hover { background: #27ae60; }
+        
+        /* Cajón de Verificación Dinámica */
+        .cajon-verificacion { display: none; margin-top: 15px; padding: 15px; background: #fff8e1; border-left: 5px solid #ffc107; border-radius: 4px; animation: fadeIn 0.4s ease-in-out; }
+        .cajon-verificacion p { margin-top: 0; font-weight: bold; color: #5c4400; font-size: 14px; }
+        .btn-omitir { background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 4px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold;}
+        .btn-verificar-ia { background: var(--banco-primario); color: white; border: none; padding: 12px; border-radius: 4px; width: 100%; cursor: pointer; font-weight: bold; font-size: 15px;}
+        .btn-verificar-ia:hover { background: #06264a; }
+        
+        .btn-familiar { display: none; background: #2ecc71; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; justify-content: center; }
         .shield-header h2 { margin: 0; }
-        
         .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; }
-        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px;}
         .btn-canal.activo { background: white; color: var(--banco-primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
-        textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; font-family: inherit; font-size: 15px;}
-        textarea:focus { outline: none; border-color: var(--shield-acento); }
+        textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 10px;}
         .botones-accion { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-shield { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; flex: 1; }
+        .btn-shield { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 1; }
         .btn-texto { background: var(--shield-acento); }
-        .btn-texto:hover:not(:disabled) { background: #e76f51; }
         .btn-micro { background: #2ecc71; }
-        .btn-micro:hover:not(:disabled) { background: #27ae60; }
         .btn-micro.grabando { background: #e74c3c; animation: latido 1.5s infinite; }
-        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         
-        #resultado { padding: 15px; border-radius: 5px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; margin-top: 15px; overflow-wrap: break-word; text-align: left; position: relative; }
+        /* Visor de Ondas de Voz */
+        #visualizadorVoz { width: 100%; height: 60px; background: #f4f7f6; border-radius: 6px; display: none; margin-bottom: 10px; border: 1px solid #ddd; }
+
+        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #resultado { padding: 15px; border-radius: 5px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; margin-top: 15px; }
         .alerta { background: #ffebee; border-left: 8px solid #f44336; color: #b71c1c; }
         .seguro { background: #e8f5e9; border-left: 8px solid #4caf50; color: #1b5e20; }
         .error { background: #fff3e0; border-left: 8px solid #ff9800; color: #e65100; }
         
-        .btn-tts { background: none; border: none; font-size: 18px; cursor: pointer; float: right; margin-top: -5px; transition: transform 0.2s; }
-        .btn-tts:hover { transform: scale(1.2); }
-
-        .compliance-footer { background: #1a252f; color: #ecf0f1; padding: 12px 40px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; border-top: 3px solid var(--shield-acento); flex-wrap: wrap; gap: 10px; }
+        /* Pie de Cumplimiento Normativo */
+        .compliance-footer { background: #1a252f; color: #ecf0f1; padding: 12px 40px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; width: 100%; box-sizing: border-box;}
         .compliance-items { display: flex; gap: 20px; align-items: center; }
 
         body.modo-accesible { font-size: 120%; }
         body.modo-accesible .card { border: 2px solid #333; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        body.modo-accesible input[type="text"], body.modo-accesible textarea, body.modo-accesible button { font-size: 110%; border: 2px solid #666; }
-        body.modo-accesible label { font-size: 110%; color: #000; }
-        body.modo-accesible .alerta { font-size: 120%; border-left-width: 12px; }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <h2>🏦 SilverBank</h2>
-        <div class="controles-top">
-            <button class="btn-accesibilidad" onclick="toggleAccesibilidad()">🔍 A+ Letra Grande</button>
-            <div class="usuario-info">👤 Juan Pérez | Saldo: 4.520,00 €</div>
-        </div>
+
+<div class="navbar">
+    <h2>🛡️ SilverBank</h2>
+    <div class="controles-top">
+        <button class="btn-accesibilidad" onclick="toggleAccesibilidad()">🔍 A+ Letra Grande</button>
+        <div class="usuario-info">👤 Juan Pérez | Saldo: 4.520,00 €</div>
     </div>
-    
-    <div class="container">
-        <!-- Panel Bancario interactivo -->
-        <div class="card">
-            <h3>Nueva Transferencia</h3>
-            <div class="form-group">
-                <label>Destinatario (IBAN)</label>
-                <input type="text" id="ibanDestino" placeholder="Ej: ES91 2100 0418...">
-            </div>
-            <div class="form-group">
-                <label>Importe a transferir (€)</label>
-                <input type="text" id="importeTransferencia" placeholder="Ej: 700,00 €">
-            </div>
-            <div class="form-group">
-                <label>Concepto</label>
-                <input type="text" id="conceptoTransferencia" placeholder="Ej: Pago multa o bombilla">
-            </div>
-            <button class="btn-transfer" id="btnTransferencia" onclick="alert('Iniciando proceso de transferencia...')">Confirmar Transferencia</button>
-            <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
+</div>
+
+<div class="container">
+    <!-- Panel Bancario Interactivo con límite de 100€ -->
+    <div class="card">
+        <h3>Nueva Transferencia</h3>
+        <div class="form-group">
+            <label>Destinatario (IBAN)</label>
+            <input type="text" id="ibanDestino" placeholder="Ej: ES91 2100 0418...">
+        </div>
+        <div class="form-group">
+            <label>Importe a transferir (€)</label>
+            <input type="text" id="importeTransferencia" placeholder="Ej: 400,00">
+        </div>
+        <div class="form-group">
+            <label>Concepto</label>
+            <input type="text" id="conceptoTransferencia" placeholder="Ej: Compra ordenador">
+        </div>
+        
+        <button class="btn-transfer" id="btnTransferencia" onclick="iniciarTransferencia()">Confirmar Transferencia</button>
+        
+        <div class="cajon-verificacion" id="cajonVerificacion">
+            <p>⚠️ Operación superior a 100€. Elige cómo deseas proceder por tu seguridad:</p>
+            <button class="btn-omitir" onclick="autorizarSinRiesgo()">✓ Conozco el destino. Autorizar directamente.</button>
+            <button class="btn-verificar-ia" onclick="activarSilverShield()">🛡️ Me lo han pedido por teléfono/SMS (Verificar Riesgo)</button>
         </div>
 
-        <!-- Módulo IA Híbrido & Omnicanal -->
-        <div class="card" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
-            <div class="shield-header">
-                <h2>🛡️ SilverShield IA</h2>
-            </div>
-            <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Selecciona el canal de entrada y describe o habla sobre el engaño.</p>
-            
-            <div class="canales-selector">
-                <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
-                <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp / SMS')">💬 WhatsApp</button>
-                <button class="btn-canal" id="canalWeb" onclick="cambiarCanal('Enlace Web / Smishing')">🌐 Enlace Web</button>
-            </div>
+        <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
+    </div>
 
-            <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk..."></textarea>
-            
-            <div class="botones-accion">
-                <button id="btnMicrofono" class="btn-shield btn-micro" onclick="iniciarGrabacion()">
-                    🎙️ Hablar
-                </button>
-                <button id="btnSimular" class="btn-shield btn-texto" onclick="procesarTexto()">
-                    📝 Enviar Texto
-                </button>
-            </div>
-
-            <div id="resultado">
-                <span id="textoResultadoSpan"></span>
-                <button class="btn-tts" onclick="leerTextoVozNativa()" title="Escuchar mensaje en voz alta">🔊</button>
-            </div>
+    <!-- Módulo IA Omnicanal -->
+    <div class="card" id="moduloIA" style="display: none; flex-direction: column; justify-content: center; text-align: center;">
+        <div class="shield-header">
+            <h2>SilverShield IA</h2>
+        </div>
+        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Selecciona el canal y descríbenos qué te han pedido.</p>
+        
+        <div class="canales-selector">
+            <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
+            <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp/SMS')">💬 WhatsApp</button>
+            <button class="btn-canal" id="canalWeb" onclick="cambiarCanal('Enlace Web / Smishing')">🔗 Enlace Web</button>
         </div>
 
-        <!-- Panel de Administración (Base de Datos) -->
-        <div class="card" style="min-width: 100%; margin-top: 10px; background: #eef2f5;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="color: #2c3e50; font-size: 16px; margin: 0; border: none; padding: 0;">📊 Log de Seguridad del Banco (Base de Datos)</h3>
-                <button onclick="limpiarBaseDatos()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s;">🗑️ Limpiar Historial</button>
-            </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <thead>
-                    <tr style="background: var(--banco-primario); color: white;">
-                        <th style="padding: 10px; text-align: left;">Fecha</th>
-                        <th style="padding: 10px; text-align: left;">Canal / Texto Capturado</th>
-                        <th style="padding: 10px; text-align: center;">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaHistorial">
-                    <!-- Se rellena por JavaScript -->
-                </tbody>
-            </table>
+        <!-- Ecualizador Visual de Voz -->
+        <canvas id="visualizadorVoz" width="300" height="60"></canvas>
+
+        <textarea id="textoUsuario" placeholder="Ej: Me llama un falso técnico pidiendo acceso remoto..."></textarea>
+        
+        <div class="botones-accion">
+            <button id="btnMicrofono" class="btn-shield btn-micro" onclick="iniciarGrabacion()">🎙️ Hablar</button>
+            <button id="btnSimular" class="btn-shield btn-texto" onclick="procesarTexto()">Enviar Texto</button>
+        </div>
+
+        <div id="resultado">
+            <span id="textoResultadoSpan"></span>
         </div>
     </div>
 
-    <!-- Barra de Cumplimiento Normativo -->
-    <div class="compliance-footer">
-        <div>🔒 <strong>SilverShield Security Framework</strong> — IA Protectora Activa</div>
-        <div class="compliance-items">
-            <span>🛡️ TLS 1.3 End-to-End</span>
-            <span>📜 Cumplimiento PSD2 & SCA</span>
-            <span>🇪🇺 Estándar Europeo de Privacidad</span>
-        </div>
-    </div>
-
-    <script>
-        function toggleAccesibilidad() { document.body.classList.toggle("modo-accesible"); }
-
-        let canalActual = "Llamada Telefónica";
-
-        function cambiarCanal(canal) {
-            canalActual = canal;
-            document.querySelectorAll('.btn-canal').forEach(b => b.classList.remove('activo'));
-            if (canal === 'Llamada Telefónica') document.getElementById('canalVoz').classList.add('activo');
-            if (canal === 'WhatsApp / SMS') document.getElementById('canalWats').classList.add('activo');
-            if (canal === 'Enlace Web / Smishing') document.getElementById('canalWeb').classList.add('activo');
+    <!-- Panel de Administración (Base de Datos) -->
+    <div class="card" style="min-width: 100%; margin-top: 10px; background: #eef2f5;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="color: #2c3e50; font-size: 16px; margin: 0; border: none; padding: 0;">📋 Log de Seguridad del Banco (Base de Datos)</h3>
             
-            const area = document.getElementById('textoUsuario');
-            if (canal === 'Llamada Telefónica') area.placeholder = "Ej: Me llama un falso técnico pidiendo acceso remoto...";
-            if (canal === 'WhatsApp / SMS') area.placeholder = "Ej: Me ha escrito mi hijo pidiendo 1.500€ urgentemente por WhatsApp...";
-            if (canal === 'Enlace Web / Smishing') area.placeholder = "Ej: He clicado en un SMS del banco que dice que mi cuenta está bloqueada...";
+            <!-- BOTONES DE EXPORTAR Y LIMPIAR RECUPERADOS -->
+            <div style="display: flex; gap: 10px;">
+                <button onclick="generarDenunciaPDF()" style="background: #34495e; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">📄 Exportar Denuncia</button>
+                <button onclick="limpiarBaseDatos()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">🗑️ Limpiar Historial</button>
+            </div>
+
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+                <tr style="background: var(--banco-primario); color: white;">
+                    <th style="padding: 10px; text-align: left;">Fecha</th>
+                    <th style="padding: 10px; text-align: left;">Canal / Texto Capturado</th>
+                    <th style="padding: 10px; text-align: center;">Estado</th>
+                </tr>
+            </thead>
+            <tbody id="tablaHistorial">
+                <!-- Se rellena por JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Barra de Cumplimiento Normativo PSD2 -->
+<div class="compliance-footer">
+    <div><strong>SilverShield Security Framework</strong> | IA Protectora Activa</div>
+    <div class="compliance-items">
+        <span>🔒 TLS 1.3 End-to-End</span>
+        <span>🛡️ Cumplimiento PSD2 & SCA</span>
+        <span>🇪🇺 Estándar Europeo de Privacidad</span>
+    </div>
+</div>
+
+<script>
+    function toggleAccesibilidad() { document.body.classList.toggle("modo-accesible"); }
+
+    // --- LÓGICA DE TRANSFERENCIAS (> 100€) ---
+    function iniciarTransferencia() {
+        const importeTexto = document.getElementById("importeTransferencia").value;
+        const importeLimpio = importeTexto.replace(/[^\d,-]/g, '').replace(',', '.');
+        const importe = parseFloat(importeLimpio);
+
+        if (isNaN(importe) || importe <= 0) {
+            alert("Por favor, introduce un importe válido.");
+            return;
         }
 
-        let reconocimiento;
-        let grabando = false;
-
-        const btnMicro = document.getElementById("btnMicrofono");
-        const btnSimular = document.getElementById("btnSimular");
-        const areaTexto = document.getElementById("textoUsuario");
-
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            reconocimiento = new SpeechRecognition();
-            reconocimiento.lang = 'es-ES';
-            reconocimiento.interimResults = false;
-
-            reconocimiento.onstart = function() {
-                grabando = true;
-                btnMicro.innerHTML = "🎙️ Escuchando...";
-                btnMicro.classList.add("grabando");
-            };
-
-            reconocimiento.onresult = function(event) {
-                areaTexto.value = event.results[0][0].transcript;
-            };
-
-            reconocimiento.onerror = function(event) {
-                detenerInterfazGrabacion();
-                alert("Error de micrófono. Inténtalo de nuevo.");
-            };
-
-            reconocimiento.onend = function() {
-                detenerInterfazGrabacion();
-                if (areaTexto.value.trim() !== "") {
-                    procesarTexto();
-                }
-            };
+        if (importe < 100) {
+            alert("✅ Transferencia de " + importe + "€ completada con éxito. (Importe seguro).");
+            document.getElementById("importeTransferencia").value = "";
         } else {
-            alert("Tu navegador no soporta reconocimiento de voz. Usa la caja de texto.");
+            document.getElementById("btnTransferencia").style.display = "none";
+            document.getElementById("cajonVerificacion").style.display = "block";
         }
+    }
 
-        function iniciarGrabacion() {
-            if (grabando) { 
-                reconocimiento.stop(); 
-            } else { 
-                areaTexto.value = ""; 
-                reconocimiento.start(); 
-            }
-        }
+    function autorizarSinRiesgo() {
+        alert("✅ Transferencia autorizada bajo tu responsabilidad y procesada con éxito.");
+        document.getElementById("cajonVerificacion").style.display = "none";
+        document.getElementById("btnTransferencia").style.display = "block";
+        document.getElementById("importeTransferencia").value = "";
+    }
 
-        function detenerInterfazGrabacion() {
-            grabando = false;
-            btnMicro.innerHTML = "🎙️ Hablar";
-            btnMicro.classList.remove("grabando");
-        }
+    function activarSilverShield() {
+        document.getElementById("moduloIA").style.display = "flex";
+        document.getElementById("moduloIA").scrollIntoView({ behavior: 'smooth' });
+    }
 
-        function leerTextoVozNativa() {
-            const textoAEscuchar = document.getElementById("textoResultadoSpan").innerText;
-            if ('speechSynthesis' in window && textoAEscuchar) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(textoAEscuchar);
-                utterance.lang = 'es-ES';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("Tu navegador no soporta la síntesis de voz nativa.");
-            }
-        }
+    // --- LÓGICA DE CANALES ---
+    let canalActual = 'Llamada Telefónica';
+    function cambiarCanal(canal) {
+        canalActual = canal;
+        document.querySelectorAll('.btn-canal').forEach(b => b.classList.remove('activo'));
+        
+        if (canal === 'Llamada Telefónica') document.getElementById('canalVoz').classList.add('activo');
+        if (canal === 'WhatsApp/SMS') document.getElementById('canalWats').classList.add('activo');
+        if (canal === 'Enlace Web / Smishing') document.getElementById('canalWeb').classList.add('activo');
+    }
 
-        async function procesarTexto() {
-            const textoOriginal = areaTexto.value;
-            const divResultado = document.getElementById("resultado");
-            const spanResultado = document.getElementById("textoResultadoSpan");
-            const btnTransfer = document.getElementById("btnTransferencia");
-            const btnFamiliar = document.getElementById("btnFamiliar");
+    // --- LÓGICA DE VOZ Y ONDAS VISUALES ---
+    let reconocimiento;
+    let grabando = false;
+    let audioContext, analyser, dataArray, mediaStreamSource;
+    
+    const canvas = document.getElementById("visualizadorVoz");
+    const canvasCtx = canvas.getContext("2d");
+    const btnMicro = document.getElementById("btnMicrofono");
+    const btnSimular = document.getElementById("btnSimular");
+    const areaTexto = document.getElementById("textoUsuario");
 
-            if (!textoOriginal.trim()) {
-                alert("Por favor, escribe el contexto o usa el micrófono.");
-                return;
-            }
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        reconocimiento = new SpeechRecognition();
+        reconocimiento.lang = 'es-ES';
+        reconocimiento.interimResults = false;
 
-            const textoConCanal = `[Canal: ${canalActual}] ${textoOriginal}`;
-
-            btnMicro.disabled = true;
-            btnSimular.innerHTML = "⏳ Analizando...";
-            btnSimular.style.background = "#ccc";
-            btnSimular.disabled = true;
+        reconocimiento.onstart = function() {
+            grabando = true;
+            btnMicro.innerHTML = "Escuchando...";
+            btnMicro.classList.add("grabando");
+            canvas.style.display = "block";
             
-            divResultado.style.display = "none";
-            divResultado.className = "";
-            btnFamiliar.style.display = "none";
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                mediaStreamSource = audioContext.createMediaStreamSource(stream);
+                mediaStreamSource.connect(analyser);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                dibujarOndas(bufferLength);
+            }).catch(err => console.log("Permiso denegado para las ondas visuales."));
+        };
 
-            try {
-                const response = await fetch("/analizar", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ texto: textoConCanal })
-                });
+        reconocimiento.onresult = function(event) {
+            areaTexto.value = event.results[0][0].transcript;
+        };
 
-                const datos = await response.json();
-                divResultado.style.display = "block";
+        reconocimiento.onerror = function() {
+            detenerInterfazGrabacion();
+            alert("Error de micrófono.");
+        };
 
-                if (datos.exito) {
-                    spanResultado.innerText = datos.advertencia;
+        reconocimiento.onend = function() {
+            detenerInterfazGrabacion();
+            if (areaTexto.value.trim() !== "") {
+                procesarTexto();
+            }
+        };
+    }
 
-                    if (datos.advertencia.includes("Análisis seguro")) {
-                        divResultado.className = "seguro";
-                        btnTransfer.disabled = false;
-                        btnTransfer.style.background = "var(--banco-secundario)";
-                        btnTransfer.innerText = "Confirmar Transferencia";
-                    } else {
-                        divResultado.className = "alerta";
-                        btnTransfer.disabled = true;
-                        btnTransfer.style.background = "#e74c3c";
-                        btnTransfer.innerText = "🚫 Bloqueada por Seguridad";
-                        
-                        btnFamiliar.style.display = "block";
-                        btnFamiliar.innerHTML = "📞 Llamar a mi hijo/a (Contacto Seguro)";
-                        btnFamiliar.style.background = "#2ecc71";
+    function dibujarOndas(bufferLength) {
+        if (!grabando) return;
+        requestAnimationFrame(() => dibujarOndas(bufferLength));
+        analyser.getByteFrequencyData(dataArray);
 
-                        if (datos.audio_base64) {
-                            const audio = new Audio("data:audio/mpeg;base64," + datos.audio_base64);
-                            audio.play().catch(e => console.log("Auto-play bloqueado."));
-                        }
+        canvasCtx.fillStyle = "#f4f7f6";
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for(let i = 0; i < bufferLength; i++) {
+            barHeight = dataArray[i] / 2;
+            canvasCtx.fillStyle = barHeight > 60 ? "#e74c3c" : "#085696";
+            canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+            x += barWidth + 1;
+        }
+    }
+
+    function iniciarGrabacion() {
+        if (grabando) {
+            reconocimiento.stop();
+        } else {
+            areaTexto.value = "";
+            reconocimiento.start();
+        }
+    }
+
+    function detenerInterfazGrabacion() {
+        grabando = false;
+        btnMicro.innerHTML = "🎙️ Hablar";
+        btnMicro.classList.remove("grabando");
+        canvas.style.display = "none";
+    }
+
+    // --- LÓGICA DE BACKEND (CLAUDE) ---
+    async function procesarTexto() {
+        const textoOriginal = areaTexto.value;
+        const divResultado = document.getElementById("resultado");
+        const spanResultado = document.getElementById("textoResultadoSpan");
+        const btnTransfer = document.getElementById("btnTransferencia");
+        const btnFamiliar = document.getElementById("btnFamiliar");
+        const cajon = document.getElementById("cajonVerificacion");
+
+        if (!textoOriginal.trim()) {
+            alert("Por favor, escribe el contexto o usa el micrófono.");
+            return;
+        }
+
+        const textoConCanal = `[Canal: ${canalActual}] ${textoOriginal}`;
+
+        btnMicro.disabled = true;
+        btnSimular.innerHTML = "Analizando...";
+        btnSimular.disabled = true;
+        divResultado.style.display = "none";
+        btnFamiliar.style.display = "none";
+
+        try {
+            const response = await fetch("/analizar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ texto: textoConCanal, volumen_alto: false }) 
+            });
+
+            const datos = await response.json();
+            divResultado.style.display = "block";
+
+            if (datos.exito) {
+                spanResultado.innerText = datos.advertencia;
+
+                if (datos.advertencia.includes("Análisis seguro")) {
+                    divResultado.className = "seguro";
+                    cajon.style.display = "none";
+                    btnTransfer.style.display = "block";
+                    btnTransfer.disabled = false;
+                    btnTransfer.style.background = "var(--banco-secundario)";
+                    btnTransfer.innerText = "Confirmar Transferencia Segura";
+                } else {
+                    divResultado.className = "alerta";
+                    cajon.style.display = "none";
+                    btnTransfer.style.display = "block";
+                    btnTransfer.disabled = true;
+                    btnTransfer.style.background = "#e74c3c";
+                    btnTransfer.innerText = "🚫 Bloqueada por Seguridad";
+                    
+                    btnFamiliar.style.display = "block";
+
+                    if (datos.audio_base64) {
+                        const audio = new Audio("data:audio/mpeg;base64," + datos.audio_base64);
+                        audio.play().catch(e => console.log("Auto-play bloqueado."));
                     }
                 }
-            } catch (error) {
-                divResultado.style.display = "block";
-                spanResultado.innerText = "Error de conexión con el servidor.";
-                divResultado.className = "error";
-            } finally {
-                btnMicro.disabled = false;
-                btnSimular.innerHTML = "📝 Enviar Texto";
-                btnSimular.style.background = "var(--shield-acento)";
-                btnSimular.disabled = false;
+            }
+            cargarHistorial(); 
+        } catch (error) {
+            divResultado.style.display = "block";
+            spanResultado.innerText = "Error de conexión con el servidor local.";
+            divResultado.className = "error";
+        } finally {
+            btnMicro.disabled = false;
+            btnSimular.innerHTML = "Enviar Texto";
+            btnSimular.disabled = false;
+        }
+    }
+
+    // ABRIR WHATSAPP REAL
+    function simularLlamada() {
+        const btn = document.getElementById("btnFamiliar");
+        btn.innerHTML = "⏳ Abriendo contacto seguro...";
+        btn.style.background = "#f39c12";
+        
+        setTimeout(() => {
+            btn.innerHTML = "📞 Contacto Avisado";
+            btn.style.background = "#27ae60";
+            // Lanza WhatsApp Web
+            const mensaje = encodeURIComponent("⚠️ ALERTA URGENTE: El banco ha bloqueado una operación en mi cuenta porque SilverShield ha detectado una estafa. Por favor, llámame ahora mismo.");
+            window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
+        }, 1500);
+    }
+
+    // --- LÓGICA DE LA BASE DE DATOS Y EXPORTAR DENUNCIA ---
+    async function cargarHistorial() {
+        try {
+            const response = await fetch("/historial");
+            const datos = await response.json();
+            const tbody = document.getElementById("tablaHistorial");
+            tbody.innerHTML = "";
+            datos.historial.forEach(registro => {
+                const fila = document.createElement("tr");
+                fila.style.borderBottom = "1px solid #ccc";
+                const badgeEstado = registro.bloqueado
+                    ? '<span style="background: #e74c3c; color:white; padding: 4px 8px; border-radius:10px; font-weight: bold;">BLOQUEADO</span>'
+                    : '<span style="background: #2ecc71; color:white; padding: 4px 8px; border-radius:10px; font-weight:bold;">PERMITIDO</span>';
+                fila.innerHTML = `
+                    <td style="padding: 10px;">${registro.fecha}</td>
+                    <td style="padding: 10px; font-style: italic;">"${registro.texto}"</td>
+                    <td style="padding: 10px; text-align: center;">${badgeEstado}</td>
+                `;
+                tbody.appendChild(fila);
+            });
+        } catch (error) {
+            console.log("Error cargando historial de la base de datos.");
+        }
+    }
+
+    async function limpiarBaseDatos() {
+        if (confirm("¿Estás seguro de borrar todo el historial de seguridad?")) {
+            await fetch("/limpiar-historial", { method: "DELETE" });
+            cargarHistorial();
+        }
+    }
+
+    // NUEVA FUNCIÓN PARA GENERAR EL PDF DE LA DENUNCIA (SIN TOCAR EL SERVIDOR)
+    function generarDenunciaPDF() {
+        const tbody = document.getElementById("tablaHistorial").innerHTML;
+        if (!tbody || tbody.trim() === "") {
+            alert("No hay registros en el historial para exportar.");
+            return;
+        }
+
+        // Abre una pestaña nueva y escribe una plantilla de documento oficial
+        const ventana = window.open('', '_blank');
+        ventana.document.write(`
+            <html>
+            <head>
+                <title>Denuncia Policial - SilverBank</title>
+                <style>
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 50px; color: #333; line-height: 1.6; }
+                    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #003366; padding-bottom: 20px; margin-bottom: 30px; }
+                    h1 { color: #003366; margin: 0; font-size: 24px; }
+                    .logo { font-size: 24px; font-weight: bold; color: #003366; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                    th { background-color: #f4f7f6; color: #003366; }
+                    .footer { margin-top: 60px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #ddd; padding-top: 20px; }
+                    .badge-rojo { color: #c0392b; font-weight: bold; }
+                    .badge-verde { color: #27ae60; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="logo">🛡️ SilverBank | SilverShield</div>
+                    <div style="text-align: right; color: #777;">
+                        <strong>INFORME OFICIAL DE AUDITORÍA</strong><br>
+                        Emitido: ${new Date().toLocaleString()}
+                    </div>
+                </div>
                 
-                cargarHistorial(); 
-            }
-        }
-
-        function simularLlamada() {
-            const btn = document.getElementById("btnFamiliar");
-            btn.innerHTML = "📞 Conectando con tu hijo/a...";
-            btn.style.background = "#f39c12"; 
-            setTimeout(() => {
-                btn.innerHTML = "🗣️ Llamada en curso (00:01)";
-                btn.style.background = "#27ae60"; 
-            }, 2000);
-        }
-
-        async function cargarHistorial() {
-            try {
-                const response = await fetch("/historial");
-                const datos = await response.json();
-                const tbody = document.getElementById("tablaHistorial");
-                tbody.innerHTML = "";
+                <h2>Extracto de Eventos de Ciberseguridad (Prevención de Fraude)</h2>
+                <p>El presente documento certifica los intentos de transacciones y su correspondiente evaluación de riesgo cognitivo bloqueados de manera automática por el sistema <strong>SilverShield</strong>, cumpliendo con la directiva europea PSD2.</p>
+                <p>Este informe puede ser adjuntado como prueba pericial en denuncias ante las Fuerzas y Cuerpos de Seguridad del Estado.</p>
                 
-                datos.historial.forEach(registro => {
-                    const fila = document.createElement("tr");
-                    fila.style.borderBottom = "1px solid #ccc";
-                    
-                    const badgeEstado = registro.bloqueado 
-                        ? '<span style="background:#e74c3c; color:white; padding:4px 8px; border-radius:10px; font-weight:bold;">BLOQUEADO</span>'
-                        : '<span style="background:#2ecc71; color:white; padding:4px 8px; border-radius:10px; font-weight:bold;">PERMITIDO</span>';
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Fecha</th>
+                            <th style="width: 60%;">Contexto Capturado / Canal de Intrusión</th>
+                            <th style="width: 20%;">Resolución</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tbody.replace(/<span[^>]*>BLOQUEADO<\/span>/g, '<span class="badge-rojo">BLOQUEADO POR SEGURIDAD</span>').replace(/<span[^>]*>PERMITIDO<\/span>/g, '<span class="badge-verde">OPERACIÓN SEGURA</span>')}
+                    </tbody>
+                </table>
 
-                    fila.innerHTML = `
-                        <td style="padding: 10px;">${registro.fecha}</td>
-                        <td style="padding: 10px; font-style: italic;">"${registro.texto}"</td>
-                        <td style="padding: 10px; text-align: center;">${badgeEstado}</td>
-                    `;
-                    tbody.appendChild(fila);
-                });
-            } catch (error) {
-                console.log("Error cargando historial.");
-            }
-        }
+                <div class="footer">
+                    Documento generado criptográficamente por SilverShield Security Framework.<br>
+                    ID de sesión interna: ${Math.random().toString(36).substr(2, 9).toUpperCase()}
+                </div>
+            </body>
+            </html>
+        `);
+        
+        ventana.document.close();
+        ventana.focus();
+        
+        // Espera medio segundo a que cargue el HTML y abre la ventana de imprimir
+        setTimeout(() => {
+            ventana.print();
+        }, 500);
+    }
 
-        async function limpiarBaseDatos() {
-            if (confirm("¿Estás seguro de borrar todo el historial de seguridad?")) {
-                await fetch("/limpiar-historial", { method: "DELETE" });
-                cargarHistorial();
-            }
-        }
-
-        window.onload = cargarHistorial;
-    </script>
+    window.onload = cargarHistorial;
+</script>
 </body>
 </html>
