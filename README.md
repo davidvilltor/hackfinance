@@ -38,3 +38,5 @@ cd hackfinance
 ```bash
 python -m uvicorn backend.main:app --reload
 ```
+
+### 3. Abrir navegador en http://localhost:8000 para ver la interfaz de SilverBank
