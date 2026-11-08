@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilverShield - Seguridad Bancaria</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; }
+        p { text-align: center; color: #7f8c8d; margin-bottom: 25px; }
+        textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; font-size: 14px; }
+        button { display: block; width: 100%; padding: 14px; margin-top: 15px; background: #f4a261; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #e76f51; }
+        #resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-weight: bold; }
+        .alerta { background: #ffebee; border-left: 5px solid #f44336; color: #b71c1c; }
+        .seguro { background: #e8f5e9; border-left: 5px solid #4caf50; color: #1b5e20; }
+        .error { background: #fff3e0; border-left: 5px solid #ff9800; color: #e65100; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ SilverShield</h1>
+        <p>Analizador de operaciones en tiempo real</p>
+        
+        <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk para asegurar mi cuenta..."></textarea>
+        
+        <button id="btnSimular" onclick="procesarTexto()">📝 Simular Voz (Texto)</button>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function procesarTexto() {
+            const btnSimular = document.getElementById("btnSimular");
+            const texto = document.getElementById("textoUsuario").value;
+            const divResultado = document.getElementById("resultado");
+
+            if (!texto.trim()) {
+                alert("Por favor, escribe un texto primero.");
+                return;
+            }
+
+            // Cambiar botón a estado de carga
+            btnSimular.innerText = "⏳ Analizando seguridad...";
+            btnSimular.style.background = "#ccc";
+            divResultado.style.display = "none";
+            divResultado.className = "";
+            divResultado.innerText = "";
+
+            try {
+                const response = await fetch("/analizar", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ texto: texto })
+                });
+
+                const datos = await response.json();
+
+                divResultado.style.display = "block";
+
+                if (datos.exito) {
+                    divResultado.innerText = datos.advertencia;
+                    
+                    if (datos.advertencia.includes("Análisis seguro")) {
+                        divResultado.className = "seguro";
+                    } else {
+                        divResultado.className = "alerta";
+                    }
+
+                    // Reproductor blindado con aviso de errores
+                    if (datos.audio_base64) {
+                        const audio = new Audio("data:audio/mpeg;base64," + datos.audio_base64);
+                        audio.play().then(() => {
+                            console.log("Audio reproduciendo bien.");
+                        }).catch(error => {
+                            alert("El navegador ha bloqueado el sonido.\nMotivo: " + error.message + "\n\nPara solucionarlo, haz clic en Aceptar, luego haz un clic en cualquier zona blanca de la página y vuelve a darle a Simular Voz.");
+                        });
+                    }
+                } else {
+                    divResultado.innerText = datos.error_detectado;
+                    divResultado.className = "error";
+                }
+            } catch (error) {
+                divResultado.style.display = "block";
+                divResultado.innerText = "Error de conexión con el servidor local.";
+                divResultado.className = "error";
+            } finally {
+                // Restaurar botón a su estado normal
+                btnSimular.innerText = "📝 Simular Voz (Texto)";
+                btnSimular.style.background = "#f4a261";
+            }
+        }
+    </script>
+</body>
+</html>
