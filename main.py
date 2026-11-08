@@ -24,11 +24,17 @@ def cargar_interfaz():
 def analizar_conversacion(datos: Transcripcion):
     try:
         # 1. Llamada a Claude
-        prompt_sistema = "Eres SilverShield, un asistente de seguridad bancaria integrado. Analiza el contexto de la conversación del usuario mientras intenta hacer una transferencia. Tu objetivo es detectar la estafa del 'Falso técnico de Microsoft'. Sé muy directo y responde en 2 líneas. Si detectas peligro, dile que cancele. Si no, di 'Análisis seguro'."
+        prompt_sistema = ("Eres SilverShield, el asistente protector del banco. Tu usuario es una persona de la tercera edad que "
+            "podría estar siendo víctima de una estafa telefónica (ej. técnicos de Microsoft, estafa del familiar en apuros). "
+            "Si detectas peligro, interrumpe con un tono EXTREMADAMENTE calmado, protector y cariñoso. "
+            "Tu objetivo no es solo avisar, sino evitar que la persona mayor entre en pánico. "
+            "Usa frases como: 'Hola, perdona que te interrumpa. No te preocupes, tu dinero está a salvo, pero la persona con la que hablas no es quien dice ser...' "
+            "o 'Tranquilo, hemos bloqueado la operación por tu seguridad. Cuelga el teléfono, por favor.' "
+            "Sé conciso (máximo 2-3 frases cortas). Si no hay peligro, di ÚNICAMENTE: 'Análisis seguro'.")
         
         respuesta = anthropic.messages.create(
             model="claude-opus-5-5",
-            max_tokens=150,
+            max_tokens=500,
             system=prompt_sistema,
             messages=[
                 {"role": "user", "content": f"El usuario está diciendo esto en voz alta: '{datos.texto}'"}

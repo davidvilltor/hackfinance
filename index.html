@@ -3,62 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SilverShield - Seguridad Bancaria</title>
+    <title>SilverBank - Área Clientes</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; }
-        p { text-align: center; color: #7f8c8d; margin-bottom: 25px; }
-        textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; font-size: 14px; }
-        button { display: block; width: 100%; padding: 14px; margin-top: 15px; background: #f4a261; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        button:hover { background: #e76f51; }
-        #resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-weight: bold; }
-        .alerta { background: #ffebee; border-left: 5px solid #f44336; color: #b71c1c; }
-        .seguro { background: #e8f5e9; border-left: 5px solid #4caf50; color: #1b5e20; }
-        .error { background: #fff3e0; border-left: 5px solid #ff9800; color: #e65100; }
+        /* Estilos generales y variables de color */
+        :root { 
+            --banco-primario: #003366; 
+            --banco-secundario: #00509e; 
+            --shield-acento: #f4a261; 
+            --fondo: #f4f7f6; 
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s ease; }
+        
+        /* Navbar con botón de accesibilidad */
+        .navbar { background: var(--banco-primario); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .navbar h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
+        .controles-top { display: flex; gap: 15px; align-items: center; }
+        .usuario-info { font-size: 14px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; }
+        .btn-accesibilidad { background: white; color: var(--banco-primario); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .btn-accesibilidad:hover { background: #e0e0e0; }
+
+        .container { max-width: 1000px; margin: 40px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; transition: all 0.3s ease; }
+
+        .card h3 { color: var(--banco-primario); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; font-size: 14px; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #f9f9f9; color: #333; font-weight: bold; transition: all 0.3s ease; }
+        
+        .btn-transfer { background: var(--banco-secundario); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .btn-transfer:hover:not(:disabled) { background: var(--banco-primario); }
+        .btn-transfer:disabled { cursor: not-allowed; opacity: 0.9; }
+
+        /* Botón de familiar (oculto por defecto) */
+        .btn-familiar { background: #2ecc71; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; display: none; animation: aparecer 0.5s ease-out; }
+        .btn-familiar:hover { background: #27ae60; }
+        
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; }
+        .shield-header h2 { margin: 0; }
+        textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; font-family: inherit; transition: all 0.3s ease; }
+        textarea:focus { outline: none; border-color: var(--shield-acento); }
+        
+        .botones-accion { display: flex; gap: 10px; margin-bottom: 15px; }
+        
+        .btn-shield { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.3s; flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-texto { background: var(--shield-acento); }
+        .btn-texto:hover:not(:disabled) { background: #e76f51; }
+        .btn-micro { background: #2ecc71; }
+        .btn-micro:hover:not(:disabled) { background: #27ae60; }
+        .btn-micro.grabando { background: #e74c3c; animation: latido 1.5s infinite; }
+
+        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        #resultado { padding: 15px; border-radius: 6px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; }
+        .alerta { background: #ffebee; border-left: 8px solid #f44336; color: #b71c1c; }
+        .seguro { background: #e8f5e9; border-left: 8px solid #4caf50; color: #1b5e20; }
+        .error { background: #fff3e0; border-left: 8px solid #ff9800; color: #e65100; }
+
+        /* === MODO ACCESIBILIDAD (Tercera Edad) === */
+        body.modo-accesible { font-size: 120%; }
+        body.modo-accesible .card { border: 2px solid #333; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        body.modo-accesible input[type="text"], body.modo-accesible textarea, body.modo-accesible button { font-size: 110%; border: 2px solid #666; }
+        body.modo-accesible label { font-size: 110%; color: #000; }
+        body.modo-accesible .alerta { font-size: 120%; border-left-width: 12px; }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <h2>🏦 SilverBank</h2>
+        <div class="controles-top">
+            <button class="btn-accesibilidad" onclick="toggleAccesibilidad()">🔍 A+ Letra Grande</button>
+            <div class="usuario-info">👤 Juan Pérez | Saldo: 4.520,00 €</div>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>🛡️ SilverShield</h1>
-        <p>Analizador de operaciones en tiempo real</p>
-        
-        <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk para asegurar mi cuenta..."></textarea>
-        
-        <button id="btnSimular" onclick="procesarTexto()">📝 Simular Voz (Texto)</button>
-        
-        <div id="resultado"></div>
+        <!-- Columna Izquierda: Formulario de banco falso -->
+        <div class="card">
+            <h3>Nueva Transferencia</h3>
+            <div class="form-group">
+                <label>Destinatario (IBAN)</label>
+                <input type="text" value="ES91 2100 0418 45 1234567890" disabled>
+            </div>
+            <div class="form-group">
+                <label>Importe a transferir (€)</label>
+                <input type="text" value="1.500,00 €" disabled>
+            </div>
+            <div class="form-group">
+                <label>Concepto</label>
+                <input type="text" value="Soporte Técnico Microsoft - AnyDesk" disabled>
+            </div>
+            
+            <button class="btn-transfer" id="btnTransferencia" onclick="alert('Iniciando proceso de transferencia...')">Confirmar Transferencia</button>
+            
+            <!-- Botón de emergencia oculto por defecto -->
+            <button class="btn-familiar" id="btnFamiliar" onclick="alert('Iniciando llamada de emergencia con tu hijo/a...')">
+                📞 Llamar a mi hijo/a (Contacto Seguro)
+            </button>
+        </div>
+
+        <!-- Columna Derecha: Módulo SilverShield -->
+        <div class="card">
+            <div class="shield-header"><h2>🛡️ SilverShield</h2></div>
+            <p style="color: #7f8c8d; font-size: 15px; margin-top: 0; margin-bottom: 20px;">
+                Protección por IA activa. Detectando fraudes en tiempo real...
+            </p>
+            
+            <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk..."></textarea>
+            
+            <div class="botones-accion">
+                <button id="btnMicrofono" class="btn-shield btn-micro" onclick="iniciarGrabacion()">
+                    🎙️ Hablar
+                </button>
+                <button id="btnSimular" class="btn-shield btn-texto" onclick="procesarTexto()">
+                    📝 Enviar Texto
+                </button>
+            </div>
+            
+            <div id="resultado"></div>
+        </div>
     </div>
 
     <script>
+        // --- 1. MODO ACCESIBILIDAD ---
+        function toggleAccesibilidad() {
+            document.body.classList.toggle("modo-accesible");
+        }
+
+        // --- 2. LÓGICA DEL MICRÓFONO ---
+        let reconocimiento;
+        let grabando = false;
+        const btnMicro = document.getElementById("btnMicrofono");
+        const areaTexto = document.getElementById("textoUsuario");
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            reconocimiento = new SpeechRecognition();
+            reconocimiento.lang = 'es-ES'; 
+            reconocimiento.interimResults = false; 
+
+            reconocimiento.onstart = function() {
+                grabando = true;
+                btnMicro.innerHTML = "🔴 Escuchando...";
+                btnMicro.classList.add("grabando");
+            };
+
+            reconocimiento.onresult = function(event) {
+                const transcripcion = event.results[0][0].transcript;
+                areaTexto.value = transcripcion; 
+                procesarTexto(); 
+            };
+
+            reconocimiento.onerror = function(event) {
+                alert("Error con el micrófono: " + event.error);
+                detenerInterfazGrabacion();
+            };
+
+            reconocimiento.onend = function() {
+                detenerInterfazGrabacion();
+            };
+        } else {
+            btnMicro.style.display = 'none'; 
+        }
+
+        function iniciarGrabacion() {
+            if (grabando) {
+                reconocimiento.stop();
+            } else {
+                areaTexto.value = ""; 
+                reconocimiento.start();
+            }
+        }
+
+        function detenerInterfazGrabacion() {
+            grabando = false;
+            btnMicro.innerHTML = "🎙️ Hablar";
+            btnMicro.classList.remove("grabando");
+        }
+
+        // --- 3. LÓGICA DEL BACKEND (BLOQUEO Y BOTÓN FAMILIAR) ---
         async function procesarTexto() {
             const btnSimular = document.getElementById("btnSimular");
-            const texto = document.getElementById("textoUsuario").value;
+            const texto = areaTexto.value;
             const divResultado = document.getElementById("resultado");
+            const btnTransfer = document.getElementById("btnTransferencia");
+            const btnFamiliar = document.getElementById("btnFamiliar"); // Botón de red de seguridad
 
             if (!texto.trim()) {
-                alert("Por favor, escribe un texto primero.");
+                alert("Por favor, escribe el contexto o usa el micrófono.");
                 return;
             }
 
-            // Cambiar botón a estado de carga
-            btnSimular.innerText = "⏳ Analizando seguridad...";
+            btnSimular.innerHTML = "⏳ Analizando...";
             btnSimular.style.background = "#ccc";
+            btnMicro.disabled = true; 
             divResultado.style.display = "none";
             divResultado.className = "";
             divResultado.innerText = "";
+            
+            // Ocultamos el botón familiar al iniciar un nuevo análisis por si acaso
+            btnFamiliar.style.display = "none";
 
             try {
                 const response = await fetch("/analizar", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ texto: texto })
                 });
 
                 const datos = await response.json();
-
                 divResultado.style.display = "block";
 
                 if (datos.exito) {
@@ -66,17 +223,25 @@
                     
                     if (datos.advertencia.includes("Análisis seguro")) {
                         divResultado.className = "seguro";
+                        btnTransfer.disabled = false;
+                        btnTransfer.style.background = "var(--banco-secundario)";
+                        btnTransfer.innerText = "Confirmar Transferencia";
+                        btnFamiliar.style.display = "none"; // Todo bien, no hace falta llamar a nadie
                     } else {
                         divResultado.className = "alerta";
+                        // Bloqueo de transferencia
+                        btnTransfer.disabled = true;
+                        btnTransfer.style.background = "#e74c3c";
+                        btnTransfer.innerText = "🚫 Bloqueada por Seguridad";
+                        
+                        // EL MOMENTO WOW: Aparece el botón de llamar al familiar
+                        btnFamiliar.style.display = "block";
                     }
 
-                    // Reproductor blindado con aviso de errores
                     if (datos.audio_base64) {
                         const audio = new Audio("data:audio/mpeg;base64," + datos.audio_base64);
-                        audio.play().then(() => {
-                            console.log("Audio reproduciendo bien.");
-                        }).catch(error => {
-                            alert("El navegador ha bloqueado el sonido.\nMotivo: " + error.message + "\n\nPara solucionarlo, haz clic en Aceptar, luego haz un clic en cualquier zona blanca de la página y vuelve a darle a Simular Voz.");
+                        audio.play().catch(error => {
+                            alert("Haz clic en cualquier parte blanca y vuelve a intentarlo.");
                         });
                     }
                 } else {
@@ -88,9 +253,9 @@
                 divResultado.innerText = "Error de conexión con el servidor local.";
                 divResultado.className = "error";
             } finally {
-                // Restaurar botón a su estado normal
-                btnSimular.innerText = "📝 Simular Voz (Texto)";
-                btnSimular.style.background = "#f4a261";
+                btnSimular.innerHTML = "📝 Enviar Texto";
+                btnSimular.style.background = "var(--shield-acento)";
+                btnMicro.disabled = false;
             }
         }
     </script>
