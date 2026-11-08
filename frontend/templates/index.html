@@ -41,9 +41,11 @@
         .btn-familiar { display: none; background: #2ecc71; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; justify-content: center; }
         .shield-header h2 { margin: 0; }
-        .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; }
-        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px;}
+        
+        .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; flex-wrap: wrap;}
+        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px; min-width: 80px;}
         .btn-canal.activo { background: white; color: var(--banco-primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
         textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 10px;}
         .botones-accion { display: flex; gap: 10px; margin-bottom: 15px; }
         .btn-shield { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 1; }
@@ -81,7 +83,7 @@
 </div>
 
 <div class="container">
-    <!-- Panel Bancario Interactivo con límite de 100€ -->
+    <!-- Panel Bancario Interactivo -->
     <div class="card">
         <h3>Nueva Transferencia</h3>
         <div class="form-group">
@@ -102,7 +104,7 @@
         <div class="cajon-verificacion" id="cajonVerificacion">
             <p>⚠️ Operación superior a 100€. Elige cómo deseas proceder por tu seguridad:</p>
             <button class="btn-omitir" onclick="autorizarSinRiesgo()">✓ Conozco el destino. Autorizar directamente.</button>
-            <button class="btn-verificar-ia" onclick="activarSilverShield()">🛡️ Me lo han pedido por teléfono/SMS (Verificar Riesgo)</button>
+            <button class="btn-verificar-ia" onclick="activarSilverShield()">🛡️ Solicitar verificación con SilverShield</button>
         </div>
 
         <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
@@ -111,14 +113,16 @@
     <!-- Módulo IA Omnicanal -->
     <div class="card" id="moduloIA" style="display: none; flex-direction: column; justify-content: center; text-align: center;">
         <div class="shield-header">
-            <h2>SilverShield IA</h2>
+            <h2>🛡️ SilverShield IA</h2>
         </div>
-        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Selecciona el canal y descríbenos qué te han pedido.</p>
+        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Seleccione el motivo de su consulta.</p>
         
         <div class="canales-selector">
             <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
             <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp/SMS')">💬 WhatsApp</button>
             <button class="btn-canal" id="canalWeb" onclick="cambiarCanal('Enlace Web / Smishing')">🔗 Enlace Web</button>
+            <!-- NUEVO BOTÓN DE DUDA GENERAL -->
+            <button class="btn-canal" id="canalOtro" onclick="cambiarCanal('Duda General')">❓ Otra consulta</button>
         </div>
 
         <!-- Ecualizador Visual de Voz -->
@@ -140,13 +144,10 @@
     <div class="card" style="min-width: 100%; margin-top: 10px; background: #eef2f5;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h3 style="color: #2c3e50; font-size: 16px; margin: 0; border: none; padding: 0;">📋 Log de Seguridad del Banco (Base de Datos)</h3>
-            
-            <!-- BOTONES DE EXPORTAR Y LIMPIAR RECUPERADOS -->
             <div style="display: flex; gap: 10px;">
                 <button onclick="generarDenunciaPDF()" style="background: #34495e; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">📄 Exportar Denuncia</button>
                 <button onclick="limpiarBaseDatos()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">🗑️ Limpiar Historial</button>
             </div>
-
         </div>
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
             <thead>
@@ -208,7 +209,7 @@
         document.getElementById("moduloIA").scrollIntoView({ behavior: 'smooth' });
     }
 
-    // --- LÓGICA DE CANALES ---
+    // --- LÓGICA DE CANALES (ACTUALIZADO CON EL BOTÓN 4) ---
     let canalActual = 'Llamada Telefónica';
     function cambiarCanal(canal) {
         canalActual = canal;
@@ -217,6 +218,14 @@
         if (canal === 'Llamada Telefónica') document.getElementById('canalVoz').classList.add('activo');
         if (canal === 'WhatsApp/SMS') document.getElementById('canalWats').classList.add('activo');
         if (canal === 'Enlace Web / Smishing') document.getElementById('canalWeb').classList.add('activo');
+        if (canal === 'Duda General') document.getElementById('canalOtro').classList.add('activo'); // NUEVO
+        
+        const area = document.getElementById('textoUsuario');
+        if (canal === 'Llamada Telefónica') area.placeholder = "Ej: Me llama un falso técnico pidiendo acceso remoto...";
+        if (canal === 'WhatsApp/SMS') area.placeholder = "Ej: Me ha escrito mi hijo pidiendo 1.500€ urgentemente por WhatsApp...";
+        if (canal === 'Enlace Web / Smishing') area.placeholder = "Ej: He clicado en un SMS del banco que dice que mi cuenta está bloqueada...";
+        // NUEVO PLACEHOLDER
+        if (canal === 'Duda General') area.placeholder = "Ej: Estoy pagando el arreglo del coche al taller y quiero estar seguro de que está todo bien...";
     }
 
     // --- LÓGICA DE VOZ Y ONDAS VISUALES ---
@@ -386,7 +395,6 @@
         setTimeout(() => {
             btn.innerHTML = "📞 Contacto Avisado";
             btn.style.background = "#27ae60";
-            // Lanza WhatsApp Web
             const mensaje = encodeURIComponent("⚠️ ALERTA URGENTE: El banco ha bloqueado una operación en mi cuenta porque SilverShield ha detectado una estafa. Por favor, llámame ahora mismo.");
             window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
         }, 1500);
@@ -424,7 +432,6 @@
         }
     }
 
-    // NUEVA FUNCIÓN PARA GENERAR EL PDF DE LA DENUNCIA (SIN TOCAR EL SERVIDOR)
     function generarDenunciaPDF() {
         const tbody = document.getElementById("tablaHistorial").innerHTML;
         if (!tbody || tbody.trim() === "") {
@@ -432,7 +439,6 @@
             return;
         }
 
-        // Abre una pestaña nueva y escribe una plantilla de documento oficial
         const ventana = window.open('', '_blank');
         ventana.document.write(`
             <html>
@@ -488,7 +494,6 @@
         ventana.document.close();
         ventana.focus();
         
-        // Espera medio segundo a que cargue el HTML y abre la ventana de imprimir
         setTimeout(() => {
             ventana.print();
         }, 500);
