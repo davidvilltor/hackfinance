@@ -11,14 +11,14 @@
             --shield-acento: #f4a261;
             --fondo: #f4f7f6;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s; display: flex; flex-direction: column; min-height: 100vh; }
         .navbar { background: var(--banco-primario); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
         .navbar h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
         .controles-top { display: flex; gap: 15px; align-items: center; }
         .usuario-info { font-size: 14px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; }
         .btn-accesibilidad { background: white; color: var(--banco-primario); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-accesibilidad:hover { background: #eee; }
-        .container { max-width: 1000px; margin: 40px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; }
+        .container { max-width: 1000px; margin: 30px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; flex: 1; }
         .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; transition: all 0.3s; }
         .card h3 { color: var(--banco-primario); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
@@ -32,6 +32,12 @@
         .btn-familiar:hover { background: #27ae60; }
         .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; justify-content: center; }
         .shield-header h2 { margin: 0; }
+        
+        /* Selectores de Canal (Nueva Implementación 3) */
+        .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; }
+        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+        .btn-canal.activo { background: white; color: var(--banco-primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
         textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; font-family: inherit; font-size: 15px;}
         textarea:focus { outline: none; border-color: var(--shield-acento); }
         .botones-accion { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -42,10 +48,18 @@
         .btn-micro:hover:not(:disabled) { background: #27ae60; }
         .btn-micro.grabando { background: #e74c3c; animation: latido 1.5s infinite; }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-        #resultado { padding: 15px; border-radius: 5px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; margin-top: 15px; overflow-wrap: break-word; text-align: left; }
+        
+        #resultado { padding: 15px; border-radius: 5px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; margin-top: 15px; overflow-wrap: break-word; text-align: left; position: relative; }
         .alerta { background: #ffebee; border-left: 8px solid #f44336; color: #b71c1c; }
         .seguro { background: #e8f5e9; border-left: 8px solid #4caf50; color: #1b5e20; }
         .error { background: #fff3e0; border-left: 8px solid #ff9800; color: #e65100; }
+        
+        .btn-tts { background: none; border: none; font-size: 18px; cursor: pointer; float: right; margin-top: -5px; transition: transform 0.2s; }
+        .btn-tts:hover { transform: scale(1.2); }
+
+        .compliance-footer { background: #1a252f; color: #ecf0f1; padding: 12px 40px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; border-top: 3px solid var(--shield-acento); flex-wrap: wrap; gap: 10px; }
+        .compliance-items { display: flex; gap: 20px; align-items: center; }
+
         body.modo-accesible { font-size: 120%; }
         body.modo-accesible .card { border: 2px solid #333; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
         body.modo-accesible input[type="text"], body.modo-accesible textarea, body.modo-accesible button { font-size: 110%; border: 2px solid #666; }
@@ -82,13 +96,20 @@
             <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
         </div>
 
-        <!-- Módulo IA Híbrido -->
+        <!-- Módulo IA Híbrido & Omnicanal -->
         <div class="card" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
             <div class="shield-header">
                 <h2>🛡️ SilverShield IA</h2>
             </div>
-            <p style="color: #7f8c8d; font-size: 15px; margin-bottom: 20px;">Dime en voz alta o escribe lo que te están pidiendo hacer.</p>
+            <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Selecciona el canal de entrada y describe o habla sobre el engaño.</p>
             
+            <!-- Selector de Canales -->
+            <div class="canales-selector">
+                <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
+                <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp / SMS')">💬 WhatsApp</button>
+                <button class="btn-canal" id="canalWeb" onclick="cambiarCanal('Enlace Web / Smishing')">🌐 Enlace Web</button>
+            </div>
+
             <textarea id="textoUsuario" placeholder="Ej: Me ha llamado el técnico de Microsoft y me pide descargar AnyDesk..."></textarea>
             
             <div class="botones-accion">
@@ -100,7 +121,10 @@
                 </button>
             </div>
 
-            <div id="resultado"></div>
+            <div id="resultado">
+                <span id="textoResultadoSpan"></span>
+                <button class="btn-tts" onclick="leerTextoVozNativa()" title="Escuchar mensaje en voz alta">🔊</button>
+            </div>
             <div id="medidorEstres" style="display: none; margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px;"></div>
         </div>
 
@@ -114,7 +138,7 @@
                 <thead>
                     <tr style="background: var(--banco-primario); color: white;">
                         <th style="padding: 10px; text-align: left;">Fecha</th>
-                        <th style="padding: 10px; text-align: left;">Texto Capturado</th>
+                        <th style="padding: 10px; text-align: left;">Canal / Texto Capturado</th>
                         <th style="padding: 10px; text-align: left;">Estrés</th>
                         <th style="padding: 10px; text-align: center;">Estado</th>
                     </tr>
@@ -126,8 +150,33 @@
         </div>
     </div>
 
+    <!-- Barra de Cumplimiento Normativo -->
+    <div class="compliance-footer">
+        <div>🔒 <strong>SilverShield Security Framework</strong> — IA Protectora Activa</div>
+        <div class="compliance-items">
+            <span>🛡️ TLS 1.3 End-to-End</span>
+            <span>📜 Cumplimiento PSD2 & SCA</span>
+            <span>🇪🇺 Estándar Europeo de Privacidad</span>
+        </div>
+    </div>
+
     <script>
         function toggleAccesibilidad() { document.body.classList.toggle("modo-accesible"); }
+
+        let canalActual = "Llamada Telefónica";
+
+        function cambiarCanal(canal) {
+            canalActual = canal;
+            document.querySelectorAll('.btn-canal').forEach(b => b.classList.remove('activo'));
+            if (canal === 'Llamada Telefónica') document.getElementById('canalVoz').classList.add('activo');
+            if (canal === 'WhatsApp / SMS') document.getElementById('canalWats').classList.add('activo');
+            if (canal === 'Enlace Web / Smishing') document.getElementById('canalWeb').classList.add('activo');
+            
+            const area = document.getElementById('textoUsuario');
+            if (canal === 'Llamada Telefónica') area.placeholder = "Ej: Me llama un falso técnico pidiendo acceso remoto...";
+            if (canal === 'WhatsApp / SMS') area.placeholder = "Ej: Me ha escrito mi hijo pidiendo 1.500€ urgentemente por WhatsApp...";
+            if (canal === 'Enlace Web / Smishing') area.placeholder = "Ej: He clicado en un SMS del banco que dice que mi cuenta está bloqueada...";
+        }
 
         let reconocimiento;
         let grabando = false;
@@ -192,7 +241,6 @@
             for(let i = 0; i < dataArray.length; i++) { suma += dataArray[i]; }
             let promedio = suma / dataArray.length;
             
-            // Umbral ajustado a 40 para equilibrar la sensibilidad del volumen
             if (promedio > 40) { 
                 volumenDetectadoAlto = true; 
             }
@@ -214,17 +262,34 @@
             btnMicro.classList.remove("grabando");
         }
 
+        function leerTextoVozNativa() {
+            const textoAEscuchar = document.getElementById("textoResultadoSpan").innerText;
+            if ('speechSynthesis' in window && textoAEscuchar) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textoAEscuchar);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tu navegador no soporta la síntesis de voz nativa.");
+            }
+        }
+
         async function procesarTexto() {
-            const texto = areaTexto.value;
+            const textoOriginal = areaTexto.value;
             const divResultado = document.getElementById("resultado");
+            const spanResultado = document.getElementById("textoResultadoSpan");
             const btnTransfer = document.getElementById("btnTransferencia");
             const btnFamiliar = document.getElementById("btnFamiliar");
             const divEstres = document.getElementById("medidorEstres");
 
-            if (!texto.trim()) {
+            if (!textoOriginal.trim()) {
                 alert("Por favor, escribe el contexto o usa el micrófono.");
                 return;
             }
+
+            // Prefijamos el canal para que Claude sepa de dónde viene el vector de ataque
+            const textoConCanal = `[Canal: ${canalActual}] ${textoOriginal}`;
 
             btnMicro.disabled = true;
             btnSimular.innerHTML = "⏳ Analizando...";
@@ -240,14 +305,14 @@
                 const response = await fetch("/analizar", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ texto: texto, volumen_alto: volumenDetectadoAlto })
+                    body: JSON.stringify({ texto: textoConCanal, volumen_alto: volumenDetectadoAlto })
                 });
 
                 const datos = await response.json();
                 divResultado.style.display = "block";
 
                 if (datos.exito) {
-                    divResultado.innerText = datos.advertencia;
+                    spanResultado.innerText = datos.advertencia;
 
                     if (datos.nivel_estres) {
                         divEstres.style.display = "block";
@@ -285,7 +350,7 @@
                 }
             } catch (error) {
                 divResultado.style.display = "block";
-                divResultado.innerText = "Error de conexión con el servidor.";
+                spanResultado.innerText = "Error de conexión con el servidor.";
                 divResultado.className = "error";
             } finally {
                 btnMicro.disabled = false;
