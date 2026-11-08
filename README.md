@@ -1,62 +1,32 @@
-# Hackfinance
-# 🛡️ SilverShield - Guardián de Voz contra el Fraude Financiero
+# 🛡️ SilverShield
+> **Escudo de protección bancaria inteligente y empático contra fraudes dirigido a la tercera edad.**
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)
-![ElevenLabs](https://img.shields.io/badge/ElevenLabs-API-orange.svg)
-![Twilio](https://img.shields.io/badge/Twilio-Voice-red.svg)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?style=flat-square&logo=fastapi)
+![Anthropic Claude](https://img.shields.io/badge/Claude_3.5-Sonnet-8A2BE2?style=flat-square&logo=anthropic)
+![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Voice_AI-FF6F61?style=flat-square&logo=elevenlabs)
+![PSD2 Compliant](https://img.shields.io/badge/Compliance-PSD2_%2F_TLS_1.3-success?style=flat-square)
 
-## 📋 Descripción del Proyecto
+## 📌 ¿Qué es SilverShield?
+Las campañas tradicionales de ciberseguridad bancaria suelen fallar en el sector senior debido a la brecha digital y al miedo que provocan los estafadores (falsos técnicos, estafas del familiar en apuros, smishing). 
 
-**SilverShield** es un asistente de voz impulsado por IA que protege a las personas mayores de fraudes financieros en tiempo real. Utiliza análisis de lenguaje natural (GPTAdvisor) y síntesis de voz hiperrealista (ElevenLabs) para verificar transferencias bancarias, detectar patrones de estafa y prevenir la coacción financiera.
-
-### 🎯 Problema que Resuelve
-
-Cada año, los adultos mayores pierden **$27 mil millones** en estafas financieras. Las soluciones actuales (SMS, apps complejas) fallan porque:
-
-- Los estafadores engañan a las víctimas para que compartan códigos SMS
-- Las interfaces digitales son confusas para personas con baja alfabetización digital
-- No detectan coacción familiar o estrés emocional
-
-### 💡 Nuestra Solución
-
-Un sistema que **llama por teléfono** (la tecnología más familiar para este segmento) y:
-
-1. **Verifica transferencias inusuales** mediante conversación natural
-2. **Detecta patrones de fraude** (urgencia, autoridad falsa, emergencias familiares)
-3. **Analiza estrés vocal** para identificar coacción o confusión
-4. **Bloquea operaciones sospechosas** y notifica a contactos de confianza
+**SilverShield** actúa como una capa defensiva integrada de forma nativa en la banca digital (*SilverBank*). Analiza en tiempo real los intentos de fraude a través de múltiples canales (llamadas, WhatsApp, enlaces web), utilizando inteligencia artificial cognitiva para neutralizar el pánico, bloquear transacciones maliciosas y alertar instantáneamente a los familiares de confianza.
 
 ## 🚀 Características Principales
-
-- ✅ **Detección de fraude en tiempo real** con LLMs
-- ✅ **Análisis de estrés vocal** para identificar coacción
-- ✅ **Voz natural y empática** con ElevenLabs
-- ✅ **Integración telefónica** vía Twilio
-- ✅ **Notificaciones automáticas** a contactos de emergencia
-- ✅ **Dashboard de monitoreo** para familiares/tutores
+* **Inteligencia Cognitiva Adaptativa (Claude 3.5 Sonnet):** Analiza el contexto de la amenaza y desmiente los engaños con la lógica y la cercanía que una persona mayor necesita.
+* **Síntesis de Voz Empática (ElevenLabs):** Genera alertas auditivas con un tono extremadamente calmado y protector para evitar que el usuario entre en pánico.
+* **Omnicanalidad:** Detecta fraudes procedentes de llamadas telefónicas, chats (WhatsApp/SMS) o enlaces web fraudulentos (Smishing).
+* **Auditoría y Persistencia (SQLite):** Registra cada evento con marcas de tiempo, texto analizado y estado de bloqueo para cumplir con los estándares de trazabilidad legal bancaria.
+* **Accesibilidad Extrema:** Interfaz diseñada con tipografía de alto contraste, botón *"A+ Letra Grande"* y soporte de lectura por voz nativa como respaldo universal.
 
 ## 🛠️ Stack Tecnológico
+* **Backend:** Python, FastAPI, Uvicorn, SQLite.
+* **Inteligencia Artificial & Voz:** Anthropic API (`claude-3-5-sonnet-20240620`), ElevenLabs API (Text-to-Speech).
+* **Frontend:** HTML5, CSS3 moderno, JavaScript Vanilla (Web Speech API para dictado por voz y síntesis nativa).
 
-| Componente        | Tecnología                    | Propósito                                  |
-| ----------------- | ----------------------------- | ------------------------------------------ |
-| Backend           | Python + FastAPI              | API REST asíncrona                         |
-| IA Conversacional | GPTAdvisor (OpenAI/Anthropic) | Análisis semántico y detección de fraude   |
-| Síntesis de Voz   | ElevenLabs API                | Voz natural y empática                     |
-| Telefonía         | Twilio Voice                  | Llamadas entrantes/salientes               |
-| Transcripción     | OpenAI Whisper / Twilio STT   | Speech-to-text                             |
-| Base de Datos     | SQLite / PostgreSQL           | Almacenamiento de usuarios y transacciones |
-| Frontend          | Streamlit                     | Dashboard de monitoreo                     |
+## ⚙️ Guía de Instalación y Ejecución Local
 
-## Requisitos
-
-- Python 3.10 o superior
-- Cuenta en Twilio (con número de teléfono)
-- API Key de ElevenLabs
-- API Key de OpenAI o Anthropic (GPTAdvisor)
-- (Opcional) Cuenta en Belvo o Plaid para Open Banking
-
-## 🔧 Instalación y Configuración
+Sigue estos pasos para poner en marcha el proyecto en tu entorno local:
 
 ### 1. Clonar el repositorio
 
