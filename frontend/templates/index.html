@@ -192,7 +192,8 @@
             for(let i = 0; i < dataArray.length; i++) { suma += dataArray[i]; }
             let promedio = suma / dataArray.length;
             
-            if (promedio > 50) { 
+            // Umbral ajustado a 40 para equilibrar la sensibilidad del volumen
+            if (promedio > 40) { 
                 volumenDetectadoAlto = true; 
             }
             requestAnimationFrame(medirVolumen);

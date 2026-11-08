@@ -13,10 +13,11 @@ def analizar_estres(texto_usuario: str, volumen_alto: bool = False) -> dict:
     coincidencias = [palabra for palabra in palabras_alerta if palabra in texto_min]
     nivel_estres = len(coincidencias) * 25  
     
-    # EL TRUCO ACÚSTICO: Si la web detectó que el abuelo subió el volumen, forzamos el pánico
-    if volumen_alto:
-        nivel_estres = max(nivel_estres, 80)
-        coincidencias.append("(Tono de voz alterado detectado acústicamente)")
+    # Si hay volumen alto pero el texto es completamente normal, un 25% o 50% de nerviosismo, no pánico directo
+    if volumen_alto and len(coincidencias) == 0:
+        nivel_estres = max(nivel_estres, 35) # Se queda en Nerviosismo, no salta a Pánico
+    elif volumen_alto:
+        nivel_estres = max(nivel_estres, 75)
     
     nivel_estres = min(nivel_estres, 100)
     

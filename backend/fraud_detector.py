@@ -1,21 +1,21 @@
+import os
 import anthropic
 from backend.config import ANTHROPIC_API_KEY
 
 cliente_anthropic = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
+def cargar_prompt_externo() -> str:
+    """Lee el prompt del sistema desde la carpeta externa /prompts."""
+    ruta_prompt = os.path.join(os.path.dirname(__file__), "..", "prompts", "prompt_sistema.txt")
+    try:
+        with open(ruta_prompt, "r", encoding="utf-8") as archivo:
+            return archivo.read().strip()
+    except FileNotFoundError:
+        # Fallback de seguridad por si el archivo no se encuentra
+        return "Eres SilverShield, un asistente protector bancario. Sé conciso y termina con un punto."
+
 def detectar_fraude(texto_usuario: str) -> str:
-    prompt_sistema = (
-        "Eres SilverShield, el asistente protector del banco. Tu usuario es una persona mayor que podría "
-        "estar sufriendo una estafa telefónica o un engaño financiero. "
-        "Si detectas peligro, precios absurdos, falsos técnicos o urgencias sospechosas, interrumpe con un tono "
-        "EXTREMADAMENTE calmado, protector y cercano. "
-        "INSTRUCCIÓN VITAL: Personaliza tu respuesta basándote EXACTAMENTE en lo que el usuario te acaba de contar. "
-        "Desmiente el engaño usando la lógica con cariño (ej: si le piden dinero para una multa falsa, explícale que "
-        "la policía no cobra así; si es un producto carísimo sin sentido, hazle ver suavemente el engaño). "
-        "Tranquilízale siempre diciendo que su dinero está a salvo y la operación está bloqueada. "
-        "Sé conciso (máximo 2-3 frases cortas). IMPORTANTE: Termina SIEMPRE tus oraciones con un punto final. "
-        "Si el texto es una conversación cotidiana sin ningún riesgo financiero, responde ÚNICAMENTE con la frase: Análisis seguro."
-    )
+    prompt_sistema = cargar_prompt_externo()
 
     respuesta = cliente_anthropic.messages.create(
         model="claude-opus-5-5",
