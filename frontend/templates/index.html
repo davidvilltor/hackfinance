@@ -33,7 +33,6 @@
         .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; justify-content: center; }
         .shield-header h2 { margin: 0; }
         
-        /* Selectores de Canal (Nueva Implementación 3) */
         .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; }
         .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px; transition: 0.2s; }
         .btn-canal.activo { background: white; color: var(--banco-primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -103,7 +102,6 @@
             </div>
             <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Selecciona el canal de entrada y describe o habla sobre el engaño.</p>
             
-            <!-- Selector de Canales -->
             <div class="canales-selector">
                 <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
                 <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp / SMS')">💬 WhatsApp</button>
@@ -125,7 +123,6 @@
                 <span id="textoResultadoSpan"></span>
                 <button class="btn-tts" onclick="leerTextoVozNativa()" title="Escuchar mensaje en voz alta">🔊</button>
             </div>
-            <div id="medidorEstres" style="display: none; margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px;"></div>
         </div>
 
         <!-- Panel de Administración (Base de Datos) -->
@@ -139,7 +136,6 @@
                     <tr style="background: var(--banco-primario); color: white;">
                         <th style="padding: 10px; text-align: left;">Fecha</th>
                         <th style="padding: 10px; text-align: left;">Canal / Texto Capturado</th>
-                        <th style="padding: 10px; text-align: left;">Estrés</th>
                         <th style="padding: 10px; text-align: center;">Estado</th>
                     </tr>
                 </thead>
@@ -180,12 +176,6 @@
 
         let reconocimiento;
         let grabando = false;
-        let volumenDetectadoAlto = false;
-        
-        let audioContext;
-        let analyser;
-        let dataArray;
-        let mediaStreamSource;
 
         const btnMicro = document.getElementById("btnMicrofono");
         const btnSimular = document.getElementById("btnSimular");
@@ -199,20 +189,8 @@
 
             reconocimiento.onstart = function() {
                 grabando = true;
-                volumenDetectadoAlto = false; 
                 btnMicro.innerHTML = "🎙️ Escuchando...";
                 btnMicro.classList.add("grabando");
-
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    analyser = audioContext.createAnalyser();
-                    mediaStreamSource = audioContext.createMediaStreamSource(stream);
-                    mediaStreamSource.connect(analyser);
-                    analyser.fftSize = 256;
-                    const bufferLength = analyser.frequencyBinCount;
-                    dataArray = new Uint8Array(bufferLength);
-                    medirVolumen();
-                }).catch(err => console.log("Permiso de micro denegado para análisis de volumen."));
             };
 
             reconocimiento.onresult = function(event) {
@@ -232,19 +210,6 @@
             };
         } else {
             alert("Tu navegador no soporta reconocimiento de voz. Usa la caja de texto.");
-        }
-
-        function medirVolumen() {
-            if (!grabando) return;
-            analyser.getByteFrequencyData(dataArray);
-            let suma = 0;
-            for(let i = 0; i < dataArray.length; i++) { suma += dataArray[i]; }
-            let promedio = suma / dataArray.length;
-            
-            if (promedio > 40) { 
-                volumenDetectadoAlto = true; 
-            }
-            requestAnimationFrame(medirVolumen);
         }
 
         function iniciarGrabacion() {
@@ -281,14 +246,12 @@
             const spanResultado = document.getElementById("textoResultadoSpan");
             const btnTransfer = document.getElementById("btnTransferencia");
             const btnFamiliar = document.getElementById("btnFamiliar");
-            const divEstres = document.getElementById("medidorEstres");
 
             if (!textoOriginal.trim()) {
                 alert("Por favor, escribe el contexto o usa el micrófono.");
                 return;
             }
 
-            // Prefijamos el canal para que Claude sepa de dónde viene el vector de ataque
             const textoConCanal = `[Canal: ${canalActual}] ${textoOriginal}`;
 
             btnMicro.disabled = true;
@@ -299,13 +262,12 @@
             divResultado.style.display = "none";
             divResultado.className = "";
             btnFamiliar.style.display = "none";
-            divEstres.style.display = "none";
 
             try {
                 const response = await fetch("/analizar", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ texto: textoConCanal, volumen_alto: volumenDetectadoAlto })
+                    body: JSON.stringify({ texto: textoConCanal })
                 });
 
                 const datos = await response.json();
@@ -313,19 +275,6 @@
 
                 if (datos.exito) {
                     spanResultado.innerText = datos.advertencia;
-
-                    if (datos.nivel_estres) {
-                        divEstres.style.display = "block";
-                        divEstres.innerText = "Estado del usuario: " + datos.nivel_estres;
-                        
-                        if (datos.nivel_estres.includes("Pánico")) {
-                            divEstres.style.backgroundColor = "#ffebee"; divEstres.style.color = "#c62828";
-                        } else if (datos.nivel_estres.includes("Nerviosismo")) {
-                            divEstres.style.backgroundColor = "#fff9c4"; divEstres.style.color = "#f57f17";
-                        } else {
-                            divEstres.style.backgroundColor = "#e8f5e9"; divEstres.style.color = "#2e7d32";
-                        }
-                    }
 
                     if (datos.advertencia.includes("Análisis seguro")) {
                         divResultado.className = "seguro";
@@ -357,7 +306,6 @@
                 btnSimular.innerHTML = "📝 Enviar Texto";
                 btnSimular.style.background = "var(--shield-acento)";
                 btnSimular.disabled = false;
-                volumenDetectadoAlto = false;
                 
                 cargarHistorial(); 
             }
@@ -391,13 +339,12 @@
                     fila.innerHTML = `
                         <td style="padding: 10px;">${registro.fecha}</td>
                         <td style="padding: 10px; font-style: italic;">"${registro.texto}"</td>
-                        <td style="padding: 10px;">${registro.estres}</td>
                         <td style="padding: 10px; text-align: center;">${badgeEstado}</td>
                     `;
                     tbody.appendChild(fila);
                 });
             } catch (error) {
-                console.log("Error cargando historial de la base de datos.");
+                console.log("Error cargando historial.");
             }
         }
 
