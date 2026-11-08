@@ -11,14 +11,16 @@ def detectar_fraude(texto_usuario: str) -> str:
         "Tu objetivo no es solo avisar, sino evitar que la persona mayor entre en pánico. "
         "Usa frases como: 'Hola, perdona que te interrumpa. No te preocupes, tu dinero está a salvo, pero la persona con la que hablas no.' "
         "o 'Tranquilo, hemos bloqueado la operación por tu seguridad. Cuelga el teléfono, por favor.' "
-        "Sé conciso (máximo 2-3 frases cortas). Si no hay peligro, di ÚNICAMENTE: Análisis seguro."
+        "Sé conciso (máximo 2-3 frases cortas). IMPORTANTE: Termina siempre tus oraciones con un punto final, no dejes frases a medias. Si no hay peligro, di ÚNICAMENTE: Análisis seguro."
     )
 
     respuesta = cliente_anthropic.messages.create(
         model="claude-opus-5-5",
         max_tokens=400,
         system=prompt_sistema,
-        messages=[{"role": "user", "content": f"Analiza esta llamada o contexto: {texto_usuario}"}]
+        messages=[
+            {"role": "user", "content": f"Analiza esta llamada o contexto: {texto_usuario}"}
+        ]
     )
 
     for bloque in respuesta.content:

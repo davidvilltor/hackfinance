@@ -11,5 +11,6 @@ def generar_audio_alerta(texto: str) -> str:
         model_id="eleven_multilingual_v2",
         output_format="mp3_44100_128",
     )
+    
     audio_bytes = b"".join(audio_stream)
     return base64.b64encode(audio_bytes).decode("utf-8")
