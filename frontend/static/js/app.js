@@ -475,7 +475,8 @@
     ponerEstado("hablando", "SilverShield le está hablando…");
     await Voz.hablar(mensaje.texto, mensaje.audio_url);
     if (mio !== turnoHabla) return false;
-    if (estado.finalizada) ponerEstado("", "Verificación terminada.");
+    if (estado.procesando) ponerEstado("pensando", "SilverShield está pensando su respuesta…");
+    else if (estado.finalizada) ponerEstado("", "Verificación terminada.");
     else ponerEstado("espera", estado.modoTexto ? "Escriba su respuesta cuando quiera." : "Pulse el botón para responder.");
     return true;
   }
@@ -496,6 +497,8 @@
       const resultado = await Voz.escuchar({
         onParcial: actualizarProvisional,
         onNivel: nivel => { barra.style.width = `${Math.round(nivel * 100)}%`; },
+        // En cuanto termina la captura, el botón deja de mostrar "He terminado de hablar".
+        onFinCaptura: () => ponerEstado("pensando", "Un momento, estoy entendiendo lo que ha dicho…"),
       });
       if (resultado.cancelado) return;
       if (!resultado.texto) {
@@ -519,6 +522,7 @@
     estado.procesando = true;
     turnoHabla++;        // invalida cualquier locución en curso
     Voz.detener();
+    Voz.cancelarEscucha();   // si respondió escribiendo mientras se le escuchaba
     quitarProvisional();
     anadirBurbuja("cliente", texto);
     ponerEstado("pensando", "SilverShield está pensando su respuesta…");
@@ -552,6 +556,7 @@
   });
 
   $("#btn-repetir").addEventListener("click", () => {
+    if (estado.procesando || !estado.ultimoAsistente) return;
     Voz.cancelarEscucha();
     quitarProvisional();
     decir(estado.ultimoAsistente).then(vigente => { if (vigente && !estado.modoTexto) cicloEscucha(); });
@@ -621,7 +626,7 @@
       titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-alerta"/></svg>';
       titulo.append("Le recomendamos NO enviar este dinero");
       parrafos.push("Hemos parado la transferencia. Su dinero está a salvo en su cuenta.");
-      parrafos.push(`Hemos avisado a ${contacto}. Háblelo con calma con ${cuenta.contacto_nombre} antes de hacer nada más.`);
+      parrafos.push(`Le recomendamos avisar a ${contacto}. Háblelo con calma con ${cuenta.contacto_nombre} antes de hacer nada más.`);
       const llamar = document.createElement("a");
       llamar.className = "btn btn-primario";
       llamar.href = `tel:${cuenta.contacto_telefono.replace(/\s/g, "")}`;

@@ -255,7 +255,7 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
         return {
             "respuesta": (
                 f"{nombre}, esto tiene las señales de una estafa. {explicacion} "
-                f"Su dinero está a salvo: he parado la transferencia y voy a avisar a {contacto}."
+                f"Su dinero está a salvo: he parado la transferencia. Le recomiendo avisar a {contacto}."
             ),
             "decision": "riesgo",
             "nivel_riesgo": max(nivel, 60),
@@ -323,8 +323,8 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
             resultado.decision = "riesgo"
             resultado.respuesta = (
                 f"{cuenta['nombre_corto']}, no tengo claro que esta transferencia sea segura. "
-                f"Por precaución la he parado y voy a avisar a {cuenta.get('contacto_nombre')} "
-                "para que lo hablen con calma. Su dinero está a salvo."
+                "Por precaución la he parado. Su dinero está a salvo. "
+                f"Le recomiendo avisar a {cuenta.get('contacto_nombre')} para que lo hablen con calma."
             )
         else:
             resultado.decision = "seguro"

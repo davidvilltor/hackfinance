@@ -59,6 +59,10 @@ async def medir_tiempo(request: Request, call_next):
     inicio = time.perf_counter()
     respuesta = await call_next(request)
     respuesta.headers["Server-Timing"] = f"app;dur={(time.perf_counter() - inicio) * 1000:.0f}"
+    # Que el navegador compruebe siempre si hay una versión nueva de los JS/CSS
+    # (si no, puede seguir usando una copia antigua tras cambiar el código).
+    if request.url.path.startswith("/static/"):
+        respuesta.headers["Cache-Control"] = "no-cache"
     return respuesta
 
 

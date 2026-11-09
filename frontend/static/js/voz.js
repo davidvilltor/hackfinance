@@ -89,6 +89,9 @@
         audio: { echoCancellation: true, noiseSuppression: true },
       });
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // A partir del 2.º turno la escucha arranca sola (sin clic) y el navegador
+      // puede crear el AudioContext en pausa: se intenta reanudar.
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
       const analizador = ctx.createAnalyser();
       analizador.fftSize = 1024;
       ctx.createMediaStreamSource(stream).connect(analizador);
@@ -97,6 +100,8 @@
         stream, inicio: performance.now(), primerSonido: null, ultimoSonido: null,
         suma: 0, n: 0, activo: true,
         volumenMedio() { return this.n ? Math.round((this.suma / this.n) * 100) : null; },
+        /** false si el AudioContext no llegó a funcionar: entonces "no hubo sonido" no es fiable. */
+        fiable() { return ctx.state === "running"; },
         parar() {
           if (!this.activo) return;
           this.activo = false;
@@ -147,58 +152,140 @@
   }
 
   // ------------------------------------------------------------- reconocimiento del navegador
-  function escucharNavegador(medidor, onParcial) {
+  // Chrome solo admite un reconocedor activo por página: antes de crear otro hay
+  // que esperar a que el anterior se haya cerrado de verdad (evento "end").
+  let reconocedorVivo = null;   // { rec, cerrado: Promise }
+
+  function crearReconocedor() {
+    const rec = new Reconocedor();
+    rec.lang = "es-ES";
+    rec.continuous = true;
+    rec.interimResults = true;
+    let avisarCierre;
+    const vivo = { rec, cerrado: new Promise(r => { avisarCierre = r; }) };
+    rec.addEventListener("end", () => {
+      avisarCierre();
+      if (reconocedorVivo === vivo) reconocedorVivo = null;
+    });
+    reconocedorVivo = vivo;
+    return rec;
+  }
+
+  async function liberarReconocedor() {
+    const anterior = reconocedorVivo;
+    if (!anterior) return;
+    try { anterior.rec.abort(); } catch (_) { /* ya estaba parado */ }
+    await Promise.race([anterior.cerrado, new Promise(r => setTimeout(r, 1500))]);
+    reconocedorVivo = null;
+  }
+
+  const espera = ms => new Promise(r => setTimeout(r, ms));
+  const ERRORES_FATALES = ["not-allowed", "service-not-allowed", "audio-capture", "language-not-supported"];
+
+  function escucharNavegador(medidor, { onParcial, onFinCaptura } = {}) {
     return new Promise((resolve, reject) => {
-      const rec = new Reconocedor();
-      rec.lang = "es-ES";
-      rec.continuous = true;
-      rec.interimResults = true;
       const tInicio = performance.now();
+      let rec = null;
       let textoFinal = "", ultimoParcial = "", tPrimer = null, tUltimo = null;
-      let error = null, cancelado = false, temporizador = null;
+      let error = null, cancelado = false, temporizador = null, terminado = false;
+      let salvaguarda = null, pidioParar = false, reintentos = 0;
 
-      const programarFin = ms => { clearTimeout(temporizador); temporizador = setTimeout(() => rec.stop(), ms); };
-      const limiteTotal = setTimeout(() => rec.stop(), DURACION_MAX_MS);
+      // rec.stop() no siempre provoca "end"; tras un margen se cierra a la fuerza.
+      const parar = () => {
+        if (pidioParar) return;
+        pidioParar = true;
+        if (onFinCaptura) onFinCaptura();
+        try { if (rec) rec.stop(); } catch (_) { /* no había arrancado */ }
+        salvaguarda = setTimeout(() => {
+          console.info("[voz] el reconocedor no respondió a stop(); se cierra a la fuerza");
+          cerrar();
+        }, 1500);
+      };
+      const programarFin = ms => { clearTimeout(temporizador); temporizador = setTimeout(parar, ms); };
+      const limiteTotal = setTimeout(parar, DURACION_MAX_MS);
 
-      rec.onresult = evento => {
-        let provisional = "";
-        for (let i = evento.resultIndex; i < evento.results.length; i++) {
-          const resultado = evento.results[i];
-          if (resultado.isFinal) textoFinal += resultado[0].transcript + " ";
-          else provisional += resultado[0].transcript;
-        }
-        const ahora = performance.now();
-        if (tPrimer === null) tPrimer = ahora;
-        tUltimo = ahora;
-        ultimoParcial = (textoFinal + provisional).trim();
-        if (onParcial) onParcial(ultimoParcial);
-        programarFin(SILENCIO_FIN_MS);
-      };
-      rec.onerror = evento => {
-        if (evento.error !== "no-speech" && evento.error !== "aborted") error = evento.error;
-      };
-      rec.onend = () => {
+      const cerrar = () => {
+        if (terminado) return;
+        terminado = true;
         clearTimeout(temporizador);
         clearTimeout(limiteTotal);
+        clearTimeout(salvaguarda);
+        // Si el reconocedor sigue vivo, se aborta para que no bloquee la siguiente escucha.
+        if (rec) { rec.onresult = rec.onerror = rec.onend = null; try { rec.abort(); } catch (_) { /* */ } }
         if (medidor) medidor.parar();
-        escuchaActual = null;
+        if (escuchaActual === control) escuchaActual = null;
         if (cancelado) return resolve({ texto: "", cancelado: true });
         const texto = (textoFinal.trim() || ultimoParcial).trim();
+        console.info("[voz] fin de escucha", { texto, error, reintentos });
         if (error && !texto) return reject(new Error(error));
         resolve({ texto, senales: calcularSenales(texto, medidor, tInicio, tPrimer, tUltimo) });
       };
 
-      escuchaActual = {
-        terminar: () => rec.stop(),
-        cancelar: () => { cancelado = true; rec.abort(); },
+      const arrancar = async () => {
+        await liberarReconocedor();
+        if (terminado) return;
+        rec = crearReconocedor();
+        // Los resultados de cada sesión empiezan desde cero; se acumula lo ya confirmado.
+        let finalesSesion = "";
+        rec.onstart = () => console.info("[voz] escuchando…");
+        rec.onresult = evento => {
+          let provisional = "";
+          finalesSesion = "";
+          for (let i = 0; i < evento.results.length; i++) {
+            const r = evento.results[i];
+            if (r.isFinal) finalesSesion += r[0].transcript + " ";
+            else provisional += r[0].transcript;
+          }
+          const ahora = performance.now();
+          if (tPrimer === null) tPrimer = ahora;
+          tUltimo = ahora;
+          ultimoParcial = (textoFinal + finalesSesion + provisional).trim();
+          if (onParcial) onParcial(ultimoParcial);
+          programarFin(SILENCIO_FIN_MS);
+        };
+        rec.onerror = evento => {
+          console.info("[voz] error del reconocedor:", evento.error);
+          if (evento.error !== "no-speech" && evento.error !== "aborted") error = evento.error;
+        };
+        rec.onend = () => {
+          textoFinal += finalesSesion;
+          finalesSesion = "";
+          if (terminado) return;
+          const hayTexto = !!(textoFinal.trim() || ultimoParcial);
+          const quedaTiempo = performance.now() - tInicio < ESPERA_INICIAL_MS;
+          // Chrome a veces corta la escucha por su cuenta (red, reconocedor ocupado…).
+          // Si el cliente aún no ha dicho nada, se vuelve a arrancar en silencio.
+          if (!pidioParar && !cancelado && !hayTexto && quedaTiempo && reintentos < 5
+              && !ERRORES_FATALES.includes(error)) {
+            reintentos++;
+            error = null;
+            console.info("[voz] el reconocedor se cerró solo; reintento", reintentos);
+            espera(300).then(arrancar);
+            return;
+          }
+          cerrar();
+        };
+        try {
+          rec.start();
+        } catch (e) {
+          console.info("[voz] no se pudo arrancar el reconocedor:", e);
+          error = "start-failed";
+          cerrar();
+        }
       };
+
+      const control = {
+        terminar: parar,
+        cancelar: () => { cancelado = true; cerrar(); },
+      };
+      escuchaActual = control;
       programarFin(ESPERA_INICIAL_MS);
-      rec.start();
+      arrancar();
     });
   }
 
   // ------------------------------------------------------------- grabación + ElevenLabs Scribe
-  function escucharGrabando(medidor) {
+  function escucharGrabando(medidor, { onFinCaptura } = {}) {
     return new Promise((resolve, reject) => {
       if (!medidor) return reject(new Error("sin-microfono"));
       const grabadora = new MediaRecorder(medidor.stream);
@@ -210,24 +297,39 @@
         const ahora = performance.now();
         const sinEmpezar = medidor.primerSonido === null && ahora - tInicio > ESPERA_INICIAL_MS;
         const silencio = medidor.ultimoSonido !== null && ahora - medidor.ultimoSonido > SILENCIO_FIN_MS;
-        if (sinEmpezar || silencio || ahora - tInicio > DURACION_MAX_MS) terminar();
+        // Si el medidor no funciona, no se puede detectar el silencio: solo el límite total.
+        const medible = medidor.fiable();
+        if ((medible && (sinEmpezar || silencio)) || ahora - tInicio > DURACION_MAX_MS) terminar();
       }, 200);
-      const terminar = () => { if (grabadora.state !== "inactive") grabadora.stop(); };
+      const pararGrabadora = () => { if (grabadora.state !== "inactive") grabadora.stop(); };
+      let avisado = false;
+      const terminar = () => {
+        if (!avisado && onFinCaptura) { avisado = true; onFinCaptura(); }
+        pararGrabadora();
+      };
 
       grabadora.ondataavailable = e => { if (e.data.size) trozos.push(e.data); };
       grabadora.onstop = async () => {
         clearInterval(vigilancia);
-        escuchaActual = null;
+        if (escuchaActual === control) escuchaActual = null;
         const senalesBase = calcularSenales("", medidor, tInicio, null, null);
-        const huboSonido = medidor.primerSonido !== null;
+        const huboSonido = medidor.primerSonido !== null || !medidor.fiable();
         medidor.parar();
         if (cancelado) return resolve({ texto: "", cancelado: true });
         if (!huboSonido) return resolve({ texto: "", senales: senalesBase });
         try {
           const blob = new Blob(trozos, { type: grabadora.mimeType || "audio/webm" });
-          const r = await fetch("/api/voz/transcribir", {
-            method: "POST", headers: { "Content-Type": blob.type }, body: blob,
-          });
+          // Límite de tiempo: si el servidor no responde, la escucha no puede quedarse colgada.
+          const corte = new AbortController();
+          const limite = setTimeout(() => corte.abort(), 30000);
+          let r;
+          try {
+            r = await fetch("/api/voz/transcribir", {
+              method: "POST", headers: { "Content-Type": blob.type }, body: blob, signal: corte.signal,
+            });
+          } finally {
+            clearTimeout(limite);
+          }
           if (!r.ok) throw new Error("transcripcion");
           const { texto } = await r.json();
           const senales = { ...senalesBase };
@@ -241,21 +343,40 @@
         }
       };
 
-      escuchaActual = {
+      const control = {
         terminar,
-        cancelar: () => { cancelado = true; terminar(); },
+        cancelar: () => { cancelado = true; pararGrabadora(); },
       };
+      escuchaActual = control;
       grabadora.start(250);
     });
   }
 
   // ------------------------------------------------------------- API pública
-  async function escuchar({ onParcial, onNivel } = {}) {
+  function escuchar(opciones = {}) {
     cancelarEscucha();
-    if (!puedeEscuchar()) throw new Error("sin-reconocimiento");
-    const medidor = await iniciarMedidor(onNivel);
-    if (Reconocedor) return escucharNavegador(medidor, onParcial);
-    return escucharGrabando(medidor);
+    if (!puedeEscuchar()) return Promise.reject(new Error("sin-reconocimiento"));
+    return new Promise((resolve, reject) => {
+      // Mientras se abre el micrófono (incluido el aviso de permisos), pulsar
+      // "He terminado de hablar" o cancelar debe responder al momento, aunque
+      // getUserMedia tarde o no conteste nunca.
+      let abandonado = false;
+      const pendiente = {
+        terminar: () => { abandonado = true; escuchaActual = null; resolve({ texto: "", senales: {} }); },
+        cancelar: () => { abandonado = true; escuchaActual = null; resolve({ texto: "", cancelado: true }); },
+      };
+      escuchaActual = pendiente;
+      iniciarMedidor(opciones.onNivel).then(medidor => {
+        if (abandonado) { if (medidor) medidor.parar(); return; }
+        escuchaActual = null;
+        const escucha = Reconocedor ? escucharNavegador(medidor, opciones) : escucharGrabando(medidor, opciones);
+        escucha.then(resolve, reject);
+      }, error => {
+        if (abandonado) return;
+        escuchaActual = null;
+        reject(error);
+      });
+    });
   }
 
   function terminarEscucha() { if (escuchaActual) escuchaActual.terminar(); }
