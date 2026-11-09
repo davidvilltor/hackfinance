@@ -10,3 +10,6 @@ env/
 
 # Base de datos local (se crea y rellena sola al arrancar)
 *.db
+
+# Muestras de audio para elegir voz (no forman parte de la app)
+muestras_voz/

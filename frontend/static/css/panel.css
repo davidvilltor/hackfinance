@@ -1,4 +1,4 @@
-/* Panel del contacto de emergencia / gestor: más denso que la app del cliente. */
+/* Panel del operador del banco: más denso que la app del cliente. */
 body.panel { font-size: 16px; }
 .etiqueta-barra { font-size: .95rem; }
 .panel-principal {
@@ -75,3 +75,10 @@ body.panel { font-size: 16px; }
   .detalle { box-shadow: none; border: none; }
   .solo-impresion { display: block; }
 }
+
+/* ---------- Acceso de operadores ---------- */
+.acceso { max-width: 30rem; margin: 3rem auto; padding: 0 1rem; }
+.acceso h1 { margin-top: 0; }
+.acceso .btn { width: 100%; }
+.acceso .volver { margin-top: 1rem; }
+.operador-barra { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }

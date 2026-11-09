@@ -8,6 +8,7 @@
 Si no hay clave de ElevenLabs, el navegador usa su síntesis de voz nativa.
 """
 import logging
+import time
 from collections import OrderedDict
 
 import httpx2 as httpx
@@ -64,6 +65,7 @@ async def sintetizar_stream(clave: int, texto: str) -> Response:
         headers={"xi-api-key": config.ELEVENLABS_API_KEY, "Accept": "audio/mpeg"},
         json=_cuerpo_tts(texto),
     )
+    inicio = time.perf_counter()
     try:
         respuesta = await cliente.send(peticion, stream=True)
     except httpx.HTTPError as error:
@@ -77,6 +79,11 @@ async def sintetizar_stream(clave: int, texto: str) -> Response:
         await cliente.aclose()
         log.error("ElevenLabs TTS error %s: %s", respuesta.status_code, cuerpo[:300])
         raise HTTPException(status_code=502, detail="Servicio de voz no disponible")
+
+    # Tiempo hasta que ElevenLabs empieza a mandar audio (lo que nota el usuario).
+    primer_byte_ms = int((time.perf_counter() - inicio) * 1000)
+    log.info("Voz del mensaje %s: ElevenLabs empieza a responder en %s ms (%s)",
+             clave, primer_byte_ms, config.ELEVENLABS_TTS_MODEL)
 
     async def emitir():
         acumulado = bytearray()
@@ -92,7 +99,8 @@ async def sintetizar_stream(clave: int, texto: str) -> Response:
             if completo:
                 _guardar_cache(clave, bytes(acumulado))
 
-    return StreamingResponse(emitir(), media_type="audio/mpeg")
+    return StreamingResponse(emitir(), media_type="audio/mpeg",
+                             headers={"Server-Timing": f"tts;dur={primer_byte_ms}"})
 
 
 async def transcribir(audio: bytes, tipo_mime: str) -> str:

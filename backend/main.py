@@ -10,20 +10,30 @@ Flujo de una transferencia:
                └─ /verificacion (SilverShield) ────────────► en_verificacion
                       └─ /verificacion/mensajes (conversación por voz)
                              ├─ "seguro" ─► verificada_segura ─► /autorizar ─► completada
-                             └─ "riesgo" ─► retenida + aviso al contacto de emergencia
-                                              └─ /liberar o /cancelar (panel del contacto)
+                             ├─ "riesgo" ─► retenida + aviso al contacto de emergencia
+                             │                └─ /liberar o /cancelar (operador del banco)
+                             └─ "no_verificada" (Claude falló) ─► retenida + aviso
+                                (fallar de forma segura: sin IA nada se da por bueno)
+
+Por motivos legales, solo un operador del banco puede liberar una transferencia
+retenida (tras hablar con el titular). El contacto de emergencia solo recibe avisos.
+Las rutas del operador exigen haber iniciado sesión (ver acceso_operador.py).
 """
+import asyncio
 import logging
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, Response
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 from backend import config, database as db
+from backend.acceso_operador import (
+    abrir_sesion, cerrar_sesion, credenciales_validas, exigir_operador, operador_actual,
+)
 from backend.agente_silvershield import evaluar_turno, mensaje_apertura
 from backend.notifications import avisar_contacto
 from backend.reglas_riesgo import (
@@ -47,6 +57,12 @@ async def ciclo_de_vida(_app: FastAPI):
         f"Claude ({config.CLAUDE_MODEL})" if config.ia_disponible() else "evaluador local",
         "sí" if config.voz_disponible() else "voz del navegador",
     )
+    if not config.OPERADORES:
+        log.error("OPERADORES está mal escrito en .env (formato: usuario:contraseña,usuario2:contraseña2): "
+                  "nadie podrá entrar en el panel del operador.")
+    elif config.OPERADORES_SON_DE_DEMO:
+        log.warning("Panel del operador con la contraseña de DEMO. Defina OPERADORES en .env "
+                    "antes de usarlo fuera de una demostración.")
     yield
 
 
@@ -58,7 +74,9 @@ app.mount("/static", StaticFiles(directory=FRONTEND / "static"), name="static")
 async def medir_tiempo(request: Request, call_next):
     inicio = time.perf_counter()
     respuesta = await call_next(request)
-    respuesta.headers["Server-Timing"] = f"app;dur={(time.perf_counter() - inicio) * 1000:.0f}"
+    medida = f"app;dur={(time.perf_counter() - inicio) * 1000:.0f}"
+    previa = respuesta.headers.get("Server-Timing")
+    respuesta.headers["Server-Timing"] = f"{previa}, {medida}" if previa else medida
     # Que el navegador compruebe siempre si hay una versión nueva de los JS/CSS
     # (si no, puede seguir usando una copia antigua tras cambiar el código).
     if request.url.path.startswith("/static/"):
@@ -86,6 +104,11 @@ class SenalesVoz(BaseModel):
     silencio_inicial_s: float | None = None
     duracion_s: float | None = None
     via: str | None = None  # "voz" o "texto"
+
+
+class AccesoOperador(BaseModel):
+    usuario: str = Field(min_length=1, max_length=60)
+    contrasena: str = Field(min_length=1, max_length=200)
 
 
 class RespuestaCliente(BaseModel):
@@ -136,8 +159,36 @@ async def pagina_cliente():
 
 
 @app.get("/panel", include_in_schema=False)
-async def pagina_panel():
+async def pagina_panel(request: Request):
+    if operador_actual(request) is None:
+        return RedirectResponse("/acceso", status_code=303)
     return FileResponse(FRONTEND / "templates" / "panel.html")
+
+
+@app.get("/acceso", include_in_schema=False)
+async def pagina_acceso(request: Request):
+    if operador_actual(request) is not None:
+        return RedirectResponse("/panel", status_code=303)
+    return FileResponse(FRONTEND / "templates" / "acceso.html")
+
+
+# ------------------------------------------------------------------ acceso del operador
+
+@app.post("/api/operador/acceso")
+async def acceso_operador(datos: AccesoOperador, respuesta: Response):
+    if not credenciales_validas(datos.usuario, datos.contrasena):
+        log.warning("Intento de acceso fallido al panel con el usuario «%s»", datos.usuario)
+        await asyncio.sleep(1)   # frena los intentos de adivinar la contraseña
+        raise HTTPException(status_code=401, detail="Usuario o contraseña incorrectos.")
+    abrir_sesion(respuesta, datos.usuario)
+    log.info("El operador «%s» ha entrado en el panel", datos.usuario)
+    return {"operador": datos.usuario}
+
+
+@app.post("/api/operador/salir")
+async def salir_operador(respuesta: Response):
+    cerrar_sesion(respuesta)
+    return {"ok": True}
 
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -206,7 +257,8 @@ async def crear_transferencia(datos: NuevaTransferencia):
 
 
 @app.get("/api/transferencias/{transferencia_id}")
-async def ver_transferencia(transferencia_id: int):
+async def ver_transferencia(transferencia_id: int, _operador: str = Depends(exigir_operador)):
+    """Detalle completo con la transcripción (solo para el operador)."""
     t = _transferencia_o_404(transferencia_id)
     return {"transferencia": t, "mensajes": db.obtener_mensajes(transferencia_id)}
 
@@ -217,27 +269,39 @@ async def autorizar(transferencia_id: int):
     después de que SilverShield haya recomendado seguir."""
     t = _transferencia_o_404(transferencia_id)
     _exigir_estado(t, db.PENDIENTE_DECISION, db.VERIFICADA_SEGURA)
+    if t["estado"] == db.PENDIENTE_DECISION and not (t.get("evaluacion") or {}).get("permite_autorizacion_directa"):
+        raise HTTPException(
+            status_code=409,
+            detail="Esta transferencia necesita una verificación con SilverShield antes de enviarse.",
+        )
     via = "verificada_ia" if t["estado"] == db.VERIFICADA_SEGURA else "autorizada_cliente"
     t = _completar(transferencia_id, via)
     return {"transferencia": t, "saldo": db.obtener_cuenta()["saldo"]}
 
 
 @app.post("/api/transferencias/{transferencia_id}/cancelar")
-async def cancelar(transferencia_id: int):
+async def cancelar(transferencia_id: int, request: Request):
+    """El cliente puede cancelar sus transferencias en curso. Una retenida solo la
+    puede cancelar un operador del banco."""
     t = _transferencia_o_404(transferencia_id)
     _exigir_estado(t, *db.ESTADOS_ACTIVOS)
-    t = db.actualizar_transferencia(
-        transferencia_id, estado=db.CANCELADA, fecha_resolucion=db.ahora()
-    )
+    campos = dict(estado=db.CANCELADA, fecha_resolucion=db.ahora())
+    if t["estado"] == db.RETENIDA:
+        campos["operador"] = exigir_operador(request)
+        log.info("El operador «%s» ha cancelado la transferencia #%s", campos["operador"], transferencia_id)
+    t = db.actualizar_transferencia(transferencia_id, **campos)
     return {"transferencia": t}
 
 
 @app.post("/api/transferencias/{transferencia_id}/liberar")
-async def liberar(transferencia_id: int):
-    """Acción del contacto de emergencia / gestor: libera una transferencia retenida."""
+async def liberar(transferencia_id: int, operador: str = Depends(exigir_operador)):
+    """Acción del operador del banco: libera una transferencia retenida después de
+    hablar con el titular. El contacto de emergencia no puede hacerlo."""
     t = _transferencia_o_404(transferencia_id)
     _exigir_estado(t, db.RETENIDA)
-    t = _completar(transferencia_id, via="liberada_contacto")
+    _completar(transferencia_id, via="liberada_operador")
+    t = db.actualizar_transferencia(transferencia_id, operador=operador)
+    log.info("El operador «%s» ha liberado la transferencia #%s", operador, transferencia_id)
     return {"transferencia": t, "saldo": db.obtener_cuenta()["saldo"]}
 
 
@@ -281,7 +345,7 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
     # retiene la operación y avisa en silencio al contacto de emergencia.
     if _contiene_palabra_seguridad(datos.texto, cuenta.get("palabra_seguridad")):
         texto = (
-            f"De acuerdo, {cuenta['nombre_corto']}. Para terminar, un gestor del banco revisará "
+            f"De acuerdo, {cuenta['nombre_corto']}. Para terminar, un operador del banco revisará "
             "la operación y le llamará en unos minutos. Muchas gracias por su paciencia."
         )
         respuesta = db.guardar_mensaje(transferencia_id, "asistente", texto)
@@ -306,7 +370,12 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
         }
 
     resultado = await evaluar_turno(t, cuenta, mensajes, senales)
-    respuesta = db.guardar_mensaje(transferencia_id, "asistente", resultado.respuesta)
+    tiempo_ms = int((time.perf_counter() - inicio) * 1000)
+    respuesta = db.guardar_mensaje(transferencia_id, "asistente", resultado.respuesta, {
+        "motor": resultado.motor, "tiempo_ms": tiempo_ms, "tiempo_ia_ms": resultado.tiempo_ia_ms,
+    })
+    log.info("Turno de verificación #%s: %s ms en total (IA: %s ms, motor: %s)",
+             transferencia_id, tiempo_ms, resultado.tiempo_ia_ms, resultado.motor)
 
     contacto_avisado = False
     campos = dict(
@@ -323,6 +392,15 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
             f"{resultado.resumen_para_contacto}".strip(),
         )
         contacto_avisado = True
+    elif resultado.decision == "no_verificada":
+        campos.update(estado=db.RETENIDA, fecha_resolucion=db.ahora())
+        avisar_contacto(
+            cuenta, transferencia_id, "NO_VERIFICADA",
+            f"SilverShield no ha podido verificar una transferencia de "
+            f"{euros_hablados(t['importe'])} de {cuenta['titular']} a {t['beneficiario_nombre']} "
+            "por un fallo técnico y la ha dejado retenida por precaución.",
+        )
+        contacto_avisado = True
     elif resultado.decision == "seguro":
         campos.update(estado=db.VERIFICADA_SEGURA)
     t = db.actualizar_transferencia(transferencia_id, **campos)
@@ -332,10 +410,14 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
         "decision": resultado.decision,
         "final": resultado.decision != "preguntar",
         "nivel_riesgo": resultado.nivel_riesgo,
+        # Para explicar en pantalla por qué se ha parado (solo se muestran si hay riesgo).
+        "categoria": resultado.categoria,
+        "senales": resultado.senales,
         "transferencia": t,
         "contacto_avisado": contacto_avisado,
         "motor": resultado.motor,
-        "tiempo_ms": int((time.perf_counter() - inicio) * 1000),
+        "tiempo_ms": tiempo_ms,
+        "tiempo_ia_ms": resultado.tiempo_ia_ms,
     }
 
 
@@ -362,12 +444,13 @@ async def transcribir_audio(request: Request):
     return {"texto": texto}
 
 
-# ------------------------------------------------------------------ panel del contacto / banco
+# ------------------------------------------------------------------ panel del operador del banco
 
 @app.get("/api/panel")
-async def datos_panel():
+async def datos_panel(operador: str = Depends(exigir_operador)):
     cuenta = db.obtener_cuenta()
     return {
+        "operador": operador,
         "cuenta": cuenta,
         "transferencias": db.listar_transferencias(limite=50),
         "alertas": db.listar_alertas(),
@@ -376,6 +459,6 @@ async def datos_panel():
 
 
 @app.post("/api/demo/reiniciar")
-async def reiniciar_demo():
+async def reiniciar_demo(_operador: str = Depends(exigir_operador)):
     db.reiniciar_demo()
     return {"ok": True}

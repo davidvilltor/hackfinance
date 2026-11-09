@@ -343,6 +343,11 @@
       return li;
     }));
     $("#aviso-decision").classList.toggle("alto", evaluacion.nivel === "alto");
+    // Enviar sin verificar solo se ofrece a destinatarios habituales sin señales graves
+    // (el servidor lo vuelve a comprobar).
+    const directo = !!evaluacion.permite_autorizacion_directa;
+    $("#btn-autorizar-directo").hidden = !directo;
+    $("#nota-verificacion").hidden = directo;
     mostrarPantalla("decision");
   }
 
@@ -350,7 +355,9 @@
     const motivos = estado.evaluacion.motivos.map(m => m.texto).join(" ");
     Voz.leer(
       `Antes de enviarlo, un momento. Hemos notado algo en esta transferencia. ${motivos} ` +
-      "Puede pedir que SilverShield la compruebe con usted, o, si conoce al destinatario, autorizarla directamente."
+      (estado.evaluacion.permite_autorizacion_directa
+        ? "Puede pedir que SilverShield la compruebe con usted, o, si conoce al destinatario, autorizarla directamente."
+        : "Como es la primera vez que envía dinero a esta cuenta, o hay señales de estafa, hace falta comprobarla con SilverShield. Solo es un minuto.")
     );
   });
 
@@ -377,25 +384,7 @@
     });
   }
 
-  const dialogo = $("#dialogo-confirmar");
-  $("#btn-autorizar-directo").addEventListener("click", evento => {
-    if (estado.evaluacion.nivel === "alto") {
-      $("#texto-confirmar").textContent =
-        `Va a enviar ${euros(estado.transferencia.importe)} a ${estado.transferencia.beneficiario_nombre}. ` +
-        "Esta transferencia tiene varias señales que suelen aparecer en estafas.";
-      dialogo.showModal();
-    } else {
-      autorizar(evento.currentTarget);
-    }
-  });
-  $("#btn-confirmar-enviar").addEventListener("click", () => {
-    dialogo.close();
-    autorizar($("#btn-autorizar-directo"));
-  });
-  $("#btn-confirmar-verificar").addEventListener("click", () => {
-    dialogo.close();
-    iniciarVerificacion($("#btn-verificar"));
-  });
+  $("#btn-autorizar-directo").addEventListener("click", evento => autorizar(evento.currentTarget));
   $("#btn-cancelar-decision").addEventListener("click", e => cancelar(e.currentTarget));
   $("#btn-verificar").addEventListener("click", e => iniciarVerificacion(e.currentTarget));
 
@@ -605,6 +594,51 @@
     return b;
   }
 
+  // Tipo de engaño explicado a la clienta (se muestra junto a las señales).
+  const TIPOS_ENGANO = {
+    falso_banco: "Se parece al engaño del falso empleado del banco.",
+    falso_tecnico: "Se parece al engaño del falso servicio técnico.",
+    falsa_autoridad: "Se parece al engaño de la falsa policía o el falso Hacienda.",
+    hijo_en_apuros: "Se parece al engaño del familiar en apuros.",
+    inversion_cripto: "Se parece a las falsas inversiones que prometen ganar dinero rápido.",
+    premio_herencia: "Se parece al engaño del falso premio o la falsa herencia.",
+    romance: "Se parece al engaño de la pareja conocida por internet.",
+    compra_online: "Se parece al engaño del paquete retenido.",
+    coaccion_familiar: "Parece que alguien le está presionando.",
+  };
+
+  // Bloque "¿Por qué la hemos parado?" con las señales que ha visto SilverShield.
+  function bloqueMotivosIA(datos) {
+    const senales = (datos.senales || []).filter(Boolean).slice(0, 4);
+    const tipo = TIPOS_ENGANO[datos.categoria];
+    if (!senales.length && !tipo) return null;
+    const bloque = document.createElement("div");
+    bloque.className = "motivos-ia";
+    const encabezado = document.createElement("h3");
+    encabezado.textContent = "¿Por qué la hemos parado?";
+    bloque.append(encabezado);
+    if (tipo) {
+      const p = document.createElement("p");
+      p.textContent = tipo;
+      bloque.append(p);
+    }
+    if (senales.length) {
+      const lista = document.createElement("ul");
+      lista.append(...senales.map(t => { const li = document.createElement("li"); li.textContent = t; return li; }));
+      bloque.append(lista);
+    }
+    return bloque;
+  }
+
+  function botonLlamarContacto(cuenta) {
+    const llamar = document.createElement("a");
+    llamar.className = "btn btn-primario";
+    llamar.href = `tel:${cuenta.contacto_telefono.replace(/\s/g, "")}`;
+    llamar.innerHTML = '<svg aria-hidden="true"><use href="#i-telefono"/></svg> ';
+    llamar.append(`Llamar a ${cuenta.contacto_nombre}`);
+    return llamar;
+  }
+
   function mostrarVeredicto(datos) {
     const caja = $("#veredicto");
     const cuenta = estado.cuenta;
@@ -616,6 +650,8 @@
     const acciones = document.createElement("div");
     acciones.className = "acciones";
     const contacto = describirContacto(cuenta);
+    const volverInicio = () => { cargarCuenta(); mostrarPantalla("inicio"); };
+    let explicacion = null;
 
     if (datos.decision === "seguro") {
       caja.className = "veredicto seguro";
@@ -631,24 +667,31 @@
       caja.className = "veredicto riesgo";
       titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-alerta"/></svg>';
       titulo.append("Le recomendamos NO enviar este dinero");
-      parrafos.push("Hemos parado la transferencia. Su dinero está a salvo en su cuenta.");
+      parrafos.push("Hemos parado la transferencia. Su dinero está a salvo en su cuenta. Un operador de SilverBank la revisará y le llamará.");
       parrafos.push(`Le recomendamos avisar a su contacto de emergencia, ${contacto}. Háblelo con calma antes de hacer nada más.`);
-      const llamar = document.createElement("a");
-      llamar.className = "btn btn-primario";
-      llamar.href = `tel:${cuenta.contacto_telefono.replace(/\s/g, "")}`;
-      llamar.innerHTML = '<svg aria-hidden="true"><use href="#i-telefono"/></svg> ';
-      llamar.append(`Llamar a ${cuenta.contacto_nombre}`);
-      acciones.append(llamar, crearBoton("btn-secundario", "Volver al inicio", () => { cargarCuenta(); mostrarPantalla("inicio"); }));
+      explicacion = bloqueMotivosIA(datos);
+      acciones.append(botonLlamarContacto(cuenta), crearBoton("btn-secundario", "Volver al inicio", volverInicio));
+    } else if (datos.decision === "no_verificada") {
+      // Claude no respondió: por seguridad no se da por buena, queda retenida.
+      caja.className = "veredicto revision";
+      titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-reloj"/></svg>';
+      titulo.append("No hemos podido terminar la comprobación");
+      parrafos.push("Ha habido un problema técnico. Por precaución, la transferencia está parada y su dinero está a salvo en su cuenta.");
+      parrafos.push("Un operador de SilverBank la revisará y le llamará para terminar la comprobación con usted.");
+      parrafos.push(`Si tiene dudas, puede hablarlo también con su contacto de emergencia, ${contacto}.`);
+      acciones.append(botonLlamarContacto(cuenta), crearBoton("btn-secundario", "Volver al inicio", volverInicio));
     } else {
       // "revision": palabra de auxilio. Mensaje neutro para no alertar a quien presiona.
       caja.className = "veredicto revision";
       titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-reloj"/></svg>';
       titulo.append("Su operación está en revisión");
-      parrafos.push("Un gestor del banco la revisará y le llamará en unos minutos.");
-      acciones.append(crearBoton("btn-primario", "Volver al inicio", () => { cargarCuenta(); mostrarPantalla("inicio"); }));
+      parrafos.push("Un operador del banco la revisará y le llamará en unos minutos.");
+      acciones.append(crearBoton("btn-primario", "Volver al inicio", volverInicio));
     }
 
-    caja.append(titulo, ...parrafos.map(t => { const p = document.createElement("p"); p.textContent = t; return p; }), acciones);
+    caja.append(titulo, ...parrafos.map(t => { const p = document.createElement("p"); p.textContent = t; return p; }));
+    if (explicacion) caja.append(explicacion);
+    caja.append(acciones);
     caja.hidden = false;
     caja.focus({ preventScroll: true });
     caja.scrollIntoView({ behavior: "smooth", block: "center" });

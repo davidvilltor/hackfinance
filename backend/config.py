@@ -4,6 +4,7 @@ Todos los valores se pueden sobrescribir con variables de entorno (o un archivo
 .env en la raíz del proyecto). Ver .env.example.
 """
 import os
+import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -49,6 +50,28 @@ PAISES_ALTO_RIESGO = _lista_env(
 )
 # Máximo de respuestas del cliente antes de que SilverShield dé un veredicto.
 MAX_TURNOS_VERIFICACION = int(os.getenv("MAX_TURNOS_VERIFICACION", "4"))
+
+# --- Acceso de los operadores del banco al panel ---
+# Formato: "usuario:contraseña,usuario2:contraseña2". Solo estos operadores pueden
+# entrar en /panel y liberar o cancelar transferencias retenidas.
+_OPERADORES_DEMO = "operador:silvershield-demo"
+
+
+def _operadores_env() -> dict[str, str]:
+    operadores = {}
+    for par in (os.getenv("OPERADORES") or _OPERADORES_DEMO).split(","):
+        usuario, _, contrasena = par.strip().partition(":")
+        if usuario and contrasena:
+            operadores[usuario] = contrasena
+    return operadores
+
+
+OPERADORES = _operadores_env()
+OPERADORES_SON_DE_DEMO = not os.getenv("OPERADORES")
+# Clave para firmar la cookie de sesión. Si no se define, se genera una al arrancar
+# (las sesiones se cierran al reiniciar el servidor).
+OPERADOR_SECRETO = os.getenv("OPERADOR_SECRETO") or secrets.token_hex(32)
+OPERADOR_SESION_HORAS = float(os.getenv("OPERADOR_SESION_HORAS", "8"))
 
 # --- Persistencia ---
 DB_PATH = os.getenv("SILVERSHIELD_DB", str(RAIZ_PROYECTO / "backend" / "silvershield.db"))

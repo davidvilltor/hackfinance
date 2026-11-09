@@ -144,6 +144,10 @@
           <span class="sub">Hablará un minuto con nuestro asistente de voz, que le dirá si es seguro enviarla.</span>
         </span>
       </button>
+      <p class="nota-verificacion" id="nota-verificacion" hidden>
+        Como es la primera vez que envía dinero a esta cuenta, o hay señales que suelen aparecer en estafas,
+        <strong>hace falta comprobarla con SilverShield</strong> antes de enviarla. Solo es un minuto.
+      </p>
       <button type="button" class="opcion-grande" id="btn-autorizar-directo">
         <svg aria-hidden="true"><use href="#i-check"/></svg>
         <span>
@@ -212,18 +216,6 @@
   </section>
 </main>
 
-<dialog id="dialogo-confirmar" aria-labelledby="t-confirmar">
-  <h2 id="t-confirmar">¿Está seguro?</h2>
-  <p id="texto-confirmar"></p>
-  <p><strong>Si alguien le ha llamado o escrito para pedirle este dinero, no lo envíe.</strong></p>
-  <div class="acciones">
-    <button type="button" class="btn btn-primario" id="btn-confirmar-verificar">
-      <svg aria-hidden="true"><use href="#i-escudo"/></svg> Mejor, verificar con SilverShield
-    </button>
-    <button type="button" class="btn btn-secundario" id="btn-confirmar-enviar">Sí, conozco a esta persona. Enviar</button>
-  </div>
-</dialog>
-
 <footer class="pie">
   <span><strong>SilverShield</strong> protege sus transferencias. Nunca le pediremos claves ni códigos.</span>
   <span>
@@ -231,7 +223,7 @@
     &nbsp;·&nbsp;
     <span class="chip-estado"><span class="punto" id="punto-voz"></span> <span id="txt-voz">Voz</span></span>
     &nbsp;·&nbsp;
-    <a href="/panel" target="_blank" rel="noopener">Panel del contacto de emergencia (demo)</a>
+    <a href="/panel" target="_blank" rel="noopener">Panel del operador del banco (demo)</a>
   </span>
 </footer>
 

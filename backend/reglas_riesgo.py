@@ -183,9 +183,14 @@ def evaluar_transferencia(
     else:
         nivel = "bajo"
 
+    nivel_final = nivel if requiere else "bajo"
     return {
         "requiere_confirmacion": requiere,
-        "nivel": nivel if requiere else "bajo",
+        "nivel": nivel_final,
+        # "Conozco al destinatario" (enviar sin verificar) solo se permite si ya le ha
+        # enviado dinero antes y no hay señales graves. En las estafas el dinero va
+        # siempre a una cuenta nueva: ahí la verificación con SilverShield es obligatoria.
+        "permite_autorizacion_directa": beneficiario_conocido and nivel_final != "alto",
         "puntuacion": puntuacion,
         # El motivo "beneficiario nuevo" solo se muestra si acompaña a otro motivo.
         "motivos": motivos if requiere else [],

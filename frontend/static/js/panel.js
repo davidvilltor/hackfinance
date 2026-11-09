@@ -1,4 +1,4 @@
-/* SilverShield · Panel del contacto de emergencia / gestor del banco. */
+/* SilverShield · Panel del operador antifraude del banco (único que puede liberar o cancelar). */
 (function () {
   "use strict";
 
@@ -16,7 +16,8 @@
   };
   const VIAS = {
     directa: "Sin alertas", autorizada_cliente: "Autorizada por el cliente (sin verificación)",
-    verificada_ia: "Verificada por SilverShield", liberada_contacto: "Liberada por el contacto de emergencia",
+    verificada_ia: "Verificada por SilverShield", liberada_operador: "Liberada por un operador del banco",
+    liberada_contacto: "Liberada (versión anterior)",
   };
   const CATEGORIAS = {
     ninguna: "Ninguna", falso_banco: "Falso empleado del banco", falso_tecnico: "Falso servicio técnico",
@@ -25,7 +26,11 @@
     romance: "Estafa romántica", compra_online: "Paquete / compra online",
     coaccion_familiar: "Coacción", otra: "Otra",
   };
-  const VEREDICTOS = { preguntar: "En curso", seguro: "Sin señales de estafa", riesgo: "Riesgo de estafa" };
+  const VEREDICTOS = {
+    preguntar: "En curso", seguro: "Sin señales de estafa", riesgo: "Riesgo de estafa",
+    no_verificada: "No verificada (fallo técnico de la IA)",
+  };
+  const TIPOS_ALERTA = { COACCION: "Palabra de auxilio", POSIBLE_ESTAFA: "Posible estafa", NO_VERIFICADA: "No se pudo verificar" };
   const MOTORES = { claude: "Claude (IA)", reglas: "Evaluador local", palabra_auxilio: "Palabra de auxilio" };
 
   let seleccionada = null;
@@ -44,6 +49,11 @@
 
   async function api(ruta, metodo = "GET") {
     const r = await fetch(ruta, { method: metodo });
+    if (r.status === 401) {
+      // Sesión caducada o cerrada: vuelta a la pantalla de acceso.
+      window.location.replace("/acceso");
+      throw new Error("Sesión caducada");
+    }
     const datos = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(datos.detail || "Error de servidor");
     return datos;
@@ -72,7 +82,7 @@
     for (const a of alertas) {
       const clases = ["alerta", a.tipo === "COACCION" ? "coaccion" : "", nuevas.has(a.id) ? "nueva" : ""].join(" ");
       lista.append(el("li", { class: clases },
-        el("span", { class: "tipo" }, a.tipo === "COACCION" ? "Palabra de auxilio" : "Posible estafa"),
+        el("span", { class: "tipo" }, TIPOS_ALERTA[a.tipo] || a.tipo),
         " ", el("span", { class: "cuando" }, `· ${fechaHora(a.fecha)} · ${a.canal}`),
         el("p", {}, a.mensaje),
         a.transferencia_id ? el("button", {
@@ -121,6 +131,19 @@
     return partes.join(" · ");
   }
 
+  // "⏱ 2,4 s · Claude 2,1 s": cuánto tardó SilverShield en contestar ese turno.
+  function textoTiempos(senales) {
+    if (!senales || senales.tiempo_ms === undefined) return "";
+    const seg = ms => `${(ms / 1000).toLocaleString("es-ES", { maximumFractionDigits: 1 })} s`;
+    const partes = [`⏱ respuesta en ${seg(senales.tiempo_ms)}`];
+    if (senales.tiempo_ia_ms !== null && senales.tiempo_ia_ms !== undefined) {
+      partes.push(`${senales.motor === "claude" ? "Claude" : "Claude (falló)"} ${seg(senales.tiempo_ia_ms)}`);
+    } else if (senales.motor) {
+      partes.push(MOTORES[senales.motor] || senales.motor);
+    }
+    return partes.join(" · ");
+  }
+
   async function verDetalle(id, enfocar = true) {
     seleccionada = id;
     const { transferencia: t, mensajes } = await api(`/api/transferencias/${id}`);
@@ -131,7 +154,7 @@
     if (t.estado === "retenida") {
       acciones.append(
         el("button", { type: "button", class: "btn btn-exito pequeno", onclick: () => accion(t.id, "liberar",
-          "¿Ha hablado con la persona titular y confirma que la transferencia es legítima?") }, "Liberar y enviar"),
+          "¿Ha hablado con el cliente por un canal seguro y confirma que la transferencia es legítima?") }, "Liberar y enviar"),
         el("button", { type: "button", class: "btn btn-peligro pequeno", onclick: () => accion(t.id, "cancelar",
           "¿Cancelar definitivamente esta transferencia?") }, "Cancelar transferencia"),
       );
@@ -152,7 +175,8 @@
             el("div", {}, el("dt", {}, "Cuenta destino"), el("dd", {}, t.iban)),
             el("div", {}, el("dt", {}, "País"), el("dd", {}, ev.pais_nombre || t.pais)),
             el("div", {}, el("dt", {}, "Concepto"), el("dd", {}, t.concepto || "—")),
-            el("div", {}, el("dt", {}, "Resolución"), el("dd", {}, VIAS[t.via] || "—")),
+            el("div", {}, el("dt", {}, "Resolución"), el("dd", {}, VIAS[t.via] || (t.estado === "cancelada" ? "Cancelada" : "—"))),
+            t.operador ? el("div", {}, el("dt", {}, "Operador"), el("dd", {}, t.operador)) : null,
           )),
         bloque("Alertas del motor de reglas", lista((ev.motivos || []).map(m => m.texto), "Ninguna alerta.")),
         bloque("Análisis de SilverShield (IA)",
@@ -171,6 +195,7 @@
           el("span", { class: "quien" }, `${m.rol === "asistente" ? "SilverShield" : "Cliente"} · ${fechaHora(m.fecha)}`),
           m.texto,
           m.rol === "cliente" && m.senales ? el("span", { class: "metricas" }, textoMetricas(m.senales)) : null,
+          m.rol === "asistente" && m.senales ? el("span", { class: "metricas" }, textoTiempos(m.senales)) : null,
         )))) : null,
     );
     $("#detalle").hidden = false;
@@ -194,8 +219,11 @@
   async function refrescar() {
     try {
       const datos = await api("/api/panel");
-      $("#nombre-contacto").textContent = datos.cuenta.contacto_relacion ? `${datos.cuenta.contacto_nombre} (${datos.cuenta.contacto_relacion})` : datos.cuenta.contacto_nombre;
+      const c = datos.cuenta;
+      $("#nombre-contacto").textContent =
+        `${c.contacto_nombre}${c.contacto_relacion ? ` (${c.contacto_relacion})` : ""} · ${c.contacto_telefono}`;
       $("#nombre-titular").textContent = datos.cuenta.titular;
+      $("#nombre-operador").textContent = datos.operador;
       $("#palabra-auxilio").textContent = `«${datos.cuenta.palabra_seguridad}»`;
       $("#umbral").textContent = `${euros(datos.estado.umbral_verificacion)} o destino sospechoso`;
       $("#motor-ia").textContent = datos.estado.ia ? `Claude · ${datos.estado.modelo}` : "Evaluador local (sin clave de Anthropic)";
@@ -207,7 +235,11 @@
     }
   }
 
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) document.title = "SilverShield · Panel del contacto de emergencia"; });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) document.title = "SilverShield · Panel del operador"; });
+  $("#btn-salir").addEventListener("click", async () => {
+    await fetch("/api/operador/salir", { method: "POST" }).catch(() => {});
+    window.location.replace("/");   // cierra la sesión y vuelve a la app del cliente
+  });
   $("#btn-reiniciar").addEventListener("click", async () => {
     if (!window.confirm("Se borrarán todas las transferencias y avisos de la demo. ¿Continuar?")) return;
     await api("/api/demo/reiniciar", "POST");

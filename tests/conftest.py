@@ -11,15 +11,34 @@ os.environ["SILVERSHIELD_DB"] = str(_DB_TEMPORAL)
 os.environ["ANTHROPIC_API_KEY"] = ""
 os.environ["ANTHROPIC_AUTH_TOKEN"] = ""
 os.environ["ELEVENLABS_API_KEY"] = ""
+os.environ["OPERADORES"] = "operadora:clave-de-prueba,otro:otra-clave"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi.testclient import TestClient  # noqa: E402
 
 from backend.main import app  # noqa: E402
 
+CREDENCIALES = {"usuario": "operadora", "contrasena": "clave-de-prueba"}
+
+
+def entrar(cliente):
+    r = cliente.post("/api/operador/acceso", json=CREDENCIALES)
+    assert r.status_code == 200, r.text
+
 
 @pytest.fixture()
 def cliente():
+    """Cliente de la app SIN sesión de operador (como la app de la persona mayor)."""
     with TestClient(app) as c:
+        entrar(c)
         c.post("/api/demo/reiniciar")
+        c.post("/api/operador/salir")
+        c.cookies.clear()
         yield c
+
+
+@pytest.fixture()
+def operador(cliente):
+    """El mismo cliente, con la sesión de operador abierta."""
+    entrar(cliente)
+    return cliente

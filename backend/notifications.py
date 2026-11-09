@@ -1,8 +1,13 @@
-"""Avisos al contacto de emergencia.
+"""Avisos cuando SilverShield retiene una transferencia.
 
-En la demo el aviso se registra en la base de datos (aparece en tiempo real en el
-panel /panel del contacto de emergencia) y se muestra en la consola del servidor.
-En producción este módulo se conectaría con la pasarela SMS/WhatsApp/push del banco.
+Cada aviso llega a dos sitios:
+- al panel del operador del banco (/panel), que es quien revisa la operación y el
+  único que puede liberarla o cancelarla;
+- al contacto de emergencia del cliente, solo para informarle (no puede autorizar nada).
+
+En la demo el aviso se guarda en la base de datos (aparece en directo en el panel
+del operador) y se escribe en la consola del servidor: NO se envía ningún SMS real.
+En producción, aquí se conectaría la pasarela SMS/WhatsApp/push del banco.
 """
 import logging
 
@@ -17,7 +22,7 @@ def avisar_contacto(cuenta: dict, transferencia_id: int | None, tipo: str, mensa
         transferencia_id=transferencia_id,
         tipo=tipo,
         mensaje=mensaje,
-        canal="SMS + notificación en la app",
+        canal="Panel del operador · aviso al contacto simulado (SMS en producción)",
         destinatario=destinatario,
     )
     log.warning("AVISO [%s] a %s: %s", tipo, destinatario, mensaje)

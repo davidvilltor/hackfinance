@@ -3,22 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SilverShield · Panel del contacto de emergencia</title>
+  <title>SilverShield · Panel del operador</title>
   <link rel="stylesheet" href="/static/css/silvershield.css">
   <link rel="stylesheet" href="/static/css/panel.css">
 </head>
 <body class="panel">
 <header class="barra">
-  <div class="marca">🛡️ SilverShield · Panel de <span id="nombre-contacto">contacto</span></div>
+  <div class="marca">🛡️ SilverShield · Panel del operador antifraude de SilverBank</div>
   <div class="ajustes">
-    <span class="etiqueta-barra">Contacto de emergencia de <strong id="nombre-titular">…</strong></span>
+    <span class="etiqueta-barra">Cliente: <strong id="nombre-titular">…</strong> ·
+      Contacto de emergencia: <span id="nombre-contacto">…</span></span>
+    <span class="operador-barra">
+      <span class="etiqueta-barra">Operador: <strong id="nombre-operador">…</strong></span>
+      <a class="btn btn-secundario pequeno" href="/"><span aria-hidden="true">←</span> Volver a la app del cliente</a>
+      <button type="button" class="btn btn-secundario pequeno" id="btn-salir">Cerrar sesión y salir</button>
+    </span>
   </div>
 </header>
 
 <main class="panel-principal" id="principal">
   <section class="columna" aria-labelledby="t-alertas">
     <h1 id="t-alertas">Avisos</h1>
-    <p class="texto-suave">Se actualiza automáticamente cada pocos segundos.</p>
+    <p class="texto-suave">Se actualiza automáticamente cada pocos segundos. Las transferencias
+      retenidas solo las puede liberar o cancelar un operador, después de llamar al cliente.
+      El contacto de emergencia recibe el aviso, pero no puede autorizar nada.</p>
     <ul id="lista-alertas" class="lista-alertas" aria-live="polite"></ul>
 
     <h2>Configuración de protección</h2>
@@ -30,7 +38,8 @@
         <div><dt>Voz</dt><dd id="motor-voz">…</dd></div>
       </dl>
       <p class="nota">Si la persona pronuncia la palabra de auxilio durante la verificación, SilverShield
-        retiene la operación en silencio y le avisa a usted, sin alertar a quien pueda estar presionándola.</p>
+        retiene la operación en silencio y avisa al operador y al contacto de emergencia, sin alertar
+        a quien pueda estar presionándola. El operador debe contactar con el cliente por un canal seguro.</p>
       <button type="button" class="btn btn-secundario pequeno" id="btn-reiniciar">Reiniciar datos de la demo</button>
     </div>
   </section>

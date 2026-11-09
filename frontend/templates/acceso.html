@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SilverShield · Acceso de operadores</title>
+  <link rel="stylesheet" href="/static/css/silvershield.css">
+  <link rel="stylesheet" href="/static/css/panel.css">
+</head>
+<body class="panel">
+<header class="barra">
+  <div class="marca">🛡️ SilverShield · Panel del operador antifraude de SilverBank</div>
+</header>
+
+<main class="acceso" id="principal">
+  <form class="tarjeta" id="form-acceso" novalidate>
+    <h1>Acceso de operadores</h1>
+    <p class="texto-suave">Solo el personal antifraude del banco puede revisar, liberar o cancelar
+      las transferencias retenidas por SilverShield.</p>
+    <div class="banner-error" id="error-acceso" role="alert" hidden></div>
+    <div class="campo">
+      <label for="campo-usuario">Usuario</label>
+      <input type="text" id="campo-usuario" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    </div>
+    <div class="campo">
+      <label for="campo-contrasena">Contraseña</label>
+      <input type="password" id="campo-contrasena" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn-primario" id="btn-entrar">Entrar</button>
+  </form>
+  <a class="btn btn-secundario volver" href="/"><span aria-hidden="true">←</span> Volver a la app del cliente</a>
+</main>
+
+<script src="/static/js/acceso.js"></script>
+</body>
+</html>

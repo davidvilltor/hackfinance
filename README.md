@@ -6,101 +6,211 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat-square&logo=fastapi)
 ![Claude](https://img.shields.io/badge/Claude-Opus_5.5-8A2BE2?style=flat-square&logo=anthropic)
 ![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Multilingual_v2_%2B_Scribe-FF6F61?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-49_OK-2ea44f?style=flat-square)
 
 ## El problema
-Los estafadores convencen a personas mayores para que hagan transferencias (falso técnico, falso empleado del banco, "hijo en apuros"...) y les piden en la misma llamada el código SMS que debería protegerlas. El SMS no detecta el engaño: solo confirma que la víctima tiene el móvil en la mano.
 
-## La solución
-SilverShield se integra en la banca online y actúa solo cuando hace falta:
+Los estafadores convencen a personas mayores para que hagan transferencias: el falso técnico de Microsoft, el falso empleado del banco, el "hijo en apuros" que escribe desde un número nuevo… Y en la misma llamada les piden el código SMS que debería protegerlas. El SMS no detecta el engaño: solo confirma que la víctima tiene el móvil en la mano.
 
-1. **Motor de reglas instantáneo.** Una transferencia normal se envía sin fricción. Se pide confirmación si:
-   - el importe es de **500 € o más**, o
-   - por debajo de 500 €, la cuenta está en un **país de alto riesgo**, es una **cuenta extranjera nueva**, el concepto es típico de estafa ("bitcoin", "Hacienda", "soporte técnico"...) o supera la mitad del saldo.
-2. **Pantalla de decisión** con dos opciones grandes y claras:
-   - **"Solicitar verificación con SilverShield"** (recomendada).
-   - **"Conozco al destinatario: autorizar directamente"** (si el riesgo es alto, se pide una segunda confirmación).
-3. **Conversación por voz con IA.** SilverShield explica la operación en lenguaje sencillo y hace preguntas cortas (para qué es el dinero, si alguien se lo ha pedido, si hay alguien al lado dictando). **Claude** analiza cada respuesta junto con el contexto de la transferencia y con indicadores de estrés de la voz (velocidad del habla, volumen, titubeos). **ElevenLabs** pone una voz española, clara, pausada y tranquila.
-4. **Veredicto:**
-   - ✅ *Puede enviarla*: la persona confirma el envío con un botón.
-   - ⛔ *No la envíe*: la transferencia queda **retenida**, se explica con calma por qué parece un engaño y se **avisa al contacto de emergencia**, que puede liberarla o cancelarla desde su panel.
-5. **Palabra de auxilio (contra la coacción).** Si alguien obliga a la persona a transferir, basta con que diga su palabra secreta durante la conversación. SilverShield responde con normalidad (para no alertar a quien presiona), retiene la operación y avisa en silencio al contacto de emergencia.
+## La solución, en una frase
 
-## Accesibilidad y experiencia de usuario
-- Una tarea por pantalla, lenguaje llano, texto base de 20 px con tres tamaños (Normal, Grande, Muy grande) y **modo de alto contraste**, que se recuerdan entre visitas.
-- Botones de 64 a 96 px, iconos siempre con texto, foco de teclado muy visible y compatible con lectores de pantalla (`aria-live`, roles, gestión del foco al cambiar de pantalla).
-- Subtítulos de todo lo que dice el asistente, botón **"Repetir"**, opción **"Prefiero escribir"** y botón **"Escuchar este mensaje"** en la pantalla de decisión.
-- Sin límites de tiempo y respetando la preferencia de "reducir movimiento" del sistema.
-- **Latencia baja:** el saludo es instantáneo (plantilla), Claude trabaja con esfuerzo `low` y la voz de ElevenLabs (nativa de España, modelo Multilingual v2) llega en streaming, así que el audio empieza a sonar antes de estar completo. La cabecera `Server-Timing` mide cada petición.
+Cuando una transferencia es inusual, **SilverShield habla con la persona** (con voz, como lo haría un empleado de su oficina), averigua con dos o tres preguntas si alguien la está engañando o presionando y, si es así, **para el dinero**: un operador del banco la revisa con ella y su contacto de emergencia recibe un aviso.
 
-## Requisitos
+---
+
+## Cómo funciona
+
+```
+ Transferencia ──► 1. Reglas (instantáneas) ──► ¿Algo inusual? ── no ──► Se envía sin más
+                                                     │ sí
+                                                     ▼
+                          2. Pantalla "Antes de enviarlo, un momento"
+                             (motivos explicados y se pueden escuchar)
+                           ┌─────────────────────┴─────────────────────┐
+              "Conozco al destinatario"                 "Verificar con SilverShield"
+          (solo destinatarios habituales                               │
+           y sin señales graves)                                       ▼
+                           │                         3. Conversación por voz con Claude
+                           ▼                            (2-4 preguntas cortas)
+                        Enviada
+                                                                       │
+                     ┌──────────────────┬──────────────────┬───────────┴──────────┐
+                     ▼                  ▼                  ▼                      ▼
+                ✅ "Seguro"        ⛔ "Riesgo"     ⚠️ "No verificada"     🌻 Palabra de auxilio
+             Ella confirma      Retenida, con      (falló la IA)         Retenida + aviso
+             y se envía         el porqué          Retenida              urgente, en silencio
+                                     │                  │                      │
+                                     └──────────────────┴──────────────────────┘
+                                                        ▼
+                            Aviso al operador del banco y al contacto de emergencia.
+                            Solo el OPERADOR puede liberarla o cancelarla, tras llamar a la clienta.
+```
+
+1. **Motor de reglas** ([reglas_riesgo.py](backend/reglas_riesgo.py)). Decide *cuándo* preguntar. Salta si el importe es de **500 € o más** o, por debajo, si la cuenta está en un **país de alto riesgo**, es una **cuenta extranjera nueva**, el concepto suena a estafa ("bitcoin", "Hacienda", "soporte técnico"…) o se envía más de la mitad del saldo. Es instantáneo, gratuito y explicable.
+2. **Pantalla de decisión.** Explica los motivos en lenguaje sencillo, con botón para escucharlos. Si el destinatario es **habitual** y no hay señales graves, la persona puede elegir entre verificar (opción recomendada) o autorizar ella misma. Si la cuenta es **nueva** o el riesgo es **alto**, la verificación es obligatoria: en las estafas el dinero va siempre a una cuenta nueva, y así un estafador al teléfono no puede decirle "pulse *Conozco al destinatario*". El servidor también lo comprueba.
+3. **Conversación por voz** ([agente_silvershield.py](backend/agente_silvershield.py)). En cada turno, **Claude** recibe el contexto completo (importe, saldo, destinatario nuevo o habitual, país, concepto, alertas de las reglas, indicadores de la voz y la conversación) y devuelve un JSON validado con lo que va a decir y su decisión. **ElevenLabs** le pone una voz española clara y tranquila.
+4. **Veredicto explicado.** Si para la transferencia, la pantalla muestra **"¿Por qué la hemos parado?"** con el tipo de engaño ("Se parece al engaño del falso servicio técnico") y las señales que ha visto ("Le han pedido que instale un programa en el ordenador").
+5. **Operador del banco y contacto de emergencia.** Por motivos legales, una transferencia retenida solo la puede **liberar** o **cancelar** un **operador antifraude del banco**, desde su panel, después de hablar con la clienta. Ni la app de la clienta ni su contacto de emergencia (un familiar, un amigo, un vecino, un cuidador…) pueden autorizarla. El contacto solo recibe un aviso para que pueda ayudarla.
+
+## Qué tenemos implementado
+
+| Función | Detalle |
+|---|---|
+| **Reglas de riesgo** | Umbral, países de riesgo, cuentas extranjeras nuevas, conceptos típicos de estafa, % del saldo. IBAN validado con dígitos de control. |
+| **Agente conversacional con Claude** | Claude Opus 5.5 con esfuerzo `low` y salida JSON con esquema (`output_config.format`), validada con Pydantic. Fallback de servidor ante rechazos. Máximo de 4 preguntas: al llegar al límite, el servidor fuerza un veredicto. |
+| **Voz** | ElevenLabs Multilingual v2 con una voz nativa de España, en streaming. Reconocimiento de voz del navegador (Chrome/Edge) o ElevenLabs Scribe (Firefox). Si falta ElevenLabs, se usa la voz del navegador. |
+| **Indicadores de estrés** | [voice_stress.py](backend/voice_stress.py): velocidad del habla, volumen, silencio antes de responder, palabras de urgencia, de duda o que mencionan a un tercero. Son **indicadores sencillos** que Claude pondera; no es biometría. |
+| **Explicación del bloqueo** | Tipo de engaño y señales en lenguaje sencillo en la pantalla del cliente. En el panel: nivel de riesgo, categoría, señales, resumen y transcripción. |
+| **Palabra de auxilio** | Si la persona dice su palabra secreta («girasol» en la demo), SilverShield contesta con normalidad, retiene la operación y avisa en silencio. |
+| **Fallar de forma segura** | Si Claude falla, el evaluador local puede seguir preguntando o detectar la estafa, pero **nunca aprueba**: la transferencia queda retenida (`no_verificada`) para que la revise un operador. |
+| **Verificación obligatoria** | "Conozco al destinatario" solo aparece si ya le ha enviado dinero antes a esa cuenta y no hay señales graves. Si no, hay que verificar (lo comprueba también el servidor). |
+| **Acceso de operadores** | El panel exige usuario y contraseña (configurables en `.env`). Sesión con cookie firmada (HMAC-SHA256, HttpOnly, SameSite=Strict) que caduca a las 8 horas. Un intento fallido tarda 1 s, para frenar a quien intente adivinar la contraseña. Cada liberación o cancelación queda registrada con el nombre del operador. |
+| **Seguridad** | Máquina de estados validada en el servidor (HTTP 409 si la acción no está permitida). Cargo atómico. El texto del usuario siempre se pinta como texto (sin `innerHTML`). Defensa ante *prompt injection* en el prompt. La palabra de auxilio nunca llega a la pantalla del cliente. El endpoint de voz solo sintetiza mensajes del servidor. |
+| **Accesibilidad** | Texto base de 20 px con tres tamaños, modo de alto contraste, botones grandes, foco visible, `aria-live`, subtítulos de todo lo que se dice, botones "Repetir" y "Prefiero escribir", campos obligatorios marcados con `*`, sin límites de tiempo. |
+| **Medición de tiempos** | Cada turno guarda su tiempo total y el de Claude (visible en la transcripción del panel). Cabecera `Server-Timing`. Tiempo de arranque del audio en la consola del navegador. |
+| **Panel del operador del banco** | Avisos en directo, historial, detalle de cada transferencia (transcripción, señales, riesgo, tiempos), **liberar o cancelar** las retenidas (queda registrado qué operador lo hizo) e informe imprimible para adjuntar a una denuncia. |
+| **Evaluación** | 40 casos (20 estafas, 20 legítimas difíciles) con métricas de aciertos, falsos positivos, falsos negativos y tiempos. Ver abajo. |
+| **Tests** | 49 tests automáticos, sin claves de API. |
+
+## Resultados medidos
+
+Evaluación con [evaluacion/casos.py](evaluacion/casos.py): **20 estafas** variadas (falso banco, técnico, policía, Hacienda, hijo en apuros, cripto, romance, aduana, cambio de IBAN del casero, coacción de un familiar o cuidadora, un intento de manipular a la IA…) y **20 transferencias legítimas difíciles** (urgentes, al extranjero, a familiares, con palabras como "herencia", "multa" o "urgente", o con la persona nerviosa).
+
+| Motor | Aciertos | Estafas detectadas | Legítimas aprobadas | Tiempo medio por turno (p95) | Preguntas por conversación |
+|---|---|---|---|---|---|
+| **Claude Opus 5.5** (por defecto) | **39/40** | **20/20** | 19/20 | 5,2 s (8,9 s) | 2,1 |
+| Claude Sonnet 5.5 | 39/40 | 20/20 | 19/20 | 3,1 s (5,7 s) | 3,0 |
+| Claude Haiku 5.5 | 33/40 | 20/20 | 13/20 | 3,1 s (6,0 s) | 3,2 |
+| Evaluador local (sin IA) | 31/40 | 13/20 | 18/20 | instantáneo | 2,2 |
+
+- **Ninguna estafa se habría enviado con Claude** (0 falsos negativos con los tres modelos). El evaluador local deja pasar 7 de 20: por eso, si Claude falla, el sistema no aprueba nada.
+- El único fallo de Opus es un falso positivo razonable: un pago "de todos los años" que iba a una cuenta que el banco no había visto nunca. Un falso positivo es reversible: el operador llama a la clienta y la libera.
+- La voz de ElevenLabs tarda unos **0,5-0,75 s** en empezar a sonar con Multilingual v2 (0,2 s con Flash v2.5, que suena algo menos nítido).
+- **Limitación:** las respuestas de la clienta están guionizadas, así que a veces no encajan con la pregunta exacta que hace la IA. Es una prueba más dura que una conversación real.
+
+Informes completos, con las conversaciones de los casos fallados, en [evaluacion/resultados/](evaluacion/resultados/).
+
+---
+
+## Puesta en marcha
+
+### Requisitos
 - Python 3.10 o superior (probado en 3.15).
-- Chrome o Edge (recomendado, por el reconocimiento de voz del navegador). En Firefox se usa ElevenLabs Scribe para transcribir.
-- Opcional: claves de **Anthropic** y **ElevenLabs**. **Sin claves la app funciona igual**: usa un evaluador local en lugar de Claude y la voz del navegador en lugar de ElevenLabs.
+- Chrome o Edge, por el reconocimiento de voz del navegador. En Firefox se transcribe con ElevenLabs Scribe.
+- Opcional: claves de **Anthropic** y **ElevenLabs**. Sin claves, la app funciona en **modo local**, con el evaluador local en lugar de Claude y la voz del navegador en lugar de ElevenLabs.
 
-## Instalación
+### Instalación
 ```bash
 git clone https://github.com/davidvilltor/hackfinance.git
 cd hackfinance
 python -m venv .venv
 # Windows:      .venv\Scripts\activate
 # macOS/Linux:  source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt     # dependencias de la app + pytest
 ```
 
-## Configuración
+### Configuración
 ```bash
 cp .env.example .env      # Windows: copy .env.example .env
 ```
-Rellene `ANTHROPIC_API_KEY` y `ELEVENLABS_API_KEY`. El resto de opciones (modelo, voz, umbral, países de riesgo, número máximo de preguntas) están documentadas en `.env.example`.
+Rellene `ANTHROPIC_API_KEY` y `ELEVENLABS_API_KEY`, y en `OPERADORES` los usuarios y contraseñas de los operadores del banco (por ejemplo `OPERADORES=ana:una-clave-larga,luis:otra-clave`). Si `OPERADORES` se deja vacío, se usa el de demo: usuario **`operador`**, contraseña **`silvershield-demo`**. Las demás opciones están documentadas en [.env.example](.env.example): modelo de Claude, voz y velocidad, umbral de 500 €, países de riesgo y número máximo de preguntas.
 
-## Ejecución
+### Arrancar
 ```bash
 python -m uvicorn backend.main:app --reload
 ```
-- App del cliente: <http://localhost:8000>
-- Panel del contacto de emergencia / gestor: <http://localhost:8000/panel> (ábralo en otra ventana para ver los avisos en directo)
-- Documentación de la API: <http://localhost:8000/docs>
 
-La base de datos SQLite se crea sola con datos de demo (María López, 82 años, contacto de emergencia: su hijo Carlos, palabra de auxilio: «girasol»). Para empezar de cero use el botón **"Reiniciar datos de la demo"** del panel.
+| Qué | Dónde |
+|---|---|
+| App del cliente (la persona mayor) | <http://localhost:8000> |
+| Panel del operador del banco | <http://localhost:8000/panel> (pide usuario y contraseña; ábralo en otra ventana para ver los avisos en directo) |
+| Documentación de la API | <http://localhost:8000/docs> |
 
-## Cómo probarlo
-### Escenarios de demo
-| Escenario | Destinatario e IBAN | Importe | Resultado esperado |
-|---|---|---|---|
-| Transferencia habitual | "Mi hijo Carlos" (guardado) | 100 € | Se envía directamente |
-| Importe alto, destinatario conocido | "La comunidad" (guardado) | 800 € | Pantalla de decisión → "Conozco al destinatario" → enviada |
-| Estafa del falso técnico | Otra persona · `ES48 1465 0100 7220 3087 6293` · concepto "Soporte técnico" | 2.500 € | Decisión → SilverShield → responder *"Me ha llamado un chico de Microsoft, dice que tengo un virus"* → **retenida** y aviso en el panel |
-| País de alto riesgo por debajo de 500 € | Otra persona · `VG96 VPVG 0000 0123 4567 8901` | 300 € | Pantalla de decisión con aviso de nivel alto |
-| Extranjero nuevo por debajo de 500 € | Otra persona · `PT50 0002 0123 1234 5678 9015 4` | 200 € | Pantalla de decisión |
-| Coacción | Cualquier transferencia que pase a verificación | ≥ 500 € | Decir una frase con «girasol» → "en revisión" + aviso urgente en el panel |
-| Uso legítimo | "Mi hijo Carlos" · concepto "Reforma" | 900 € | Verificación → *"Es para la reforma del baño"*, *"Lo he decidido yo, le he llamado yo"* → recomendación de enviar |
+El pie de la app indica qué motores están activos: "IA Claude" o "evaluador local", y "Voz ElevenLabs" o voz del navegador.
+
+---
+
+## Cómo probar la demo
+
+**Datos de demo** (se crean solos al arrancar): María López, 82 años, saldo de 12.450 €. Su contacto de emergencia es Carlos (+34 600 123 456) y su palabra de auxilio es **«girasol»**. Tiene guardados tres destinatarios: *Mi hijo Carlos*, *La comunidad* y *El dentista*. Para empezar de cero, entre en el panel del operador y pulse **"Reiniciar datos de la demo"**.
+
+### Escenarios
+
+En la app: **Enviar dinero** → elija destinatario (o *Otra persona* y rellene nombre e IBAN) → importe → concepto → **Continuar**.
+
+| # | Escenario | Qué introducir | Qué responder (hablando o con "Prefiero escribir") | Resultado esperado |
+|---|---|---|---|---|
+| 1 | Lo normal no molesta | *Mi hijo Carlos* · 100 € | — | Se envía al instante |
+| 2 | Importe alto a alguien conocido | *La comunidad* · 800 € | — | Pantalla de decisión → "Conozco al destinatario" → enviada |
+| 2b | Importe alto a una cuenta nueva | *Otra persona* · `Fontanería García` · `ES48 1465 0100 7220 3087 6293` · 800 € | — | No aparece "Conozco al destinatario": la verificación es obligatoria |
+| 3 | **Falso técnico** | *Otra persona* · `Soporte Técnico Global` · `ES48 1465 0100 7220 3087 6293` · 2.500 € · concepto `Soporte técnico` | *"Me ha llamado un chico de Microsoft, dice que tengo un virus en el ordenador y que si no pago pierdo mis fotos."* | **Retenida**, con el recuadro "¿Por qué la hemos parado?" y botón "Llamar a Carlos". Aviso rojo en el panel del operador, que puede **liberarla** o **cancelarla** |
+| 4 | **Falsa policía** | *Otra persona* · `Abogados Asociados` · `ES48 1465 0100 7220 3087 6293` · 3.000 € · concepto `Fianza` | *"Me ha llamado un policía, que han detenido a mi nieto y tengo que pagar la fianza. Me han dicho que no se lo cuente a nadie."* | Retenida, tipo "falsa policía" |
+| 5 | Uso legítimo | *Mi hijo Carlos* · 900 € · concepto `Reforma` | *"Es para pagar la reforma del baño de mi hijo"* → *"Lo he decidido yo sola, nadie me ha llamado, le he llamado yo"* | "Puede enviarla" → botón Enviar |
+| 6 | **Coacción** | *Mi hijo Carlos* · 3.000 € | *"Es para mi sobrino… mira qué girasoles más bonitos"* | Pantalla neutra "Su operación está en revisión". En el panel: **PALABRA DE AUXILIO** |
+| 7 | País de alto riesgo, importe bajo | *Otra persona* · `VG96 VPVG 0000 0123 4567 8901` · 300 € | — | Pantalla de decisión con aviso de nivel alto |
+| 8 | Extranjero nuevo, importe bajo | *Otra persona* · `PT50 0002 0123 1234 5678 9015 4` · 200 € | — | Pantalla de decisión |
+| 9 | Fallo de la IA (seguridad) | Ponga una clave falsa en `ANTHROPIC_API_KEY`, reinicie y repita el escenario 5 | Las mismas respuestas | "No hemos podido terminar la comprobación": **retenida, no se aprueba**. Aviso "No se pudo verificar" en el panel |
+| 10 | **Acceso del operador** | Abra <http://localhost:8000/panel> sin haber entrado | — | Le lleva a "Acceso de operadores" (con botón para volver a la app del cliente). Con una contraseña incorrecta: "Usuario o contraseña incorrectos". Con la buena: entra al panel y arriba sale "Operador: …" con los botones **Volver a la app del cliente** (la sesión sigue abierta) y **Cerrar sesión y salir** (vuelve a la app del cliente). Al liberar o cancelar, el detalle muestra qué operador lo hizo |
+
+El guion de la presentación en vivo (3 minutos, con plan B) está en [tests/guion_demo.md](tests/guion_demo.md).
 
 ### Tests automáticos
 ```bash
-pip install -r requirements-dev.txt
 python -m pytest
 ```
-29 pruebas: reglas de riesgo y validación de IBAN, el flujo completo de la API (envío directo, autorización, estafa detectada, uso legítimo, palabra de auxilio, límite de turnos y errores), la respuesta estructurada de Claude y el paso al evaluador local si Claude falla. Los tests no necesitan claves de API.
+49 pruebas, sin claves de API:
+- **Reglas:** umbral de 500 €, países, extranjeros, conceptos, % del saldo, validación de IBAN.
+- **Flujo de la API:** envío directo, autorización, estafa detectada y retenida, uso legítimo, palabra de auxilio, límite de turnos, cancelar, liberación por el operador, errores de validación.
+- **Verificación obligatoria:** a una cuenta nueva, o con riesgo alto, no se puede enviar sin verificar.
+- **Robustez:** Claude caído (nunca aprueba, pero sigue detectando estafas claras), Claude devolviendo una decisión no permitida, texto con HTML, texto de más de 2.000 caracteres.
+- **Explicación y tiempos:** las señales llegan en lenguaje sencillo y cada turno guarda su tiempo.
+- **Acceso del operador:** sin sesión no se puede ver el panel, el detalle, liberar, cancelar una retenida ni reiniciar la demo; contraseña incorrecta, cookie manipulada o caducada no valen; la cookie es HttpOnly y SameSite; se registra qué operador libera o cancela; el cliente sí puede cancelar lo suyo mientras no esté retenido.
 
-## Estructura
+### Evaluación con 40 casos
+```bash
+python -m evaluacion.evaluar --motor local     # gratis, sin red, instantáneo
+python -m evaluacion.evaluar                   # con Claude (unas 100 llamadas, ~2-4 min)
+python -m evaluacion.evaluar --motor ambos     # los dos, para comparar
+python -m evaluacion.evaluar --solo E01,L05    # solo algunos casos
+```
+Para comparar modelos, use la variable `CLAUDE_MODEL` (por ejemplo, `CLAUDE_MODEL=claude-sonnet-5-5`). Los informes se guardan en `evaluacion/resultados/`.
+
+---
+
+## Estructura del proyecto
+
 ```
 backend/
   main.py                 API FastAPI y máquina de estados de la transferencia
   reglas_riesgo.py        Motor de reglas (umbral, países, IBAN, conceptos)
-  agente_silvershield.py  Conversación con Claude (salida JSON con esquema) + evaluador local de respaldo
-  voice_agent.py          ElevenLabs: voz (streaming) y transcripción (Scribe)
-  voice_stress.py         Indicadores de estrés y coacción (texto y métricas acústicas)
-  notifications.py        Avisos al contacto de emergencia
-  database.py             SQLite: cuenta, beneficiarios, transferencias, conversación y alertas
+  agente_silvershield.py  Conversación con Claude + evaluador local + "fallar de forma segura"
+  voice_agent.py          ElevenLabs: voz en streaming y transcripción (Scribe)
+  voice_stress.py         Indicadores de estrés y coacción (texto y medidas de la voz)
+  notifications.py        Avisos al operador y al contacto de emergencia
+  acceso_operador.py      Acceso de los operadores al panel (sesión firmada)
+  database.py             SQLite: cuenta, destinatarios, transferencias, conversación y avisos
   config.py               Configuración por variables de entorno
 frontend/
-  templates/index.html    App del cliente (persona mayor)
-  templates/panel.html    Panel del contacto de emergencia / gestor del banco
-  static/js/voz.js        Síntesis de voz, reconocimiento de voz y medición acústica en el navegador
-  static/js/app.js        Lógica de las pantallas del cliente
+  templates/index.html    App del cliente
+  templates/panel.html    Panel del operador antifraude del banco
+  templates/acceso.html   Pantalla de acceso de los operadores
+  static/js/app.js        Pantallas del cliente
+  static/js/voz.js        Voz, reconocimiento de voz y medidas acústicas en el navegador
+  static/js/panel.js      Panel del operador
+  static/js/acceso.js     Inicio de sesión del operador
 prompts/prompt_sistema.txt  Instrucciones del asistente
+evaluacion/                 40 casos de prueba, script de evaluación y resultados
+tests/                      Tests automáticos y guion de la demo
 docs/architecture.md        Arquitectura y decisiones técnicas
-tests/                      Pruebas automáticas y guion de la demo
 ```
 
-Más detalle en [docs/architecture.md](docs/architecture.md).
+Más detalle técnico en [docs/architecture.md](docs/architecture.md).
+
+## Limitaciones conocidas (es un prototipo)
+
+- **Avisos simulados:** el aviso aparece en directo en el panel del operador, pero al contacto de emergencia no se le envía ningún SMS real. [notifications.py](backend/notifications.py) es el punto donde se conectaría la pasarela del banco.
+- **Una sola cuenta de cliente, sin inicio de sesión del cliente.** La app de María no pide contraseña (en un banco real ya la habría tenido que poner para entrar en su banca).
+- **Acceso de operadores sencillo:** usuarios y contraseñas en `.env`, sin doble factor ni bloqueo tras varios intentos. En producción se usaría el sistema de identidad del banco (inicio de sesión único y doble factor). Sin HTTPS en local, la cookie viaja sin cifrar: en producción debe servirse siempre por HTTPS.
+- **"Conozco al destinatario"** sigue disponible para destinatarios habituales sin señales graves. Es una decisión de autonomía de la persona; el riesgo que queda es una cuenta habitual que alguien haya comprometido.
+- Los **indicadores de estrés** son medidas sencillas (velocidad, volumen, silencios, palabras), no un análisis biométrico.
+- Base de datos SQLite local.

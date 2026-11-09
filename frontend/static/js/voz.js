@@ -54,8 +54,13 @@
     detener();
     if (!usarElevenLabs || !audioUrl) return hablarNavegador(texto);
     return new Promise(resolve => {
+      const inicio = performance.now();
       const audio = new Audio(audioUrl);
       audioActual = audio;
+      // Medida de UX: cuánto tarda la voz en empezar a sonar (consola del navegador).
+      audio.addEventListener("playing", () => {
+        console.info(`[voz] el audio empieza a sonar en ${Math.round(performance.now() - inicio)} ms`);
+      }, { once: true });
       let terminado = false;
       const terminar = () => {
         if (terminado) return;

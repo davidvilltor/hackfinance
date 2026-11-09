@@ -147,11 +147,11 @@ p { margin: 0 0 1rem; }
 .obligatorio { color: var(--rojo); font-weight: 800; }
 .nota-obligatorio { margin: 0 0 1rem; font-size: .95rem; color: var(--texto-suave); }
 .ayuda { display: block; color: var(--texto-suave); font-size: .9rem; margin-bottom: .45rem; }
-input[type="text"], textarea {
+input[type="text"], input[type="password"], textarea {
   width: 100%; font: inherit; font-size: 1.1rem; padding: .8rem 1rem; min-height: 60px;
   border: 2px solid #6b7a90; border-radius: 10px; background: #fff; color: var(--texto);
 }
-input[type="text"]:focus, textarea:focus { border-color: var(--azul); outline: 4px solid var(--foco); outline-offset: 1px; }
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-color: var(--azul); outline: 4px solid var(--foco); outline-offset: 1px; }
 input[aria-invalid="true"] { border-color: var(--rojo); background: var(--rojo-claro); }
 .importe-caja { position: relative; }
 .importe-caja input { font-size: 1.6rem; font-weight: 700; padding-right: 3rem; }
@@ -292,7 +292,7 @@ body.alto-contraste .barra { background: #000; border-bottom: 3px solid #ffd400;
 body.alto-contraste .btn-ajuste[aria-pressed="true"] { background: #ffd400; color: #000; border-color: #ffd400; }
 body.alto-contraste .btn-primario, body.alto-contraste .opcion-grande.recomendada,
 body.alto-contraste .btn-exito, body.alto-contraste .btn-peligro, body.alto-contraste .avatar { color: #000; }
-body.alto-contraste input[type="text"], body.alto-contraste textarea, body.alto-contraste dialog,
+body.alto-contraste input[type="text"], body.alto-contraste input[type="password"], body.alto-contraste textarea, body.alto-contraste dialog,
 body.alto-contraste .opcion-destinatario, body.alto-contraste .opcion-grande { background: #000; color: #fff; border-color: #fff; }
 body.alto-contraste .opcion-grande.recomendada { background: #ffd400; }
 body.alto-contraste .burbuja.cliente { background: #000; }
@@ -302,3 +302,13 @@ body.alto-contraste .pie { background: #000; border-top: 3px solid #ffd400; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Veredicto: por qué se ha parado ---------- */
+.motivos-ia { background: var(--superficie); border-radius: 10px; padding: .9rem 1.1rem; margin: 0 0 1rem; }
+.motivos-ia h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
+.motivos-ia p { margin: 0 0 .4rem; font-weight: 700; }
+.motivos-ia ul { margin: 0; padding-left: 1.3rem; }
+.motivos-ia li { margin: .25rem 0; }
+
+/* ---------- Decisión: verificación obligatoria ---------- */
+.nota-verificacion { background: var(--azul-claro); border-left: 6px solid var(--azul); border-radius: 10px; padding: .9rem 1.1rem; margin: 0; }

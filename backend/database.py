@@ -11,7 +11,7 @@ from backend import config
 PENDIENTE_DECISION = "pendiente_decision"   # Ha saltado una regla: el cliente elige
 EN_VERIFICACION = "en_verificacion"         # Conversando con SilverShield
 VERIFICADA_SEGURA = "verificada_segura"     # SilverShield recomienda seguir
-RETENIDA = "retenida"                       # SilverShield la ha parado; decide el contacto
+RETENIDA = "retenida"                       # SilverShield la ha parado; decide un operador del banco
 COMPLETADA = "completada"
 CANCELADA = "cancelada"
 
@@ -73,7 +73,8 @@ CREATE TABLE IF NOT EXISTS transferencias (
     senales_ia TEXT,
     resumen_ia TEXT,
     motor_ia TEXT,
-    fecha_resolucion TEXT
+    fecha_resolucion TEXT,
+    operador TEXT               -- operador del banco que la liberó o canceló
 );
 CREATE TABLE IF NOT EXISTS mensajes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,6 +115,10 @@ def conectar():
 def inicializar_bd() -> None:
     with conectar() as db:
         db.executescript(_ESQUEMA)
+        # Migración: bases de datos creadas antes de existir la columna "operador".
+        columnas = {fila["name"] for fila in db.execute("PRAGMA table_info(transferencias)")}
+        if "operador" not in columnas:
+            db.execute("ALTER TABLE transferencias ADD COLUMN operador TEXT")
         if db.execute("SELECT COUNT(*) FROM cuenta").fetchone()[0] == 0:
             _sembrar(db)
 

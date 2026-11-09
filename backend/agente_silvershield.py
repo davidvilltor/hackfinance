@@ -5,11 +5,16 @@ de reglas, los indicadores de voz y la conversación completa, y recibe una
 respuesta estructurada (JSON validado por esquema) con lo que hay que decir en
 voz alta y la decisión: seguir preguntando, "seguro" o "riesgo".
 
-Si Claude no está configurado o falla (sin conexión, timeout...), un evaluador
-heurístico local mantiene la demo funcionando con la misma interfaz.
+Si Claude no está configurado, un evaluador heurístico local mantiene la demo
+funcionando con la misma interfaz. Si Claude SÍ está configurado pero falla
+(sin conexión, timeout, respuesta inválida...), el evaluador local puede seguir
+preguntando o detectar una estafa, pero nunca da una transferencia por buena:
+en ese caso la decisión es "no_verificada" y la operación queda retenida
+(principio de "fallar de forma segura").
 """
 import json
 import logging
+import time
 from pathlib import Path
 from typing import Literal
 
@@ -21,7 +26,9 @@ from backend.reglas_riesgo import euros_hablados, nombre_pais, normalizar_texto
 
 log = logging.getLogger("silvershield.agente")
 
-Decision = Literal["preguntar", "seguro", "riesgo"]
+# "no_verificada" solo la genera el servidor (nunca Claude): la IA falló y no se
+# puede dar la transferencia por buena.
+Decision = Literal["preguntar", "seguro", "riesgo", "no_verificada"]
 CATEGORIAS = [
     "ninguna", "falso_banco", "falso_tecnico", "falsa_autoridad", "hijo_en_apuros",
     "inversion_cripto", "premio_herencia", "romance", "compra_online",
@@ -37,6 +44,8 @@ class ResultadoTurno(BaseModel):
     senales: list[str] = []
     resumen_para_contacto: str = ""
     motor: str = "reglas"
+    tiempo_ia_ms: int | None = None   # cuánto ha tardado Claude (None si no se usó)
+    fallo_ia: bool = False            # Claude estaba configurado pero no respondió bien
 
 
 ESQUEMA_RESPUESTA = {
@@ -199,6 +208,17 @@ _PATRONES = {
     "coaccion_familiar": ["me obliga", "se enfada", "me grita", "tengo miedo", "no me deja",
                           "me ha amenazado", "me amenaza", "me lo exige"],
 }
+_SENALES_SENCILLAS = {
+    "falso_tecnico": "Habla de un técnico, de un virus o de instalar un programa en el ordenador.",
+    "falso_banco": "Alguien que dice ser del banco le pide mover su dinero.",
+    "falsa_autoridad": "Alguien que dice ser de la policía, Hacienda o un juzgado le pide dinero.",
+    "hijo_en_apuros": "Un supuesto familiar le pide dinero desde un número o un mensaje nuevo.",
+    "inversion_cripto": "Le prometen ganar dinero rápido con una inversión.",
+    "premio_herencia": "Le piden pagar antes para cobrar un premio o una herencia.",
+    "romance": "Le pide dinero alguien a quien solo conoce por internet.",
+    "compra_online": "Le piden pagar por un paquete retenido o un envío.",
+    "coaccion_familiar": "Alguien le está presionando o le da miedo.",
+}
 _SENALES_LEGITIMAS = [
     "reforma", "obra", "factura", "comunidad", "dentista", "le he llamado yo",
     "lo he decidido yo", "lo he decidido yo sola", "lo he decidido yo solo", "regalo",
@@ -245,7 +265,7 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
     nivel = max(0, min(100, puntos))
 
     categoria = max(detectadas, key=lambda c: len(detectadas[c])) if detectadas else "ninguna"
-    lista_senales = [f"Menciona: {', '.join(ps)}" for ps in detectadas.values()]
+    lista_senales = [_SENALES_SENCILLAS[cat] for cat in detectadas]
     lista_senales += senales.get("indicadores", [])
     nombre = cuenta["nombre_corto"]
     contacto = cuenta.get("contacto_nombre") or "su contacto de emergencia"
@@ -255,7 +275,8 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
         return {
             "respuesta": (
                 f"{nombre}, esto tiene las señales de una estafa. {explicacion} "
-                f"Su dinero está a salvo: he parado la transferencia. Le recomiendo avisar a {contacto}."
+                "Su dinero está a salvo: he parado la transferencia y un operador del banco la "
+                f"revisará con usted. Le recomiendo avisar a {contacto}."
             ),
             "decision": "riesgo",
             "nivel_riesgo": max(nivel, 60),
@@ -299,13 +320,19 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
     turno = sum(1 for m in mensajes if m["rol"] == "cliente")
     datos: dict | None = None
     motor = "reglas"
+    tiempo_ia_ms = None
     if config.ia_disponible():
+        inicio = time.perf_counter()
         try:
             contexto = _construir_contexto(transferencia, cuenta, mensajes, senales, turno)
             datos = await _llamar_claude(contexto)
+            if datos.get("decision") not in ("preguntar", "seguro", "riesgo"):
+                raise ValueError(f"Decisión no permitida: {datos.get('decision')!r}")
             motor = "claude"
         except Exception as error:  # noqa: BLE001 - cualquier fallo -> modo local
+            datos = None
             log.error("Fallo al consultar Claude, se usa el evaluador local: %s", error)
+        tiempo_ia_ms = int((time.perf_counter() - inicio) * 1000)
     if datos is None:
         datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno)
 
@@ -316,6 +343,8 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
         log.error("Respuesta con formato inesperado (%s); se usa el evaluador local.", error)
         datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno)
         resultado = ResultadoTurno(**datos, motor="reglas")
+    resultado.tiempo_ia_ms = tiempo_ia_ms
+    resultado.fallo_ia = config.ia_disponible() and resultado.motor != "claude"
 
     # Garantía: la conversación nunca se alarga más allá del máximo de turnos.
     if resultado.decision == "preguntar" and turno >= config.MAX_TURNOS_VERIFICACION:
@@ -323,7 +352,8 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
             resultado.decision = "riesgo"
             resultado.respuesta = (
                 f"{cuenta['nombre_corto']}, no tengo claro que esta transferencia sea segura. "
-                "Por precaución la he parado. Su dinero está a salvo. "
+                "Por precaución la he parado y un operador del banco la revisará con usted. "
+                "Su dinero está a salvo. "
                 f"Le recomiendo avisar a {cuenta.get('contacto_nombre')} para que lo hablen con calma."
             )
         else:
@@ -332,4 +362,24 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
                 f"Gracias, {cuenta['nombre_corto']}. No veo señales de engaño. "
                 "Si lo desea, ya puede confirmar el envío."
             )
+
+    # Fallar de forma segura: sin la IA no se da ninguna transferencia por buena.
+    if resultado.fallo_ia and resultado.decision == "seguro":
+        _marcar_no_verificada(resultado, cuenta)
     return resultado
+
+
+def _marcar_no_verificada(resultado: ResultadoTurno, cuenta: dict) -> None:
+    resultado.decision = "no_verificada"
+    resultado.categoria = "ninguna"
+    resultado.respuesta = (
+        f"{cuenta['nombre_corto']}, ahora mismo no puedo terminar la comprobación por un "
+        "problema técnico. Por precaución he dejado la transferencia parada y su dinero está "
+        "a salvo. Un operador del banco la revisará y le llamará para terminarla con usted."
+    )
+    resultado.senales = [*resultado.senales, "No se pudo completar la verificación con la IA."]
+    resultado.resumen_para_contacto = (
+        "SilverShield no ha podido completar la verificación con la IA por un fallo técnico. "
+        "La transferencia ha quedado retenida por precaución: el operador debe hablar con "
+        f"{cuenta['titular']} antes de liberarla."
+    )
