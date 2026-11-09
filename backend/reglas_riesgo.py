@@ -100,11 +100,6 @@ def validar_iban(iban: str) -> str:
     return limpio
 
 
-def formatear_iban(iban: str) -> str:
-    limpio = normalizar_iban(iban)
-    return " ".join(limpio[i:i + 4] for i in range(0, len(limpio), 4))
-
-
 def formatear_euros(importe: float) -> str:
     """1234.5 -> '1.234,50 €' (formato español)."""
     texto = f"{importe:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

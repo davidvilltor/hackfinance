@@ -263,13 +263,6 @@ fieldset { border: none; padding: 0; margin: 0 0 1.3rem; }
   padding: 1rem 1.2rem; margin-bottom: 1rem; font-weight: 600;
 }
 
-/* ---------- Diálogo modal ---------- */
-dialog {
-  border: none; border-radius: var(--radio); padding: 1.6rem; max-width: 560px; width: calc(100% - 2rem);
-  box-shadow: 0 10px 40px rgba(0,0,0,.35); color: var(--texto); background: #fff;
-}
-dialog::backdrop { background: rgba(10, 20, 40, .6); }
-dialog h2 { margin-top: 0; }
 
 /* ---------- Pie ---------- */
 .pie {
@@ -292,7 +285,7 @@ body.alto-contraste .barra { background: #000; border-bottom: 3px solid #ffd400;
 body.alto-contraste .btn-ajuste[aria-pressed="true"] { background: #ffd400; color: #000; border-color: #ffd400; }
 body.alto-contraste .btn-primario, body.alto-contraste .opcion-grande.recomendada,
 body.alto-contraste .btn-exito, body.alto-contraste .btn-peligro, body.alto-contraste .avatar { color: #000; }
-body.alto-contraste input[type="text"], body.alto-contraste input[type="password"], body.alto-contraste textarea, body.alto-contraste dialog,
+body.alto-contraste input[type="text"], body.alto-contraste input[type="password"], body.alto-contraste textarea,
 body.alto-contraste .opcion-destinatario, body.alto-contraste .opcion-grande { background: #000; color: #fff; border-color: #fff; }
 body.alto-contraste .opcion-grande.recomendada { background: #ffd400; }
 body.alto-contraste .burbuja.cliente { background: #000; }
