@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SilverShield · Panel del contacto de confianza</title>
+  <link rel="stylesheet" href="/static/css/silvershield.css">
+  <link rel="stylesheet" href="/static/css/panel.css">
+</head>
+<body class="panel">
+<header class="barra">
+  <div class="marca">🛡️ SilverShield · Panel de <span id="nombre-contacto">contacto</span></div>
+  <div class="ajustes">
+    <span class="etiqueta-barra">Contacto de confianza de <strong id="nombre-titular">…</strong></span>
+  </div>
+</header>
+
+<main class="panel-principal" id="principal">
+  <section class="columna" aria-labelledby="t-alertas">
+    <h1 id="t-alertas">Avisos</h1>
+    <p class="texto-suave">Se actualiza automáticamente cada pocos segundos.</p>
+    <ul id="lista-alertas" class="lista-alertas" aria-live="polite"></ul>
+
+    <h2>Configuración de protección</h2>
+    <div class="tarjeta compacta">
+      <dl class="datos">
+        <div><dt>Palabra de auxilio</dt><dd><strong id="palabra-auxilio">…</strong></dd></div>
+        <div><dt>Umbral de verificación</dt><dd id="umbral">…</dd></div>
+        <div><dt>Motor de IA</dt><dd id="motor-ia">…</dd></div>
+        <div><dt>Voz</dt><dd id="motor-voz">…</dd></div>
+      </dl>
+      <p class="nota">Si la persona pronuncia la palabra de auxilio durante la verificación, SilverShield
+        retiene la operación en silencio y le avisa a usted, sin alertar a quien pueda estar presionándola.</p>
+      <button type="button" class="btn btn-secundario pequeno" id="btn-reiniciar">Reiniciar datos de la demo</button>
+    </div>
+  </section>
+
+  <section class="columna ancha" aria-labelledby="t-transferencias">
+    <h1 id="t-transferencias">Transferencias</h1>
+    <div class="tabla-envoltorio tarjeta compacta">
+      <table class="tabla">
+        <thead>
+          <tr><th scope="col">Fecha</th><th scope="col">Destinatario</th><th scope="col" class="num">Importe</th>
+              <th scope="col">Estado</th><th scope="col">Riesgo</th><th scope="col"><span class="solo-lector">Acciones</span></th></tr>
+        </thead>
+        <tbody id="tabla-transferencias"></tbody>
+      </table>
+    </div>
+
+    <article id="detalle" class="tarjeta detalle" hidden aria-labelledby="t-detalle">
+      <div class="cabecera-detalle">
+        <h2 id="t-detalle" tabindex="-1">Detalle</h2>
+        <div class="botones-detalle" id="acciones-detalle"></div>
+      </div>
+      <div id="contenido-detalle"></div>
+    </article>
+  </section>
+</main>
+
+<script src="/static/js/panel.js"></script>
+</body>
+</html>

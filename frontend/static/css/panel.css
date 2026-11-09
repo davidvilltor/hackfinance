@@ -1,0 +1,77 @@
+/* Panel del contacto de confianza / gestor: más denso que la app del cliente. */
+body.panel { font-size: 16px; }
+.etiqueta-barra { font-size: .95rem; }
+.panel-principal {
+  max-width: 1280px; margin: 0 auto; padding: 1.2rem; display: grid; gap: 1.5rem;
+  grid-template-columns: 1fr; width: 100%;
+}
+@media (min-width: 1000px) { .panel-principal { grid-template-columns: 360px 1fr; } }
+.panel h1 { font-size: 1.4rem; margin-bottom: .3rem; }
+.panel h2 { font-size: 1.1rem; }
+.tarjeta.compacta { padding: 1rem; }
+
+.lista-alertas { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .7rem; }
+.alerta {
+  border-left: 6px solid var(--rojo); background: #fff; border-radius: 10px; padding: .8rem 1rem;
+  box-shadow: var(--sombra);
+}
+.alerta.coaccion { border-color: #6a1b9a; background: #f6edfa; }
+.alerta.nueva { animation: destello 1.2s ease-in-out 3; }
+@keyframes destello { 50% { background: #ffe1e1; } }
+.alerta .tipo { font-weight: 800; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--rojo); }
+.alerta.coaccion .tipo { color: #6a1b9a; }
+.alerta .cuando { font-size: .8rem; color: var(--texto-suave); }
+.alerta p { margin: .3rem 0; }
+.alerta button { margin-top: .3rem; }
+.vacio { color: var(--texto-suave); font-style: italic; }
+
+.datos { margin: 0 0 .8rem; }
+.datos div { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 1px solid #e3e8ef; }
+.datos dt { color: var(--texto-suave); }
+.datos dd { margin: 0; text-align: right; }
+.nota { font-size: .85rem; color: var(--texto-suave); }
+
+.btn.pequeno { min-height: 44px; font-size: .9rem; padding: .4rem 1rem; width: auto; }
+
+.tabla-envoltorio { overflow-x: auto; padding: 0; }
+.tabla { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.tabla th, .tabla td { padding: .65rem .8rem; text-align: left; border-bottom: 1px solid #e3e8ef; vertical-align: middle; }
+.tabla th { background: var(--azul); color: #fff; font-weight: 700; position: sticky; top: 0; }
+.tabla .num { text-align: right; white-space: nowrap; }
+.tabla tbody tr:hover { background: var(--azul-claro); }
+.tabla tr.seleccionada { background: #fff6d6; }
+
+.estado {
+  display: inline-block; padding: .15rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 700;
+  white-space: nowrap; border: 1px solid transparent;
+}
+.estado.completada { background: var(--verde-claro); color: var(--verde); border-color: #9fd3ae; }
+.estado.retenida { background: var(--rojo-claro); color: var(--rojo); border-color: #f0a9ab; }
+.estado.cancelada { background: #eceff3; color: #4a4a4a; border-color: #cfd6df; }
+.estado.pendiente_decision, .estado.en_verificacion, .estado.verificada_segura {
+  background: var(--ambar-claro); color: var(--ambar); border-color: #e9cf73;
+}
+.riesgo-barra { display: inline-flex; align-items: center; gap: .4rem; }
+.riesgo-barra .pista { width: 60px; height: 8px; background: #e3e8ef; border-radius: 99px; overflow: hidden; }
+.riesgo-barra .pista span { display: block; height: 100%; }
+
+.cabecera-detalle { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.cabecera-detalle h2 { margin: 0; }
+.botones-detalle { display: flex; gap: .5rem; flex-wrap: wrap; }
+.rejilla-detalle { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 1rem; }
+.bloque h3 { font-size: .95rem; margin: 0 0 .4rem; color: var(--azul-oscuro); }
+.bloque ul { margin: 0; padding-left: 1.1rem; }
+.transcripcion { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .5rem; }
+.transcripcion li { padding: .55rem .8rem; border-radius: 10px; font-size: .92rem; }
+.transcripcion .asistente { background: var(--azul-claro); }
+.transcripcion .cliente { background: #f3f3f3; }
+.transcripcion .quien { font-weight: 800; font-size: .75rem; text-transform: uppercase; display: block; color: var(--texto-suave); }
+.transcripcion .metricas { display: block; font-size: .75rem; color: var(--texto-suave); margin-top: .2rem; }
+
+.solo-impresion { display: none; }
+@media print {
+  .barra, .columna:first-child, .tabla-envoltorio, #t-transferencias, .botones-detalle { display: none !important; }
+  .panel-principal { display: block; padding: 0; }
+  .detalle { box-shadow: none; border: none; }
+  .solo-impresion { display: block; }
+}

@@ -1,10 +1,12 @@
-# Ignorar variables de entorno
+# Variables de entorno (claves de API)
 .env
 
-# Ignorar carpetas de entorno virtual de Python
+# Entornos virtuales y cachés de Python
 __pycache__/
+.venv/
 venv/
 env/
-# Base de datos local (se crea al arrancar el servidor)
+.pytest_cache/
+
+# Base de datos local (se crea y rellena sola al arrancar)
 *.db
-*.db-journal

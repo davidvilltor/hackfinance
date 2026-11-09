@@ -1,564 +1,240 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SilverBank - Área Clientes</title>
-    <style>
-        :root {
-            --banco-primario: #003366;
-            --banco-secundario: #085696;
-            --shield-acento: #f4a261;
-            --fondo: #f4f7f6;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fondo); margin: 0; transition: all 0.3s; padding-bottom: 50px;}
-        .navbar { background: var(--banco-primario); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
-        .controles-top { display: flex; gap: 15px; align-items: center; }
-        .usuario-info { font-size: 14px; font-weight: bold; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; }
-        .btn-accesibilidad { background: white; color: var(--banco-primario); border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        .btn-accesibilidad:hover { background: #eee; }
-        
-        .container { max-width: 1000px; margin: 30px auto; display: flex; gap: 25px; padding: 0 20px; flex-wrap: wrap; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; min-width: 320px; }
-        .card h3 { color: var(--banco-primario); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; font-size: 14px; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        input[type="text"]:focus { outline: none; border-color: var(--banco-secundario); }
-        
-        .btn-transfer { background: var(--banco-secundario); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn-transfer:hover:not(:disabled) { background: var(--banco-primario); }
-        .btn-transfer:disabled { cursor: not-allowed; opacity: 0.9; }
-        
-        /* Cajón de Verificación Dinámica */
-        .cajon-verificacion { display: none; margin-top: 15px; padding: 15px; background: #fff8e1; border-left: 5px solid #ffc107; border-radius: 4px; animation: fadeIn 0.4s ease-in-out; }
-        .cajon-verificacion p { margin-top: 0; font-weight: bold; color: #5c4400; font-size: 14px; }
-        .btn-omitir { background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 4px; width: 100%; margin-bottom: 10px; cursor: pointer; font-weight: bold;}
-        .btn-verificar-ia { background: var(--banco-primario); color: white; border: none; padding: 12px; border-radius: 4px; width: 100%; cursor: pointer; font-weight: bold; font-size: 15px;}
-        .btn-verificar-ia:hover { background: #06264a; }
-        
-        .btn-familiar { display: none; background: #2ecc71; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .shield-header { display: flex; align-items: center; gap: 10px; color: #2c3e50; margin-bottom: 5px; justify-content: center; }
-        .shield-header h2 { margin: 0; }
-        
-        .canales-selector { display: flex; gap: 5px; margin-bottom: 15px; background: #eee; padding: 4px; border-radius: 6px; flex-wrap: wrap;}
-        .btn-canal { flex: 1; background: none; border: none; padding: 8px; font-size: 12px; font-weight: bold; color: #555; cursor: pointer; border-radius: 4px; min-width: 80px;}
-        .btn-canal.activo { background: white; color: var(--banco-primario); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #eee; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 10px;}
-        .botones-accion { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-shield { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 1; }
-        .btn-texto { background: var(--shield-acento); }
-        .btn-micro { background: #2ecc71; }
-        .btn-micro.grabando { background: #e74c3c; animation: latido 1.5s infinite; }
-        
-        /* Visor de Ondas de Voz */
-        #visualizadorVoz { width: 100%; height: 60px; background: #f4f7f6; border-radius: 6px; display: none; margin-bottom: 10px; border: 1px solid #ddd; }
-
-        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #resultado { padding: 15px; border-radius: 5px; display: none; font-weight: bold; line-height: 1.5; font-size: 16px; margin-top: 15px; }
-        .alerta { background: #ffebee; border-left: 8px solid #f44336; color: #b71c1c; }
-        .seguro { background: #e8f5e9; border-left: 8px solid #4caf50; color: #1b5e20; }
-        .error { background: #fff3e0; border-left: 8px solid #ff9800; color: #e65100; }
-        
-        /* Pie de Cumplimiento Normativo */
-        .compliance-footer { background: #1a252f; color: #ecf0f1; padding: 12px 40px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; width: 100%; box-sizing: border-box;}
-        .compliance-items { display: flex; gap: 20px; align-items: center; }
-
-        body.modo-accesible { font-size: 120%; }
-        body.modo-accesible .card { border: 2px solid #333; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SilverBank · Su banca</title>
+  <meta name="description" content="Banca accesible con verificación de transferencias por voz SilverShield.">
+  <link rel="stylesheet" href="/static/css/silvershield.css">
 </head>
 <body>
+<!-- Iconos (se reutilizan con <use>) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 4 5v6c0 5.25 3.4 10.15 8 11 4.6-.85 8-5.75 8-11V5l-8-3Zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.9-4.9 1.4 1.4-6.3 6.3Z"/></symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24"><path fill="currentColor" d="M3 20.5v-6l8-2.5-8-2.5v-6L22 12 3 20.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.6-4.2-4.2 1.4-1.4 2.8 2.8 5.8-5.8 1.4 1.4-7.2 7.2Z"/></symbol>
+  <symbol id="i-micro" viewBox="0 0 24 24"><path fill="currentColor" d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15Zm6-3.5h-1.8a4.2 4.2 0 0 1-8.4 0H6a6 6 0 0 0 5 5.9V21h2v-3.6a6 6 0 0 0 5-5.9Z"/></symbol>
+  <symbol id="i-altavoz" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3Zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4ZM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></symbol>
+  <symbol id="i-teclado" viewBox="0 0 24 24"><path fill="currentColor" d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm-9 3h2v2h-2V8Zm0 3h2v2h-2v-2ZM8 8h2v2H8V8Zm0 3h2v2H8v-2Zm-1 2H5v-2h2v2Zm0-3H5V8h2v2Zm9 7H8v-2h8v2Zm0-4h-2v-2h2v2Zm0-3h-2V8h2v2Zm3 3h-2v-2h2v2Zm0-3h-2V8h2v2Z"/></symbol>
+  <symbol id="i-telefono" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24"><path fill="currentColor" d="M1 21h22L12 2 1 21Zm12-3h-2v-2h2v2Zm0-4h-2v-4h2v4Z"/></symbol>
+  <symbol id="i-cruz" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm5 13.6L15.6 17 12 13.4 8.4 17 7 15.6 10.6 12 7 8.4 8.4 7l3.6 3.6L15.6 7 17 8.4 13.4 12l3.6 3.6Z"/></symbol>
+  <symbol id="i-reloj" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 10.4 3.5 2-1 1.7L11 13V7h2v5.4Z"/></symbol>
+</svg>
 
-<div class="navbar">
-    <h2>🛡️ SilverBank</h2>
-    <div class="controles-top">
-        <button class="btn-accesibilidad" onclick="toggleAccesibilidad()">🔍 A+ Letra Grande</button>
-        <div class="usuario-info">👤 Juan Pérez | Saldo: 4.520,00 €</div>
+<a class="saltar" href="#principal">Saltar al contenido principal</a>
+
+<header class="barra">
+  <div class="marca"><svg aria-hidden="true"><use href="#i-escudo"/></svg> SilverBank</div>
+  <div class="ajustes" role="group" aria-label="Ajustes de lectura">
+    <button type="button" class="btn-ajuste" id="btn-letra" aria-describedby="desc-letra">Letra: Normal</button>
+    <span id="desc-letra" class="solo-lector">Cambia el tamaño del texto de la página</span>
+    <button type="button" class="btn-ajuste" id="btn-contraste" aria-pressed="false">Alto contraste</button>
+  </div>
+</header>
+
+<main id="principal" tabindex="-1">
+  <div id="banner-error" class="banner-error" role="alert" hidden></div>
+
+  <!-- ============ 1. INICIO ============ -->
+  <section id="pantalla-inicio" class="pantalla" aria-labelledby="t-inicio">
+    <h1 id="t-inicio" tabindex="-1">Hola, <span data-dato="nombre">…</span></h1>
+    <div class="tarjeta saldo">
+      <p class="etiqueta">Dinero disponible en su cuenta</p>
+      <p class="cifra" data-dato="saldo">…</p>
     </div>
-</div>
+    <button type="button" class="btn btn-primario" id="btn-nueva">
+      <svg aria-hidden="true"><use href="#i-enviar"/></svg> Enviar dinero
+    </button>
 
-<div class="container">
-    <!-- Panel Bancario Interactivo -->
-    <div class="card">
-        <h3>Nueva Transferencia</h3>
-        <div class="form-group">
-            <label>Destinatario (IBAN)</label>
-            <input type="text" id="ibanDestino" placeholder="Ej: ES91 2100 0418...">
-        </div>
-        <div class="form-group">
-            <label>Importe a transferir (€)</label>
-            <input type="text" id="importeTransferencia" placeholder="Ej: 400,00">
-        </div>
-        <div class="form-group">
-            <label>Concepto</label>
-            <input type="text" id="conceptoTransferencia" placeholder="Ej: Compra ordenador">
-        </div>
-        
-        <button class="btn-transfer" id="btnTransferencia" onclick="iniciarTransferencia()">Confirmar Transferencia</button>
-        
-        <div class="cajon-verificacion" id="cajonVerificacion">
-            <p>⚠️ Operación superior a 100€. Elige cómo deseas proceder por tu seguridad:</p>
-            <button class="btn-omitir" onclick="autorizarSinRiesgo()">✓ Conozco el destino. Autorizar directamente.</button>
-            <button class="btn-verificar-ia" onclick="activarSilverShield()">🛡️ Solicitar verificación con SilverShield</button>
-        </div>
-
-        <button class="btn-familiar" id="btnFamiliar" onclick="simularLlamada()">📞 Llamar a mi hijo/a (Contacto Seguro)</button>
-    </div>
-
-    <!-- Módulo IA Omnicanal -->
-    <div class="card" id="moduloIA" style="display: none; flex-direction: column; justify-content: center; text-align: center;">
-        <div class="shield-header">
-            <h2>🛡️ SilverShield IA</h2>
-        </div>
-        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 12px;">Seleccione el motivo de su consulta.</p>
-        
-        <div class="canales-selector">
-            <button class="btn-canal activo" id="canalVoz" onclick="cambiarCanal('Llamada Telefónica')">📞 Llamada</button>
-            <button class="btn-canal" id="canalWats" onclick="cambiarCanal('WhatsApp/SMS')">💬 WhatsApp</button>
-            <button class="btn-canal" id="canalWeb" onclick="cambiarCanal('Enlace Web / Smishing')">🔗 Enlace Web</button>
-            <!-- NUEVO BOTÓN DE DUDA GENERAL -->
-            <button class="btn-canal" id="canalOtro" onclick="cambiarCanal('Duda General')">❓ Otra consulta</button>
-        </div>
-
-        <!-- Ecualizador Visual de Voz -->
-        <canvas id="visualizadorVoz" width="300" height="60"></canvas>
-
-        <textarea id="textoUsuario" maxlength="1000" placeholder="Ej: Me llama un falso técnico pidiendo acceso remoto..."></textarea>
-        
-        <div class="botones-accion">
-            <button id="btnMicrofono" class="btn-shield btn-micro" onclick="iniciarGrabacion()">🎙️ Hablar</button>
-            <button id="btnSimular" class="btn-shield btn-texto" onclick="procesarTexto()">Enviar Texto</button>
-        </div>
-
-        <div id="resultado">
-            <span id="textoResultadoSpan"></span>
-        </div>
+    <h2>Últimos movimientos</h2>
+    <div class="tarjeta">
+      <ul class="movimientos" id="lista-movimientos"><li>Cargando…</li></ul>
     </div>
 
-    <!-- Panel de Administración (Base de Datos) -->
-    <div class="card" style="min-width: 100%; margin-top: 10px; background: #eef2f5;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h3 style="color: #2c3e50; font-size: 16px; margin: 0; border: none; padding: 0;">📋 Log de Seguridad del Banco (Base de Datos)</h3>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="generarDenunciaPDF()" style="background: #34495e; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">📄 Exportar Denuncia</button>
-                <button onclick="limpiarBaseDatos()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor:pointer; font-weight: bold;">🗑️ Limpiar Historial</button>
-            </div>
+    <aside class="consejo" aria-label="Consejo de seguridad">
+      <svg aria-hidden="true"><use href="#i-escudo"/></svg>
+      <div>
+        <p><strong>Su banco nunca le pedirá por teléfono</strong> que mueva su dinero, que instale programas ni que diga códigos.</p>
+        <p>Si alguien lo hace, cuelgue y llame a <a href="#" data-dato="tel-contacto"><span data-dato="contacto">su familiar</span></a>.</p>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ 2. FORMULARIO ============ -->
+  <section id="pantalla-formulario" class="pantalla" aria-labelledby="t-formulario" hidden>
+    <p class="pasos">Paso 1 de 2</p>
+    <h1 id="t-formulario" tabindex="-1">¿A quién quiere enviar dinero?</h1>
+    <form id="form-transferencia" novalidate>
+      <fieldset class="campo">
+        <legend>Elija una persona</legend>
+        <div class="lista-destinatarios" id="lista-destinatarios"></div>
+      </fieldset>
+
+      <div id="bloque-nuevo" hidden>
+        <div class="campo">
+          <label for="campo-nombre">Nombre de quien recibe el dinero</label>
+          <input type="text" id="campo-nombre" autocomplete="off" aria-describedby="error-nombre">
+          <div class="error-campo" id="error-nombre" hidden></div>
         </div>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            <thead>
-                <tr style="background: var(--banco-primario); color: white;">
-                    <th style="padding: 10px; text-align: left;">Fecha</th>
-                    <th style="padding: 10px; text-align: left;">Canal / Texto Capturado</th>
-                    <th style="padding: 10px; text-align: center;">Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tablaHistorial">
-                <!-- Se rellena por JavaScript -->
-            </tbody>
-        </table>
+        <div class="campo">
+          <label for="campo-iban">Número de cuenta (IBAN)</label>
+          <span class="ayuda" id="ayuda-iban">Empieza por dos letras, por ejemplo: ES91 2100 0418 4502 0005 1332</span>
+          <input type="text" id="campo-iban" autocomplete="off" spellcheck="false"
+                 autocapitalize="characters" aria-describedby="ayuda-iban error-iban">
+          <div class="error-campo" id="error-iban" hidden></div>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="campo-importe">¿Cuánto dinero?</label>
+        <div class="importe-caja">
+          <input type="text" id="campo-importe" inputmode="decimal" autocomplete="off"
+                 aria-describedby="error-importe" placeholder="0,00">
+          <span aria-hidden="true">€</span>
+        </div>
+        <div class="error-campo" id="error-importe" hidden></div>
+      </div>
+      <div class="campo">
+        <label for="campo-concepto">¿Para qué es? <span class="texto-suave">(opcional)</span></label>
+        <input type="text" id="campo-concepto" maxlength="140" autocomplete="off">
+      </div>
+
+      <div class="acciones en-linea">
+        <button type="button" class="btn btn-secundario" data-ir="inicio">Volver</button>
+        <button type="submit" class="btn btn-primario">Continuar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ 3. RESUMEN ============ -->
+  <section id="pantalla-resumen" class="pantalla" aria-labelledby="t-resumen" hidden>
+    <p class="pasos">Paso 2 de 2</p>
+    <h1 id="t-resumen" tabindex="-1">Revise la transferencia</h1>
+    <div class="tarjeta">
+      <dl class="resumen">
+        <div><dt>Va a enviar</dt><dd class="grande" data-resumen="importe"></dd></div>
+        <div><dt>A</dt><dd data-resumen="nombre"></dd></div>
+        <div><dt>Cuenta</dt><dd data-resumen="iban"></dd></div>
+        <div><dt>Para</dt><dd data-resumen="concepto"></dd></div>
+      </dl>
     </div>
-</div>
-
-<!-- Barra de Cumplimiento Normativo PSD2 -->
-<div class="compliance-footer">
-    <div><strong>SilverShield Security Framework</strong> | IA Protectora Activa</div>
-    <div class="compliance-items">
-        <span>🛡️ Diseñado para integrarse en entornos PSD2</span>
-        <span>🇪🇺 Estándar Europeo de Privacidad</span>
+    <div class="acciones en-linea">
+      <button type="button" class="btn btn-secundario" data-ir="formulario">Cambiar datos</button>
+      <button type="button" class="btn btn-primario" id="btn-enviar">
+        <svg aria-hidden="true"><use href="#i-enviar"/></svg> Enviar dinero
+      </button>
     </div>
-</div>
+  </section>
 
-<script>
-    function toggleAccesibilidad() { document.body.classList.toggle("modo-accesible"); }
+  <!-- ============ 4. DECISIÓN (importe >= 500 € o destino sospechoso) ============ -->
+  <section id="pantalla-decision" class="pantalla" aria-labelledby="t-decision" hidden>
+    <h1 id="t-decision" tabindex="-1">Antes de enviarlo, un momento</h1>
+    <div class="aviso" id="aviso-decision">
+      <strong>Hemos notado algo en esta transferencia:</strong>
+      <ul id="lista-motivos"></ul>
+    </div>
+    <p>Por su seguridad, elija cómo quiere continuar:</p>
+    <div class="acciones">
+      <button type="button" class="opcion-grande recomendada" id="btn-verificar">
+        <svg aria-hidden="true"><use href="#i-escudo"/></svg>
+        <span>
+          <span class="titulo">Solicitar verificación con SilverShield <span class="insignia">Recomendado</span></span>
+          <span class="sub">Hablará un minuto con nuestro asistente de voz, que le dirá si es seguro enviarla.</span>
+        </span>
+      </button>
+      <button type="button" class="opcion-grande" id="btn-autorizar-directo">
+        <svg aria-hidden="true"><use href="#i-check"/></svg>
+        <span>
+          <span class="titulo">Conozco al destinatario: autorizar directamente</span>
+          <span class="sub">La transferencia se enviará ahora mismo.</span>
+        </span>
+      </button>
+    </div>
+    <div class="fila-secundaria">
+      <button type="button" class="btn btn-secundario" id="btn-escuchar-motivos">
+        <svg aria-hidden="true"><use href="#i-altavoz"/></svg> Escuchar este mensaje
+      </button>
+      <button type="button" class="btn btn-texto" id="btn-cancelar-decision">No enviar la transferencia</button>
+    </div>
+  </section>
 
-    // --- LÓGICA DE TRANSFERENCIAS (> 100€) ---
-    function iniciarTransferencia() {
-        const importeTexto = document.getElementById("importeTransferencia").value;
-        const importeLimpio = importeTexto.replace(/[^\d,-]/g, '').replace(',', '.');
-        const importe = parseFloat(importeLimpio);
+  <!-- ============ 5. VERIFICACIÓN POR VOZ ============ -->
+  <section id="pantalla-verificacion" class="pantalla" aria-labelledby="t-verificacion" hidden>
+    <div class="cabecera-shield">
+      <div class="orbe" id="orbe" aria-hidden="true"><svg><use href="#i-escudo"/></svg></div>
+      <div>
+        <h1 id="t-verificacion" tabindex="-1" style="margin:0">SilverShield</h1>
+        <p class="mini-resumen" id="mini-resumen"></p>
+      </div>
+    </div>
+    <p class="estado-voz" id="estado-voz" role="status" aria-live="polite">Conectando…</p>
 
-        if (isNaN(importe) || importe <= 0) {
-            alert("Por favor, introduce un importe válido.");
-            return;
-        }
+    <ol class="dialogo" id="dialogo" role="log" aria-label="Conversación con SilverShield" aria-live="polite"></ol>
 
-        if (importe < 100) {
-            alert("✅ Transferencia de " + importe + "€ completada con éxito. (Importe seguro).");
-            document.getElementById("importeTransferencia").value = "";
-        } else {
-            document.getElementById("btnTransferencia").style.display = "none";
-            document.getElementById("cajonVerificacion").style.display = "block";
-        }
-    }
+    <div id="controles-conversacion">
+      <div class="control-voz" id="control-voz">
+        <button type="button" class="btn btn-primario btn-micro" id="btn-micro">
+          <svg aria-hidden="true"><use href="#i-micro"/></svg> <span>Pulse para responder hablando</span>
+        </button>
+        <div class="nivel-micro" id="nivel-micro" hidden aria-hidden="true"><span></span></div>
+      </div>
+      <form id="form-texto" class="campo" hidden style="margin-top:1rem">
+        <label for="campo-respuesta">Escriba su respuesta</label>
+        <textarea id="campo-respuesta" rows="3"></textarea>
+        <button type="submit" class="btn btn-primario" style="margin-top:.7rem">Enviar respuesta</button>
+      </form>
+      <div class="fila-secundaria">
+        <button type="button" class="btn btn-secundario" id="btn-repetir">
+          <svg aria-hidden="true"><use href="#i-altavoz"/></svg> Repetir
+        </button>
+        <button type="button" class="btn btn-secundario" id="btn-modo-texto">
+          <svg aria-hidden="true"><use href="#i-teclado"/></svg> <span>Prefiero escribir</span>
+        </button>
+      </div>
+      <div class="fila-secundaria">
+        <button type="button" class="btn btn-texto" id="btn-salir-verificacion">Salir y no enviar el dinero</button>
+      </div>
+    </div>
 
-    function autorizarSinRiesgo() {
-        alert("✅ Transferencia autorizada bajo tu responsabilidad y procesada con éxito.");
-        document.getElementById("cajonVerificacion").style.display = "none";
-        document.getElementById("btnTransferencia").style.display = "block";
-        document.getElementById("importeTransferencia").value = "";
-    }
+    <div id="veredicto" class="veredicto" hidden tabindex="-1"></div>
+  </section>
 
-    function activarSilverShield() {
-        document.getElementById("moduloIA").style.display = "flex";
-        document.getElementById("moduloIA").scrollIntoView({ behavior: 'smooth' });
-    }
+  <!-- ============ 6. RESULTADO ============ -->
+  <section id="pantalla-resultado" class="pantalla resultado" aria-labelledby="t-resultado" hidden>
+    <svg class="icono-grande" aria-hidden="true"><use id="icono-resultado" href="#i-check"/></svg>
+    <h1 id="t-resultado" tabindex="-1"></h1>
+    <p id="texto-resultado"></p>
+    <div class="acciones">
+      <button type="button" class="btn btn-primario" data-ir="inicio">Volver al inicio</button>
+    </div>
+  </section>
+</main>
 
-    // --- LÓGICA DE CANALES (ACTUALIZADO CON EL BOTÓN 4) ---
-    let canalActual = 'Llamada Telefónica';
-    function cambiarCanal(canal) {
-        canalActual = canal;
-        document.querySelectorAll('.btn-canal').forEach(b => b.classList.remove('activo'));
-        
-        if (canal === 'Llamada Telefónica') document.getElementById('canalVoz').classList.add('activo');
-        if (canal === 'WhatsApp/SMS') document.getElementById('canalWats').classList.add('activo');
-        if (canal === 'Enlace Web / Smishing') document.getElementById('canalWeb').classList.add('activo');
-        if (canal === 'Duda General') document.getElementById('canalOtro').classList.add('activo'); // NUEVO
-        
-        const area = document.getElementById('textoUsuario');
-        if (canal === 'Llamada Telefónica') area.placeholder = "Ej: Me llama un falso técnico pidiendo acceso remoto...";
-        if (canal === 'WhatsApp/SMS') area.placeholder = "Ej: Me ha escrito mi hijo pidiendo 1.500€ urgentemente por WhatsApp...";
-        if (canal === 'Enlace Web / Smishing') area.placeholder = "Ej: He clicado en un SMS del banco que dice que mi cuenta está bloqueada...";
-        // NUEVO PLACEHOLDER
-        if (canal === 'Duda General') area.placeholder = "Ej: Estoy pagando el arreglo del coche al taller y quiero estar seguro de que está todo bien...";
-    }
+<dialog id="dialogo-confirmar" aria-labelledby="t-confirmar">
+  <h2 id="t-confirmar">¿Está seguro?</h2>
+  <p id="texto-confirmar"></p>
+  <p><strong>Si alguien le ha llamado o escrito para pedirle este dinero, no lo envíe.</strong></p>
+  <div class="acciones">
+    <button type="button" class="btn btn-primario" id="btn-confirmar-verificar">
+      <svg aria-hidden="true"><use href="#i-escudo"/></svg> Mejor, verificar con SilverShield
+    </button>
+    <button type="button" class="btn btn-secundario" id="btn-confirmar-enviar">Sí, conozco a esta persona. Enviar</button>
+  </div>
+</dialog>
 
-    // --- LÓGICA DE VOZ Y ONDAS VISUALES ---
-    let reconocimiento;
-    let grabando = false;
-    let audioContext, analyser, dataArray, mediaStreamSource;
-    
-    const canvas = document.getElementById("visualizadorVoz");
-    const canvasCtx = canvas.getContext("2d");
-    const btnMicro = document.getElementById("btnMicrofono");
-    const btnSimular = document.getElementById("btnSimular");
-    const areaTexto = document.getElementById("textoUsuario");
+<footer class="pie">
+  <span><strong>SilverShield</strong> protege sus transferencias. Nunca le pediremos claves ni códigos.</span>
+  <span>
+    <span class="chip-estado"><span class="punto" id="punto-ia"></span> <span id="txt-ia">IA</span></span>
+    &nbsp;·&nbsp;
+    <span class="chip-estado"><span class="punto" id="punto-voz"></span> <span id="txt-voz">Voz</span></span>
+    &nbsp;·&nbsp;
+    <a href="/panel" target="_blank" rel="noopener">Panel del familiar (demo)</a>
+  </span>
+</footer>
 
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        reconocimiento = new SpeechRecognition();
-        reconocimiento.lang = 'es-ES';
-        reconocimiento.interimResults = false;
-
-        reconocimiento.onstart = function() {
-            grabando = true;
-            btnMicro.innerHTML = "Escuchando...";
-            btnMicro.classList.add("grabando");
-            canvas.style.display = "block";
-            
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                mediaStreamSource = audioContext.createMediaStreamSource(stream);
-                mediaStreamSource.connect(analyser);
-                analyser.fftSize = 256;
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
-                dibujarOndas(bufferLength);
-            }).catch(err => console.log("Permiso denegado para las ondas visuales."));
-        };
-
-        reconocimiento.onresult = function(event) {
-            areaTexto.value = event.results[0][0].transcript;
-        };
-
-        reconocimiento.onerror = function() {
-            detenerInterfazGrabacion();
-            alert("Error de micrófono.");
-        };
-
-        reconocimiento.onend = function() {
-            detenerInterfazGrabacion();
-            if (areaTexto.value.trim() !== "") {
-                procesarTexto();
-            }
-        };
-    }
-
-    function dibujarOndas(bufferLength) {
-        if (!grabando) return;
-        requestAnimationFrame(() => dibujarOndas(bufferLength));
-        analyser.getByteFrequencyData(dataArray);
-
-        canvasCtx.fillStyle = "#f4f7f6";
-        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const barWidth = (canvas.width / bufferLength) * 2.5;
-        let barHeight;
-        let x = 0;
-
-        for(let i = 0; i < bufferLength; i++) {
-            barHeight = dataArray[i] / 2;
-            canvasCtx.fillStyle = barHeight > 60 ? "#e74c3c" : "#085696";
-            canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-            x += barWidth + 1;
-        }
-    }
-
-    function iniciarGrabacion() {
-        if (grabando) {
-            reconocimiento.stop();
-        } else {
-            areaTexto.value = "";
-            reconocimiento.start();
-        }
-    }
-
-    function detenerInterfazGrabacion() {
-        grabando = false;
-        btnMicro.innerHTML = "🎙️ Hablar";
-        btnMicro.classList.remove("grabando");
-        canvas.style.display = "none";
-    }
-
-    // --- LÓGICA DE BACKEND (CLAUDE) ---
-    const MAX_CARACTERES = 1000;
-    const MENSAJE_ERROR_GENERICO = "No hemos podido verificar la operación en este momento. Por tu seguridad, la operación queda retenida. Inténtalo de nuevo en unos minutos.";
-
-    // Fallo cerrado: si no hay veredicto fiable, se muestra el error y la operación queda retenida
-    function retenerOperacion(mensaje) {
-        const divResultado = document.getElementById("resultado");
-        const btnTransfer = document.getElementById("btnTransferencia");
-        document.getElementById("textoResultadoSpan").innerText = mensaje;
-        divResultado.className = "error";
-        divResultado.style.display = "block";
-        document.getElementById("cajonVerificacion").style.display = "none";
-        btnTransfer.style.display = "block";
-        btnTransfer.disabled = true;
-        btnTransfer.style.background = "#7f8c8d";
-        btnTransfer.innerText = "⏸️ Operación retenida";
-    }
-
-    async function procesarTexto() {
-        const textoOriginal = areaTexto.value;
-        const divResultado = document.getElementById("resultado");
-        const spanResultado = document.getElementById("textoResultadoSpan");
-        const btnTransfer = document.getElementById("btnTransferencia");
-        const btnFamiliar = document.getElementById("btnFamiliar");
-        const cajon = document.getElementById("cajonVerificacion");
-
-        if (!textoOriginal.trim()) {
-            alert("Por favor, escribe el contexto o usa el micrófono.");
-            return;
-        }
-        // El dictado por voz puede superar el maxlength del textarea, que solo limita lo tecleado
-        if (textoOriginal.length > MAX_CARACTERES) {
-            retenerOperacion(`El texto es demasiado largo (${textoOriginal.length} caracteres). Resume lo ocurrido en un máximo de ${MAX_CARACTERES} caracteres.`);
-            return;
-        }
-
-        const textoConCanal = `[Canal: ${canalActual}] ${textoOriginal}`;
-
-        btnMicro.disabled = true;
-        btnSimular.innerHTML = "Analizando...";
-        btnSimular.disabled = true;
-        divResultado.style.display = "none";
-        btnFamiliar.style.display = "none";
-
-        try {
-            const response = await fetch("/analizar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ texto: textoConCanal, volumen_alto: false }) 
-            });
-
-            const datos = await response.json().catch(() => ({}));
-
-            if (!response.ok || !datos.exito) {
-                // 400 (texto vacío o demasiado largo) trae "detail"; 503 (fallo del análisis) trae "error"
-                const mensaje = (typeof datos.detail === "string" && datos.detail) || datos.error || MENSAJE_ERROR_GENERICO;
-                retenerOperacion(mensaje);
-            } else {
-                divResultado.style.display = "block";
-                spanResultado.innerText = datos.advertencia;
-
-                if (datos.advertencia.includes("Análisis seguro")) {
-                    divResultado.className = "seguro";
-                    cajon.style.display = "none";
-                    btnTransfer.style.display = "block";
-                    btnTransfer.disabled = false;
-                    btnTransfer.style.background = "var(--banco-secundario)";
-                    btnTransfer.innerText = "Confirmar Transferencia Segura";
-                } else {
-                    divResultado.className = "alerta";
-                    cajon.style.display = "none";
-                    btnTransfer.style.display = "block";
-                    btnTransfer.disabled = true;
-                    btnTransfer.style.background = "#e74c3c";
-                    btnTransfer.innerText = "🚫 Bloqueada por Seguridad";
-                    
-                    btnFamiliar.style.display = "block";
-
-                    if (datos.audio_base64) {
-                        const audio = new Audio("data:audio/mpeg;base64," + datos.audio_base64);
-                        audio.play().catch(e => console.log("Auto-play bloqueado."));
-                    }
-                }
-            }
-            cargarHistorial(); 
-        } catch (error) {
-            retenerOperacion("No hay conexión con el servidor. Por tu seguridad, la operación queda retenida. Inténtalo de nuevo en unos minutos.");
-        } finally {
-            btnMicro.disabled = false;
-            btnSimular.innerHTML = "Enviar Texto";
-            btnSimular.disabled = false;
-        }
-    }
-
-    // ABRIR WHATSAPP REAL
-    function simularLlamada() {
-        const btn = document.getElementById("btnFamiliar");
-        btn.innerHTML = "⏳ Abriendo contacto seguro...";
-        btn.style.background = "#f39c12";
-        
-        setTimeout(() => {
-            btn.innerHTML = "📞 Contacto Avisado";
-            btn.style.background = "#27ae60";
-            const mensaje = encodeURIComponent("⚠️ ALERTA URGENTE: El banco ha bloqueado una operación en mi cuenta porque SilverShield ha detectado una estafa. Por favor, llámame ahora mismo.");
-            window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
-        }, 1500);
-    }
-
-    // --- LÓGICA DE LA BASE DE DATOS Y EXPORTAR DENUNCIA ---
-    // Escapa texto para insertarlo de forma segura en HTML (evita XSS)
-    function escaparHtml(valor) {
-        return String(valor ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-    }
-
-    // Último historial cargado; la denuncia se construye desde estos datos, no desde el HTML de la tabla
-    let historialActual = [];
-
-    async function cargarHistorial() {
-        try {
-            const response = await fetch("/historial");
-            const datos = await response.json();
-            if (!response.ok || !Array.isArray(datos.historial)) throw new Error("Historial no disponible");
-            historialActual = datos.historial;
-            const tbody = document.getElementById("tablaHistorial");
-            tbody.innerHTML = "";
-            historialActual.forEach(registro => {
-                const fila = document.createElement("tr");
-                fila.style.borderBottom = "1px solid #ccc";
-
-                // Los datos van con textContent: nunca se interpretan como HTML
-                const celdaFecha = document.createElement("td");
-                celdaFecha.style.padding = "10px";
-                celdaFecha.textContent = registro.fecha;
-
-                const celdaTexto = document.createElement("td");
-                celdaTexto.style.padding = "10px";
-                celdaTexto.style.fontStyle = "italic";
-                celdaTexto.textContent = `"${registro.texto}"`;
-
-                const celdaEstado = document.createElement("td");
-                celdaEstado.style.padding = "10px";
-                celdaEstado.style.textAlign = "center";
-                const badge = document.createElement("span");
-                badge.style.cssText = `background: ${registro.bloqueado ? "#e74c3c" : "#2ecc71"}; color: white; padding: 4px 8px; border-radius: 10px; font-weight: bold;`;
-                badge.textContent = registro.bloqueado ? "BLOQUEADO" : "PERMITIDO";
-                celdaEstado.appendChild(badge);
-
-                fila.append(celdaFecha, celdaTexto, celdaEstado);
-                tbody.appendChild(fila);
-            });
-        } catch (error) {
-            console.log("Error cargando historial de la base de datos.");
-        }
-    }
-
-    async function limpiarBaseDatos() {
-        if (confirm("¿Estás seguro de borrar todo el historial de seguridad?")) {
-            await fetch("/limpiar-historial", { method: "DELETE" });
-            cargarHistorial();
-        }
-    }
-
-    function generarDenunciaPDF() {
-        if (historialActual.length === 0) {
-            alert("No hay registros en el historial para exportar.");
-            return;
-        }
-
-        // Filas construidas desde los datos, con todo el contenido escapado
-        const filasDenuncia = historialActual.map(registro => `
-                        <tr>
-                            <td>${escaparHtml(registro.fecha)}</td>
-                            <td>"${escaparHtml(registro.texto)}"</td>
-                            <td>${registro.bloqueado
-                                ? '<span class="badge-rojo">BLOQUEADO POR SEGURIDAD</span>'
-                                : '<span class="badge-verde">OPERACIÓN SEGURA</span>'}</td>
-                        </tr>`).join("");
-
-        const ventana = window.open('', '_blank');
-        ventana.document.write(`
-            <html>
-            <head>
-                <title>Denuncia Policial - SilverBank</title>
-                <style>
-                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 50px; color: #333; line-height: 1.6; }
-                    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #003366; padding-bottom: 20px; margin-bottom: 30px; }
-                    h1 { color: #003366; margin: 0; font-size: 24px; }
-                    .logo { font-size: 24px; font-weight: bold; color: #003366; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                    th { background-color: #f4f7f6; color: #003366; }
-                    .footer { margin-top: 60px; font-size: 12px; color: #777; text-align: center; border-top: 1px solid #ddd; padding-top: 20px; }
-                    .badge-rojo { color: #c0392b; font-weight: bold; }
-                    .badge-verde { color: #27ae60; font-weight: bold; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="logo">🛡️ SilverBank | SilverShield</div>
-                    <div style="text-align: right; color: #777;">
-                        <strong>INFORME OFICIAL DE AUDITORÍA</strong><br>
-                        Emitido: ${new Date().toLocaleString()}
-                    </div>
-                </div>
-                
-                <h2>Extracto de Eventos de Ciberseguridad (Prevención de Fraude)</h2>
-                <p>El presente documento certifica los intentos de transacciones y su correspondiente evaluación de riesgo cognitivo bloqueados de manera automática por el sistema <strong>SilverShield</strong>, cumpliendo con la directiva europea PSD2.</p>
-                <p>Este informe puede servir como apoyo para una denuncia ante las Fuerzas y Cuerpos de Seguridad del Estado.</p>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 20%;">Fecha</th>
-                            <th style="width: 60%;">Contexto Capturado / Canal de Intrusión</th>
-                            <th style="width: 20%;">Resolución</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filasDenuncia}
-                    </tbody>
-                </table>
-
-                <div class="footer">
-                    Documento generado automáticamente por SilverShield Security Framework.<br>
-                    ID de sesión interna: ${Math.random().toString(36).substr(2, 9).toUpperCase()}
-                </div>
-            </body>
-            </html>
-        `);
-        
-        ventana.document.close();
-        ventana.focus();
-        
-        setTimeout(() => {
-            ventana.print();
-        }, 500);
-    }
-
-    window.onload = cargarHistorial;
-</script>
+<script src="/static/js/voz.js"></script>
+<script src="/static/js/app.js"></script>
 </body>
 </html>
