@@ -2,7 +2,8 @@
 
 Simula cada conversación turno a turno con el mismo agente que usa la app
 (`agente_silvershield.evaluar_turno`) y mide aciertos, falsos positivos, falsos
-negativos y tiempos de respuesta. No toca la base de datos ni la app.
+negativos, tiempos de respuesta y coste por verificación (tokens de Claude medidos
+en cada llamada + caracteres de voz de ElevenLabs). No toca la base de datos ni la app.
 
 Uso (desde la raíz del proyecto):
     python -m evaluacion.evaluar                 # con Claude (necesita ANTHROPIC_API_KEY)
@@ -33,6 +34,30 @@ from evaluacion.casos import CASOS  # noqa: E402
 CARPETA_RESULTADOS = Path(__file__).resolve().parent / "resultados"
 RETENIDA = {"riesgo", "no_verificada"}   # decisiones que paran el dinero
 
+# ---------------------------------------------------------------- precios (USD)
+# Claude: dólares por millón de tokens (entrada, salida). Fuente: tabla de precios de
+# Anthropic (platform.claude.com, octubre de 2026). La salida incluye el razonamiento.
+PRECIOS_CLAUDE = {
+    "claude-opus-5-5": (4.00, 20.00),
+    "claude-sonnet-5-5": (2.00, 10.00),
+    "claude-haiku-5-5": (0.10, 0.50),
+}
+# ElevenLabs: dólares por 1.000 caracteres sintetizados. Fuente: elevenlabs.io/pricing/api
+# (consultado el 09/11/2026; precios sin impuestos, iguales en todos los planes).
+PRECIOS_VOZ = {"eleven_multilingual_v2": 0.08, "eleven_flash_v2_5": 0.04}
+
+
+def coste_claude(tokens_entrada: int, tokens_salida: int) -> float | None:
+    precio = PRECIOS_CLAUDE.get(config.CLAUDE_MODEL)
+    if precio is None:
+        return None
+    return (tokens_entrada * precio[0] + tokens_salida * precio[1]) / 1_000_000
+
+
+def coste_voz(caracteres: int) -> float | None:
+    precio = PRECIOS_VOZ.get(config.ELEVENLABS_TTS_MODEL)
+    return None if precio is None else caracteres * precio / 1000
+
 
 async def simular(caso: dict) -> dict:
     """Ejecuta una conversación completa y devuelve lo que ha pasado."""
@@ -49,6 +74,7 @@ async def simular(caso: dict) -> dict:
     }
     mensajes = [{"rol": "asistente", "texto": agente.mensaje_apertura(transferencia, cuenta)}]
     tiempos_turno, tiempos_ia = [], []
+    tokens_entrada = tokens_salida = 0
     resultado = None
     for texto in caso["respuestas"]:
         mensajes.append({"rol": "cliente", "texto": texto})
@@ -57,6 +83,8 @@ async def simular(caso: dict) -> dict:
         tiempos_turno.append(int((time.perf_counter() - inicio) * 1000))
         if resultado.tiempo_ia_ms is not None:
             tiempos_ia.append(resultado.tiempo_ia_ms)
+        tokens_entrada += resultado.tokens_entrada
+        tokens_salida += resultado.tokens_salida
         mensajes.append({"rol": "asistente", "texto": resultado.respuesta})
         if resultado.decision != "preguntar":
             break
@@ -78,6 +106,9 @@ async def simular(caso: dict) -> dict:
         "fallo_ia": bool(resultado and resultado.fallo_ia),
         "turnos": sum(1 for m in mensajes if m["rol"] == "cliente"),
         "tiempos_turno_ms": tiempos_turno, "tiempos_ia_ms": tiempos_ia,
+        "tokens_entrada": tokens_entrada, "tokens_salida": tokens_salida,
+        # Todo lo que dice SilverShield (saludo incluido) se convierte en voz una vez.
+        "caracteres_voz": sum(len(m["texto"]) for m in mensajes if m["rol"] == "asistente"),
         "conversacion": mensajes,
     }
 
@@ -98,6 +129,11 @@ def resumir(resultados: list[dict]) -> dict:
     fp = len(legitimas) - vn
     turnos = [t for r in resultados for t in r["tiempos_turno_ms"]]
     ia = [t for r in resultados for t in r["tiempos_ia_ms"]]
+    media = lambda clave: statistics.mean(r[clave] for r in resultados) if resultados else 0  # noqa: E731
+    tok_in, tok_out, chars = media("tokens_entrada"), media("tokens_salida"), media("caracteres_voz")
+    c_ia = coste_claude(tok_in, tok_out) if tok_in or tok_out else 0.0
+    c_voz = coste_voz(chars)
+    total = None if c_ia is None or c_voz is None else c_ia + c_voz
     return {
         "casos": len(resultados),
         "aciertos": vp + vn,
@@ -113,6 +149,12 @@ def resumir(resultados: list[dict]) -> dict:
         "tiempo_ia_medio_ms": int(statistics.mean(ia)) if ia else None,
         "tiempo_ia_p95_ms": percentil(ia, 0.95) if ia else None,
         "sin_verificacion_por_reglas": [r["id"] for r in resultados if not r["requiere_verificacion"]],
+        "tokens_entrada_medios": int(tok_in), "tokens_salida_medios": int(tok_out),
+        "caracteres_voz_medios": int(chars),
+        "coste_ia_medio_usd": None if c_ia is None else round(c_ia, 5),
+        "coste_voz_medio_usd": None if c_voz is None else round(c_voz, 5),
+        "coste_total_medio_usd": None if total is None else round(total, 5),
+        "modelo_voz": config.ELEVENLABS_TTS_MODEL,
     }
 
 
@@ -142,6 +184,24 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
                       f"(p95: {seg(s['tiempo_ia_p95_ms'])}) |")
     if s["sin_verificacion_por_reglas"]:
         lineas.append(f"| Casos que las reglas no mandan a verificar | {', '.join(s['sin_verificacion_por_reglas'])} |")
+    usd = lambda v, d=4: "—" if v is None else f"{v:.{d}f} $".replace(".", ",")  # noqa: E731
+    miles = lambda n: f"{n:,}".replace(",", ".")  # noqa: E731
+    lineas += [
+        "",
+        "## Coste por verificación (medido)",
+        "",
+        "| Concepto | Media por conversación | Coste |",
+        "|---|---|---|",
+        f"| Claude ({config.CLAUDE_MODEL if motor == 'claude' else 'no se usa'}) | "
+        f"{miles(s['tokens_entrada_medios'])} tokens de entrada + {miles(s['tokens_salida_medios'])} de salida | "
+        f"{usd(s['coste_ia_medio_usd'])} |",
+        f"| Voz ElevenLabs ({s['modelo_voz']}) | {miles(s['caracteres_voz_medios'])} caracteres | {usd(s['coste_voz_medio_usd'])} |",
+        f"| **Total por verificación** | | **{usd(s['coste_total_medio_usd'])}** |",
+        f"| Por cada 1.000 verificaciones | | {usd(None if s['coste_total_medio_usd'] is None else s['coste_total_medio_usd'] * 1000, 2)} |",
+        "",
+        "Precios sin impuestos: Claude según la tabla de Anthropic; ElevenLabs según elevenlabs.io/pricing/api",
+        "(09/11/2026). Solo se verifican las transferencias que las reglas marcan como inusuales.",
+    ]
     lineas += [
         "",
         "Un falso negativo es lo más grave (el dinero se habría ido). Un falso positivo es",
@@ -149,13 +209,16 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
         "",
         "## Detalle por caso",
         "",
-        "| Caso | Tipo | Descripción | Decisión | Riesgo | Turnos | ¿Acierto? |",
-        "|---|---|---|---|---|---|---|",
+        "| Caso | Tipo | Descripción | Decisión | Riesgo | Turnos | Coste | ¿Acierto? |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for r in resultados:
+        c_ia = coste_claude(r["tokens_entrada"], r["tokens_salida"]) if r["tokens_entrada"] else 0.0
+        c_voz = coste_voz(r["caracteres_voz"])
+        coste = "—" if c_ia is None or c_voz is None else usd(c_ia + c_voz)
         lineas.append(
             f"| {r['id']} | {r['tipo']} | {r['descripcion']} | {r['decision']} | "
-            f"{r['nivel_riesgo']} | {r['turnos']} | {'✅' if r['acierto'] else '❌'} |"
+            f"{r['nivel_riesgo']} | {r['turnos']} | {coste} | {'✅' if r['acierto'] else '❌'} |"
         )
     fallos = [r for r in resultados if not r["acierto"]]
     if fallos:
@@ -223,7 +286,8 @@ def main() -> None:
         print(f"\nAciertos: {resumen['aciertos']}/{resumen['casos']} · "
               f"falsos negativos: {resumen['falsos_negativos']} · "
               f"falsos positivos: {resumen['falsos_positivos']} · "
-              f"tiempo medio por turno: {resumen['tiempo_turno_medio_ms']} ms")
+              f"tiempo medio por turno: {resumen['tiempo_turno_medio_ms']} ms · "
+              f"coste medio por verificación: {resumen['coste_total_medio_usd']} $")
         print(f"Informe: evaluacion/resultados/{nombre}.md")
 
 

@@ -15,7 +15,14 @@
     "tiempo_turno_p95_ms": 0,
     "tiempo_ia_medio_ms": null,
     "tiempo_ia_p95_ms": null,
-    "sin_verificacion_por_reglas": []
+    "sin_verificacion_por_reglas": [],
+    "tokens_entrada_medios": 0,
+    "tokens_salida_medios": 0,
+    "caracteres_voz_medios": 570,
+    "coste_ia_medio_usd": 0.0,
+    "coste_voz_medio_usd": 0.04564,
+    "coste_total_medio_usd": 0.04564,
+    "modelo_voz": "eleven_multilingual_v2"
   },
   "casos": [
     {
@@ -39,6 +46,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 514,
       "conversacion": [
         {
           "rol": "asistente",
@@ -74,6 +84,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 548,
       "conversacion": [
         {
           "rol": "asistente",
@@ -112,6 +125,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 605,
       "conversacion": [
         {
           "rol": "asistente",
@@ -163,6 +179,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 516,
       "conversacion": [
         {
           "rol": "asistente",
@@ -198,6 +217,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 537,
       "conversacion": [
         {
           "rol": "asistente",
@@ -235,6 +257,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 664,
       "conversacion": [
         {
           "rol": "asistente",
@@ -280,6 +305,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 794,
       "conversacion": [
         {
           "rol": "asistente",
@@ -331,6 +359,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 510,
       "conversacion": [
         {
           "rol": "asistente",
@@ -366,6 +397,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 517,
       "conversacion": [
         {
           "rol": "asistente",
@@ -403,6 +437,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 607,
       "conversacion": [
         {
           "rol": "asistente",
@@ -456,6 +493,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 516,
       "conversacion": [
         {
           "rol": "asistente",
@@ -493,6 +533,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 617,
       "conversacion": [
         {
           "rol": "asistente",
@@ -543,6 +586,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 509,
       "conversacion": [
         {
           "rol": "asistente",
@@ -588,6 +634,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 645,
       "conversacion": [
         {
           "rol": "asistente",
@@ -634,6 +683,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 666,
       "conversacion": [
         {
           "rol": "asistente",
@@ -678,6 +730,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 476,
       "conversacion": [
         {
           "rol": "asistente",
@@ -722,6 +777,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 475,
       "conversacion": [
         {
           "rol": "asistente",
@@ -765,6 +823,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 539,
       "conversacion": [
         {
           "rol": "asistente",
@@ -800,6 +861,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 621,
       "conversacion": [
         {
           "rol": "asistente",
@@ -851,6 +915,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 518,
       "conversacion": [
         {
           "rol": "asistente",
@@ -885,6 +952,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 470,
       "conversacion": [
         {
           "rol": "asistente",
@@ -927,6 +997,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 497,
       "conversacion": [
         {
           "rol": "asistente",
@@ -969,6 +1042,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 482,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1011,6 +1087,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 484,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1056,6 +1135,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 633,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1099,6 +1181,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 619,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1150,6 +1235,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 513,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1185,6 +1273,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1236,6 +1327,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 595,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1287,6 +1381,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 613,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1337,6 +1434,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 477,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1380,6 +1480,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 613,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1432,6 +1535,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 502,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1475,6 +1581,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 639,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1526,6 +1635,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1577,6 +1689,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 595,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1630,6 +1745,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1681,6 +1799,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 619,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1732,6 +1853,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 618,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1783,6 +1907,9 @@
         0
       ],
       "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 611,
       "conversacion": [
         {
           "rol": "asistente",

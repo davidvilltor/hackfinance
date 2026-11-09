@@ -78,14 +78,29 @@ Evaluación con [evaluacion/casos.py](evaluacion/casos.py): **20 estafas** varia
 
 | Motor | Aciertos | Estafas detectadas | Legítimas aprobadas | Tiempo medio por turno (p95) | Preguntas por conversación |
 |---|---|---|---|---|---|
-| **Claude Opus 5.5** (por defecto) | **39/40** | **20/20** | 19/20 | 5,2 s (8,9 s) | 2,1 |
-| Claude Sonnet 5.5 | 39/40 | 20/20 | 19/20 | 3,1 s (5,7 s) | 3,0 |
-| Claude Haiku 5.5 | 33/40 | 20/20 | 13/20 | 3,1 s (6,0 s) | 3,2 |
+| **Claude Opus 5.5** (el que usa la app) | **39/40** | **20/20** | 19/20 | 5,4 s (9,5 s) | 2,0 |
+| Claude Sonnet 5.5 ¹ | 39/40 | 20/20 | 19/20 | 3,1 s (5,7 s) | 3,0 |
+| Claude Haiku 5.5 ¹ | 33/40 | 20/20 | 13/20 | 3,1 s (6,0 s) | 3,2 |
 | Evaluador local (sin IA) | 31/40 | 13/20 | 18/20 | instantáneo | 2,2 |
 
 - **Ninguna estafa se habría enviado con Claude** (0 falsos negativos con los tres modelos). El evaluador local deja pasar 7 de 20: por eso, si Claude falla, el sistema no aprueba nada.
 - El único fallo de Opus es un falso positivo razonable: un pago "de todos los años" que iba a una cuenta que el banco no había visto nunca. Un falso positivo es reversible: el operador llama a la clienta y la libera.
 - La voz de ElevenLabs tarda unos **0,5-0,75 s** en empezar a sonar con Multilingual v2 (0,2 s con Flash v2.5, que suena algo menos nítido).
+- ¹ Sonnet y Haiku se evaluaron con una versión anterior del prompt, para elegir modelo. Opus y el evaluador local son de la versión final (09/11/2026).
+
+### Coste por verificación (medido)
+
+La evaluación mide los tokens que consume Claude en cada llamada y los caracteres que se convierten en voz:
+
+| Concepto | Media por verificación | Coste |
+|---|---|---|
+| Claude Opus 5.5 | 6.379 tokens de entrada + 835 de salida | 0,042 $ |
+| Voz ElevenLabs (Multilingual v2) | 790 caracteres | 0,063 $ |
+| **Total** | 2 preguntas de media | **≈ 0,11 $** (unos 10 céntimos de euro) |
+
+- **Solo se paga cuando hace falta:** las transferencias normales no pasan por la IA. Solo se verifican las que las reglas marcan como inusuales (500 € o más, cuenta nueva extranjera, país de riesgo…).
+- **1.000 verificaciones cuestan unos 105 $.** Basta con evitar **una sola** estafa de las de los casos de prueba (de 500 € a 8.000 €) para pagar miles de verificaciones.
+- Precios sin impuestos: Claude según la tabla de precios de Anthropic; ElevenLabs según elevenlabs.io/pricing/api (09/11/2026). El detalle de cada caso está en el informe.
 - **Limitación:** las respuestas de la clienta están guionizadas, así que a veces no encajan con la pregunta exacta que hace la IA. Es una prueba más dura que una conversación real.
 
 Informes completos, con las conversaciones de los casos fallados, en [evaluacion/resultados/](evaluacion/resultados/).
@@ -169,7 +184,7 @@ python -m pytest
 ### Evaluación con 40 casos
 ```bash
 python -m evaluacion.evaluar --motor local     # gratis, sin red, instantáneo
-python -m evaluacion.evaluar                   # con Claude (unas 100 llamadas, ~2-4 min)
+python -m evaluacion.evaluar                   # con Claude (unas 80 llamadas, ~3 min, unos 2 $ de Claude)
 python -m evaluacion.evaluar --motor ambos     # los dos, para comparar
 python -m evaluacion.evaluar --solo E01,L05    # solo algunos casos
 ```

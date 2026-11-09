@@ -373,6 +373,7 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
     tiempo_ms = int((time.perf_counter() - inicio) * 1000)
     respuesta = db.guardar_mensaje(transferencia_id, "asistente", resultado.respuesta, {
         "motor": resultado.motor, "tiempo_ms": tiempo_ms, "tiempo_ia_ms": resultado.tiempo_ia_ms,
+        "tokens_entrada": resultado.tokens_entrada, "tokens_salida": resultado.tokens_salida,
     })
     log.info("Turno de verificación #%s: %s ms en total (IA: %s ms, motor: %s)",
              transferencia_id, tiempo_ms, resultado.tiempo_ia_ms, resultado.motor)

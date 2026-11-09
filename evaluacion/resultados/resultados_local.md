@@ -1,6 +1,6 @@
 # Evaluación de SilverShield · motor: local
 
-Fecha: 09/11/2026 17:00 · Modelo: evaluador local · Máximo de turnos: 4
+Fecha: 09/11/2026 18:33 · Modelo: evaluador local · Máximo de turnos: 4
 
 | Métrica | Resultado |
 |---|---|
@@ -13,53 +13,65 @@ Fecha: 09/11/2026 17:00 · Modelo: evaluador local · Máximo de turnos: 4
 | Preguntas medias por conversación | 2,17 |
 | Tiempo medio de respuesta por turno | 0,0 s (p95: 0,0 s) |
 
+## Coste por verificación (medido)
+
+| Concepto | Media por conversación | Coste |
+|---|---|---|
+| Claude (no se usa) | 0 tokens de entrada + 0 de salida | 0,0000 $ |
+| Voz ElevenLabs (eleven_multilingual_v2) | 570 caracteres | 0,0456 $ |
+| **Total por verificación** | | **0,0456 $** |
+| Por cada 1.000 verificaciones | | 45,64 $ |
+
+Precios sin impuestos: Claude según la tabla de Anthropic; ElevenLabs según elevenlabs.io/pricing/api
+(09/11/2026). Solo se verifican las transferencias que las reglas marcan como inusuales.
+
 Un falso negativo es lo más grave (el dinero se habría ido). Un falso positivo es
 reversible: la transferencia queda retenida y un operador del banco la libera tras llamar al cliente.
 
 ## Detalle por caso
 
-| Caso | Tipo | Descripción | Decisión | Riesgo | Turnos | ¿Acierto? |
-|---|---|---|---|---|---|---|
-| E01 | estafa | Falso empleado del banco: 'cuenta segura' | riesgo | 65 | 1 | ✅ |
-| E02 | estafa | Falso técnico de Microsoft con AnyDesk | riesgo | 60 | 1 | ✅ |
-| E03 | estafa | Hijo en apuros por WhatsApp desde número nuevo | seguro | 50 | 3 | ❌ |
-| E04 | estafa | Falso policía: fianza para el nieto detenido | riesgo | 60 | 1 | ✅ |
-| E05 | estafa | Inversión en criptomonedas con rentabilidad garantizada | riesgo | 60 | 1 | ✅ |
-| E06 | estafa | Premio de lotería que exige pagar tasas | riesgo | 65 | 2 | ✅ |
-| E07 | estafa | Pareja conocida por Facebook que pide dinero | riesgo | 60 | 3 | ✅ |
-| E08 | estafa | Paquete retenido en aduana | riesgo | 60 | 1 | ✅ |
-| E09 | estafa | Falsa deuda con Hacienda | riesgo | 60 | 1 | ✅ |
-| E10 | estafa | Coacción de un familiar presente | seguro | 45 | 3 | ❌ |
-| E11 | estafa | SMS falso del banco con enlace | riesgo | 86 | 1 | ✅ |
-| E12 | estafa | Falsa compañía eléctrica: 'le cortamos la luz hoy' | seguro | 30 | 3 | ❌ |
-| E13 | estafa | Cambio de cuenta del casero por correo (fraude del IBAN) | seguro | 10 | 2 | ❌ |
-| E14 | estafa | Nieta con accidente: abogado pide dinero | riesgo | 80 | 2 | ✅ |
-| E15 | estafa | Herencia de un pariente lejano en el extranjero | riesgo | 100 | 2 | ✅ |
-| E16 | estafa | Falsa devolución de la Seguridad Social | seguro | 15 | 2 | ❌ |
-| E17 | estafa | Cuidadora que presiona | seguro | 0 | 2 | ❌ |
-| E18 | estafa | Inversión vista en un anuncio con un famoso | riesgo | 60 | 1 | ✅ |
-| E19 | estafa | Falso técnico de la compañía de teléfono | seguro | 10 | 3 | ❌ |
-| E20 | estafa | Falso banco con texto que intenta manipular a la IA | riesgo | 60 | 1 | ✅ |
-| L01 | legitima | Reforma a hijo habitual | seguro | 0 | 2 | ✅ |
-| L02 | legitima | Derrama de la comunidad (habitual) | seguro | 0 | 2 | ✅ |
-| L03 | legitima | Implantes en el dentista habitual | seguro | 0 | 2 | ✅ |
-| L04 | legitima | Fontanero nuevo con urgencia real | seguro | 10 | 2 | ✅ |
-| L05 | legitima | Nieto pide dinero, pero ella lo comprueba llamando | riesgo | 70 | 2 | ❌ |
-| L06 | legitima | Hija que vive en Alemania | seguro | 25 | 3 | ✅ |
-| L07 | legitima | Pago al notario por una herencia real | riesgo | 60 | 1 | ❌ |
-| L08 | legitima | Viaje del Imserso / balneario | seguro | 10 | 3 | ✅ |
-| L09 | legitima | Préstamo a una hermana | seguro | 25 | 3 | ✅ |
-| L10 | legitima | Nerviosa porque es su primera transferencia online | seguro | 10 | 3 | ✅ |
-| L11 | legitima | Regalo de boda a una sobrina | seguro | 0 | 2 | ✅ |
-| L12 | legitima | Compra de un audífono | seguro | 10 | 3 | ✅ |
-| L13 | legitima | Nieto de Erasmus en Lituania | seguro | 16 | 2 | ✅ |
-| L14 | legitima | Pago de la segunda residencia en Portugal | seguro | 25 | 3 | ✅ |
-| L15 | legitima | Arreglo del tejado tras una tormenta (urgente) | seguro | 25 | 3 | ✅ |
-| L16 | legitima | Hijo habitual, importe alto, motivo claro | seguro | 10 | 3 | ✅ |
-| L17 | legitima | Pago a una academia de informática para mayores | seguro | 45 | 3 | ✅ |
-| L18 | legitima | Pago de una multa de verdad a un ayuntamiento | seguro | 25 | 3 | ✅ |
-| L19 | legitima | Amiga de toda la vida en Francia | seguro | 0 | 3 | ✅ |
-| L20 | legitima | Persona mayor con respuestas cortas pero coherentes | seguro | 0 | 3 | ✅ |
+| Caso | Tipo | Descripción | Decisión | Riesgo | Turnos | Coste | ¿Acierto? |
+|---|---|---|---|---|---|---|---|
+| E01 | estafa | Falso empleado del banco: 'cuenta segura' | riesgo | 65 | 1 | 0,0411 $ | ✅ |
+| E02 | estafa | Falso técnico de Microsoft con AnyDesk | riesgo | 60 | 1 | 0,0438 $ | ✅ |
+| E03 | estafa | Hijo en apuros por WhatsApp desde número nuevo | seguro | 50 | 3 | 0,0484 $ | ❌ |
+| E04 | estafa | Falso policía: fianza para el nieto detenido | riesgo | 60 | 1 | 0,0413 $ | ✅ |
+| E05 | estafa | Inversión en criptomonedas con rentabilidad garantizada | riesgo | 60 | 1 | 0,0430 $ | ✅ |
+| E06 | estafa | Premio de lotería que exige pagar tasas | riesgo | 65 | 2 | 0,0531 $ | ✅ |
+| E07 | estafa | Pareja conocida por Facebook que pide dinero | riesgo | 60 | 3 | 0,0635 $ | ✅ |
+| E08 | estafa | Paquete retenido en aduana | riesgo | 60 | 1 | 0,0408 $ | ✅ |
+| E09 | estafa | Falsa deuda con Hacienda | riesgo | 60 | 1 | 0,0414 $ | ✅ |
+| E10 | estafa | Coacción de un familiar presente | seguro | 45 | 3 | 0,0486 $ | ❌ |
+| E11 | estafa | SMS falso del banco con enlace | riesgo | 86 | 1 | 0,0413 $ | ✅ |
+| E12 | estafa | Falsa compañía eléctrica: 'le cortamos la luz hoy' | seguro | 30 | 3 | 0,0494 $ | ❌ |
+| E13 | estafa | Cambio de cuenta del casero por correo (fraude del IBAN) | seguro | 10 | 2 | 0,0407 $ | ❌ |
+| E14 | estafa | Nieta con accidente: abogado pide dinero | riesgo | 80 | 2 | 0,0516 $ | ✅ |
+| E15 | estafa | Herencia de un pariente lejano en el extranjero | riesgo | 100 | 2 | 0,0533 $ | ✅ |
+| E16 | estafa | Falsa devolución de la Seguridad Social | seguro | 15 | 2 | 0,0381 $ | ❌ |
+| E17 | estafa | Cuidadora que presiona | seguro | 0 | 2 | 0,0380 $ | ❌ |
+| E18 | estafa | Inversión vista en un anuncio con un famoso | riesgo | 60 | 1 | 0,0431 $ | ✅ |
+| E19 | estafa | Falso técnico de la compañía de teléfono | seguro | 10 | 3 | 0,0497 $ | ❌ |
+| E20 | estafa | Falso banco con texto que intenta manipular a la IA | riesgo | 60 | 1 | 0,0414 $ | ✅ |
+| L01 | legitima | Reforma a hijo habitual | seguro | 0 | 2 | 0,0376 $ | ✅ |
+| L02 | legitima | Derrama de la comunidad (habitual) | seguro | 0 | 2 | 0,0398 $ | ✅ |
+| L03 | legitima | Implantes en el dentista habitual | seguro | 0 | 2 | 0,0386 $ | ✅ |
+| L04 | legitima | Fontanero nuevo con urgencia real | seguro | 10 | 2 | 0,0387 $ | ✅ |
+| L05 | legitima | Nieto pide dinero, pero ella lo comprueba llamando | riesgo | 70 | 2 | 0,0506 $ | ❌ |
+| L06 | legitima | Hija que vive en Alemania | seguro | 25 | 3 | 0,0495 $ | ✅ |
+| L07 | legitima | Pago al notario por una herencia real | riesgo | 60 | 1 | 0,0410 $ | ❌ |
+| L08 | legitima | Viaje del Imserso / balneario | seguro | 10 | 3 | 0,0492 $ | ✅ |
+| L09 | legitima | Préstamo a una hermana | seguro | 25 | 3 | 0,0476 $ | ✅ |
+| L10 | legitima | Nerviosa porque es su primera transferencia online | seguro | 10 | 3 | 0,0490 $ | ✅ |
+| L11 | legitima | Regalo de boda a una sobrina | seguro | 0 | 2 | 0,0382 $ | ✅ |
+| L12 | legitima | Compra de un audífono | seguro | 10 | 3 | 0,0490 $ | ✅ |
+| L13 | legitima | Nieto de Erasmus en Lituania | seguro | 16 | 2 | 0,0402 $ | ✅ |
+| L14 | legitima | Pago de la segunda residencia en Portugal | seguro | 25 | 3 | 0,0511 $ | ✅ |
+| L15 | legitima | Arreglo del tejado tras una tormenta (urgente) | seguro | 25 | 3 | 0,0492 $ | ✅ |
+| L16 | legitima | Hijo habitual, importe alto, motivo claro | seguro | 10 | 3 | 0,0476 $ | ✅ |
+| L17 | legitima | Pago a una academia de informática para mayores | seguro | 45 | 3 | 0,0492 $ | ✅ |
+| L18 | legitima | Pago de una multa de verdad a un ayuntamiento | seguro | 25 | 3 | 0,0495 $ | ✅ |
+| L19 | legitima | Amiga de toda la vida en Francia | seguro | 0 | 3 | 0,0494 $ | ✅ |
+| L20 | legitima | Persona mayor con respuestas cortas pero coherentes | seguro | 0 | 3 | 0,0489 $ | ✅ |
 
 ## Casos fallados (conversación completa)
 
