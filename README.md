@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat-square&logo=fastapi)
 ![Claude](https://img.shields.io/badge/Claude-Opus_5.5-8A2BE2?style=flat-square&logo=anthropic)
-![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Flash_v2.5_%2B_Scribe-FF6F61?style=flat-square)
+![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Multilingual_v2_%2B_Scribe-FF6F61?style=flat-square)
 
 ## El problema
 Los estafadores convencen a personas mayores para que hagan transferencias (falso técnico, falso empleado del banco, "hijo en apuros"...) y les piden en la misma llamada el código SMS que debería protegerlas. El SMS no detecta el engaño: solo confirma que la víctima tiene el móvil en la mano.
@@ -19,7 +19,7 @@ SilverShield se integra en la banca online y actúa solo cuando hace falta:
 2. **Pantalla de decisión** con dos opciones grandes y claras:
    - **"Solicitar verificación con SilverShield"** (recomendada).
    - **"Conozco al destinatario: autorizar directamente"** (si el riesgo es alto, se pide una segunda confirmación).
-3. **Conversación por voz con IA.** SilverShield explica la operación en lenguaje sencillo y hace preguntas cortas (para qué es el dinero, si alguien se lo ha pedido, si hay alguien al lado dictando). **Claude** analiza cada respuesta junto con el contexto de la transferencia y con indicadores de estrés de la voz (velocidad del habla, volumen, titubeos). **ElevenLabs** pone una voz pausada y tranquila.
+3. **Conversación por voz con IA.** SilverShield explica la operación en lenguaje sencillo y hace preguntas cortas (para qué es el dinero, si alguien se lo ha pedido, si hay alguien al lado dictando). **Claude** analiza cada respuesta junto con el contexto de la transferencia y con indicadores de estrés de la voz (velocidad del habla, volumen, titubeos). **ElevenLabs** pone una voz española, clara, pausada y tranquila.
 4. **Veredicto:**
    - ✅ *Puede enviarla*: la persona confirma el envío con un botón.
    - ⛔ *No la envíe*: la transferencia queda **retenida**, se explica con calma por qué parece un engaño y se **avisa al contacto de confianza**, que puede liberarla o cancelarla desde su panel.
@@ -30,7 +30,7 @@ SilverShield se integra en la banca online y actúa solo cuando hace falta:
 - Botones de 64 a 96 px, iconos siempre con texto, foco de teclado muy visible y compatible con lectores de pantalla (`aria-live`, roles, gestión del foco al cambiar de pantalla).
 - Subtítulos de todo lo que dice el asistente, botón **"Repetir"**, opción **"Prefiero escribir"** y botón **"Escuchar este mensaje"** en la pantalla de decisión.
 - Sin límites de tiempo y respetando la preferencia de "reducir movimiento" del sistema.
-- **Latencia baja:** el saludo es instantáneo (plantilla), Claude trabaja con esfuerzo `low` y la voz de ElevenLabs llega en streaming (modelo Flash v2.5), así que el audio empieza a sonar antes de estar completo. La cabecera `Server-Timing` mide cada petición.
+- **Latencia baja:** el saludo es instantáneo (plantilla), Claude trabaja con esfuerzo `low` y la voz de ElevenLabs (nativa de España, modelo Multilingual v2) llega en streaming, así que el audio empieza a sonar antes de estar completo. La cabecera `Server-Timing` mide cada petición.
 
 ## Requisitos
 - Python 3.10 o superior (probado en 3.15).

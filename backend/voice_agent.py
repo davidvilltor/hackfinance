@@ -1,6 +1,6 @@
 """Voz de SilverShield con ElevenLabs (texto a voz y voz a texto) vía API REST.
 
-- Texto a voz: modelo de baja latencia (eleven_flash_v2_5) en streaming, de modo
+- Texto a voz: voz nativa de España (eleven_multilingual_v2) en streaming, de modo
   que el navegador empieza a reproducir el audio antes de que esté completo.
 - Voz a texto: ElevenLabs Scribe, usado cuando el navegador no dispone de
   reconocimiento de voz propio (por ejemplo Firefox).
@@ -31,6 +31,24 @@ def _guardar_cache(clave: int, audio: bytes) -> None:
         _cache_audio.popitem(last=False)
 
 
+def _cuerpo_tts(texto: str) -> dict:
+    cuerpo = {
+        "text": texto,
+        "model_id": config.ELEVENLABS_TTS_MODEL,
+        "voice_settings": {
+            "stability": 0.6,           # sereno pero sin sonar robótico
+            "similarity_boost": 0.8,    # fiel a la voz original: dicción más nítida
+            "style": 0.0,
+            "use_speaker_boost": True,
+            "speed": config.ELEVENLABS_VELOCIDAD,
+        },
+    }
+    # Solo los modelos Flash/Turbo v2.5 aceptan forzar el idioma.
+    if "v2_5" in config.ELEVENLABS_TTS_MODEL:
+        cuerpo["language_code"] = "es"
+    return cuerpo
+
+
 async def sintetizar_stream(clave: int, texto: str) -> Response:
     """Devuelve una respuesta HTTP con el MP3 de `texto` (en streaming)."""
     if clave in _cache_audio:
@@ -44,18 +62,7 @@ async def sintetizar_stream(clave: int, texto: str) -> Response:
         f"{URL_BASE}/text-to-speech/{config.ELEVENLABS_VOICE_ID}/stream",
         params={"output_format": "mp3_44100_128"},
         headers={"xi-api-key": config.ELEVENLABS_API_KEY, "Accept": "audio/mpeg"},
-        json={
-            "text": texto,
-            "model_id": config.ELEVENLABS_TTS_MODEL,
-            "language_code": "es",
-            "voice_settings": {
-                "stability": 0.75,          # tono estable y sereno
-                "similarity_boost": 0.75,
-                "style": 0.0,
-                "use_speaker_boost": True,
-                "speed": config.ELEVENLABS_VELOCIDAD,
-            },
-        },
+        json=_cuerpo_tts(texto),
     )
     try:
         respuesta = await cliente.send(peticion, stream=True)

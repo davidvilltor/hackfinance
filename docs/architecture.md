@@ -46,7 +46,7 @@ El servidor valida cada transición (responde HTTP 409 si no está permitida). E
 - El saludo inicial se genera con una plantilla, sin esperar a la IA.
 - Claude trabaja con esfuerzo `low`, lo adecuado para una conversación.
 - El texto de la respuesta se muestra en cuanto llega, mientras el audio se pide aparte.
-- ElevenLabs Flash v2.5 se sirve en streaming y el navegador empieza a reproducir antes de recibir el audio completo. Los audios quedan en caché para el botón "Repetir".
+- La voz de ElevenLabs (nativa de España, Multilingual v2) se sirve en streaming y el navegador empieza a reproducir antes de recibir el audio completo. Los audios quedan en caché para el botón "Repetir".
 
 **Privacidad y seguridad.**
 - El endpoint de voz solo sintetiza mensajes generados por el servidor, así que no puede usarse como proxy abierto de ElevenLabs.

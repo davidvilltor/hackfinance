@@ -66,30 +66,31 @@
     <p class="pasos">Paso 1 de 2</p>
     <h1 id="t-formulario" tabindex="-1">¿A quién quiere enviar dinero?</h1>
     <form id="form-transferencia" novalidate>
+      <p class="nota-obligatorio"><span class="obligatorio" aria-hidden="true">*</span> Campo obligatorio</p>
       <fieldset class="campo">
-        <legend>Elija una persona</legend>
+        <legend>Elija una persona <span class="obligatorio" aria-hidden="true">*</span></legend>
         <div class="lista-destinatarios" id="lista-destinatarios"></div>
       </fieldset>
 
       <div id="bloque-nuevo" hidden>
         <div class="campo">
-          <label for="campo-nombre">Nombre de quien recibe el dinero</label>
-          <input type="text" id="campo-nombre" autocomplete="off" aria-describedby="error-nombre">
+          <label for="campo-nombre">Nombre de quien recibe el dinero <span class="obligatorio" aria-hidden="true">*</span></label>
+          <input type="text" id="campo-nombre" autocomplete="off" aria-required="true" aria-describedby="error-nombre">
           <div class="error-campo" id="error-nombre" hidden></div>
         </div>
         <div class="campo">
-          <label for="campo-iban">Número de cuenta (IBAN)</label>
+          <label for="campo-iban">Número de cuenta (IBAN) <span class="obligatorio" aria-hidden="true">*</span></label>
           <span class="ayuda" id="ayuda-iban">Empieza por dos letras, por ejemplo: ES91 2100 0418 4502 0005 1332</span>
-          <input type="text" id="campo-iban" autocomplete="off" spellcheck="false"
+          <input type="text" id="campo-iban" autocomplete="off" aria-required="true" spellcheck="false"
                  autocapitalize="characters" aria-describedby="ayuda-iban error-iban">
           <div class="error-campo" id="error-iban" hidden></div>
         </div>
       </div>
 
       <div class="campo">
-        <label for="campo-importe">¿Cuánto dinero?</label>
+        <label for="campo-importe">¿Cuánto dinero? <span class="obligatorio" aria-hidden="true">*</span></label>
         <div class="importe-caja">
-          <input type="text" id="campo-importe" inputmode="decimal" autocomplete="off"
+          <input type="text" id="campo-importe" inputmode="decimal" aria-required="true" autocomplete="off"
                  aria-describedby="error-importe" placeholder="0,00">
           <span aria-hidden="true">€</span>
         </div>
