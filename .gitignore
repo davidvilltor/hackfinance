@@ -5,3 +5,6 @@
 __pycache__/
 venv/
 env/
+# Base de datos local (se crea al arrancar el servidor)
+*.db
+*.db-journal
