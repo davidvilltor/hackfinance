@@ -32,8 +32,8 @@ ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "KHCvMklQZZo0O30ERnVn")
 # Para menos latencia puede usarse eleven_flash_v2_5 (algo menos nítido).
 ELEVENLABS_TTS_MODEL = os.getenv("ELEVENLABS_TTS_MODEL", "eleven_multilingual_v2")
 ELEVENLABS_STT_MODEL = os.getenv("ELEVENLABS_STT_MODEL", "scribe_v1")
-# Velocidad del habla (0.7 - 1.2). Algo más lenta que la normal para personas mayores.
-ELEVENLABS_VELOCIDAD = float(os.getenv("ELEVENLABS_VELOCIDAD", "0.92"))
+# Velocidad del habla (0.7 - 1.2). 1.0 = ritmo natural; bajar a 0.9 si se quiere más pausada.
+ELEVENLABS_VELOCIDAD = float(os.getenv("ELEVENLABS_VELOCIDAD", "1.0"))
 
 # --- Reglas de negocio ---
 UMBRAL_VERIFICACION_EUR = float(os.getenv("UMBRAL_VERIFICACION_EUR", "500"))

@@ -22,8 +22,8 @@ SilverShield se integra en la banca online y actúa solo cuando hace falta:
 3. **Conversación por voz con IA.** SilverShield explica la operación en lenguaje sencillo y hace preguntas cortas (para qué es el dinero, si alguien se lo ha pedido, si hay alguien al lado dictando). **Claude** analiza cada respuesta junto con el contexto de la transferencia y con indicadores de estrés de la voz (velocidad del habla, volumen, titubeos). **ElevenLabs** pone una voz española, clara, pausada y tranquila.
 4. **Veredicto:**
    - ✅ *Puede enviarla*: la persona confirma el envío con un botón.
-   - ⛔ *No la envíe*: la transferencia queda **retenida**, se explica con calma por qué parece un engaño y se **avisa al contacto de confianza**, que puede liberarla o cancelarla desde su panel.
-5. **Palabra de auxilio (contra la coacción).** Si alguien obliga a la persona a transferir, basta con que diga su palabra secreta durante la conversación. SilverShield responde con normalidad (para no alertar a quien presiona), retiene la operación y avisa en silencio al familiar.
+   - ⛔ *No la envíe*: la transferencia queda **retenida**, se explica con calma por qué parece un engaño y se **avisa al contacto de emergencia**, que puede liberarla o cancelarla desde su panel.
+5. **Palabra de auxilio (contra la coacción).** Si alguien obliga a la persona a transferir, basta con que diga su palabra secreta durante la conversación. SilverShield responde con normalidad (para no alertar a quien presiona), retiene la operación y avisa en silencio al contacto de emergencia.
 
 ## Accesibilidad y experiencia de usuario
 - Una tarea por pantalla, lenguaje llano, texto base de 20 px con tres tamaños (Normal, Grande, Muy grande) y **modo de alto contraste**, que se recuerdan entre visitas.
@@ -58,10 +58,10 @@ Rellene `ANTHROPIC_API_KEY` y `ELEVENLABS_API_KEY`. El resto de opciones (modelo
 python -m uvicorn backend.main:app --reload
 ```
 - App del cliente: <http://localhost:8000>
-- Panel del contacto de confianza / gestor: <http://localhost:8000/panel> (ábralo en otra ventana para ver los avisos en directo)
+- Panel del contacto de emergencia / gestor: <http://localhost:8000/panel> (ábralo en otra ventana para ver los avisos en directo)
 - Documentación de la API: <http://localhost:8000/docs>
 
-La base de datos SQLite se crea sola con datos de demo (María López, 82 años, contacto de confianza: su hijo Carlos, palabra de auxilio: «girasol»). Para empezar de cero use el botón **"Reiniciar datos de la demo"** del panel.
+La base de datos SQLite se crea sola con datos de demo (María López, 82 años, contacto de emergencia: su hijo Carlos, palabra de auxilio: «girasol»). Para empezar de cero use el botón **"Reiniciar datos de la demo"** del panel.
 
 ## Cómo probarlo
 ### Escenarios de demo
@@ -90,12 +90,12 @@ backend/
   agente_silvershield.py  Conversación con Claude (salida JSON con esquema) + evaluador local de respaldo
   voice_agent.py          ElevenLabs: voz (streaming) y transcripción (Scribe)
   voice_stress.py         Indicadores de estrés y coacción (texto y métricas acústicas)
-  notifications.py        Avisos al contacto de confianza
+  notifications.py        Avisos al contacto de emergencia
   database.py             SQLite: cuenta, beneficiarios, transferencias, conversación y alertas
   config.py               Configuración por variables de entorno
 frontend/
   templates/index.html    App del cliente (persona mayor)
-  templates/panel.html    Panel del contacto de confianza / gestor del banco
+  templates/panel.html    Panel del contacto de emergencia / gestor del banco
   static/js/voz.js        Síntesis de voz, reconocimiento de voz y medición acústica en el navegador
   static/js/app.js        Lógica de las pantallas del cliente
 prompts/prompt_sistema.txt  Instrucciones del asistente

@@ -39,7 +39,7 @@
       speechSynthesis.cancel();
       const frase = new SpeechSynthesisUtterance(texto);
       frase.lang = "es-ES";
-      frase.rate = 0.9;          // algo más lento de lo normal
+      frase.rate = 1.0;          // ritmo natural
       if (vozNavegador) frase.voice = vozNavegador;
       // Salvaguarda: algunos navegadores no emiten "onend" de forma fiable.
       const limite = setTimeout(() => terminar(), 2000 + texto.length * 75);

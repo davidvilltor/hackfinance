@@ -80,7 +80,7 @@ def test_verificacion_detecta_estafa_retiene_y_avisa(cliente):
     assert panel["alertas"][0]["tipo"] == "POSIBLE_ESTAFA"
     assert panel["alertas"][0]["transferencia_id"] == tid
 
-    # El cliente no puede autorizarla; el contacto de confianza sí puede liberarla.
+    # El cliente no puede autorizarla; el contacto de emergencia sí puede liberarla.
     assert cliente.post(f"/api/transferencias/{tid}/autorizar").status_code == 409
     assert cliente.post(f"/api/transferencias/{tid}/liberar").status_code == 200
     assert saldo(cliente) == inicial - 2500

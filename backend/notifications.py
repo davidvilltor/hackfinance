@@ -1,7 +1,7 @@
-"""Avisos al contacto de confianza.
+"""Avisos al contacto de emergencia.
 
 En la demo el aviso se registra en la base de datos (aparece en tiempo real en el
-panel /panel del contacto de confianza) y se muestra en la consola del servidor.
+panel /panel del contacto de emergencia) y se muestra en la consola del servidor.
 En producción este módulo se conectaría con la pasarela SMS/WhatsApp/push del banco.
 """
 import logging

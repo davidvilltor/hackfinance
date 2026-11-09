@@ -10,7 +10,7 @@ Flujo de una transferencia:
                └─ /verificacion (SilverShield) ────────────► en_verificacion
                       └─ /verificacion/mensajes (conversación por voz)
                              ├─ "seguro" ─► verificada_segura ─► /autorizar ─► completada
-                             └─ "riesgo" ─► retenida + aviso al contacto de confianza
+                             └─ "riesgo" ─► retenida + aviso al contacto de emergencia
                                               └─ /liberar o /cancelar (panel del contacto)
 """
 import logging
@@ -234,7 +234,7 @@ async def cancelar(transferencia_id: int):
 
 @app.post("/api/transferencias/{transferencia_id}/liberar")
 async def liberar(transferencia_id: int):
-    """Acción del contacto de confianza / gestor: libera una transferencia retenida."""
+    """Acción del contacto de emergencia / gestor: libera una transferencia retenida."""
     t = _transferencia_o_404(transferencia_id)
     _exigir_estado(t, db.RETENIDA)
     t = _completar(transferencia_id, via="liberada_contacto")
@@ -278,7 +278,7 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
 
     # Palabra de auxilio: el cliente la pronuncia si alguien le está obligando.
     # SilverShield responde con normalidad (para no alertar a quien presiona),
-    # retiene la operación y avisa en silencio al contacto de confianza.
+    # retiene la operación y avisa en silencio al contacto de emergencia.
     if _contiene_palabra_seguridad(datos.texto, cuenta.get("palabra_seguridad")):
         texto = (
             f"De acuerdo, {cuenta['nombre_corto']}. Para terminar, un gestor del banco revisará "

@@ -27,10 +27,10 @@
 | `pendiente_decision` | Ha saltado una regla; el cliente elige cómo seguir | `autorizar` → completada · `verificacion` → en_verificacion · `cancelar` |
 | `en_verificacion` | Conversación con SilverShield | "seguro" → verificada_segura · "riesgo" → retenida |
 | `verificada_segura` | SilverShield recomienda seguir; falta la confirmación del cliente | `autorizar` → completada · `cancelar` |
-| `retenida` | SilverShield la ha parado y se ha avisado al contacto de confianza | `liberar` (contacto) → completada · `cancelar` |
+| `retenida` | SilverShield la ha parado y se ha avisado al contacto de emergencia | `liberar` (contacto) → completada · `cancelar` |
 | `completada` / `cancelada` | Estados finales | — |
 
-El servidor valida cada transición (responde HTTP 409 si no está permitida). El cargo es atómico: el saldo se descuenta y el estado cambia en la misma transacción. Así, una transferencia retenida **no se puede autorizar desde la app del cliente**: solo el contacto de confianza puede liberarla.
+El servidor valida cada transición (responde HTTP 409 si no está permitida). El cargo es atómico: el saldo se descuenta y el estado cambia en la misma transacción. Así, una transferencia retenida **no se puede autorizar desde la app del cliente**: solo el contacto de emergencia puede liberarla.
 
 ## Decisiones de diseño
 
@@ -53,7 +53,7 @@ El servidor valida cada transición (responde HTTP 409 si no está permitida). E
 - La palabra de auxilio nunca se envía a la pantalla del cliente.
 - Todo el texto del usuario se pinta con `textContent`, sin inyectar HTML.
 
-**Palabra de auxilio.** La coacción familiar no siempre se detecta con preguntas, porque la persona que presiona puede estar delante escuchando. Una palabra secreta, configurada de antemano con el contacto de confianza, permite pedir ayuda sin que el agresor lo note: la respuesta es neutra y la retención y el aviso se hacen en silencio.
+**Palabra de auxilio.** La coacción familiar no siempre se detecta con preguntas, porque la persona que presiona puede estar delante escuchando. Una palabra secreta, configurada de antemano con el contacto de emergencia, permite pedir ayuda sin que el agresor lo note: la respuesta es neutra y la retención y el aviso se hacen en silencio.
 
 ## Del prototipo a producción
 - **Llamada telefónica saliente:** el mismo agente puede funcionar sobre telefonía SIP (por ejemplo Twilio y ElevenLabs Conversational AI) reutilizando `agente_silvershield.evaluar_turno`.

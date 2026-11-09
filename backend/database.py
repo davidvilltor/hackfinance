@@ -1,5 +1,5 @@
 ﻿"""Persistencia SQLite de SilverShield (cuenta demo, transferencias, conversación
-de verificación y alertas al contacto de confianza)."""
+de verificación y alertas al contacto de emergencia)."""
 import json
 import sqlite3
 from contextlib import contextmanager

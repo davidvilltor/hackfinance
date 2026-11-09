@@ -1,4 +1,4 @@
-/* SilverShield · Panel del contacto de confianza / gestor del banco. */
+/* SilverShield · Panel del contacto de emergencia / gestor del banco. */
 (function () {
   "use strict";
 
@@ -16,7 +16,7 @@
   };
   const VIAS = {
     directa: "Sin alertas", autorizada_cliente: "Autorizada por el cliente (sin verificación)",
-    verificada_ia: "Verificada por SilverShield", liberada_contacto: "Liberada por el contacto de confianza",
+    verificada_ia: "Verificada por SilverShield", liberada_contacto: "Liberada por el contacto de emergencia",
   };
   const CATEGORIAS = {
     ninguna: "Ninguna", falso_banco: "Falso empleado del banco", falso_tecnico: "Falso servicio técnico",
@@ -131,7 +131,7 @@
     if (t.estado === "retenida") {
       acciones.append(
         el("button", { type: "button", class: "btn btn-exito pequeno", onclick: () => accion(t.id, "liberar",
-          "¿Ha hablado con su familiar y confirma que la transferencia es legítima?") }, "Liberar y enviar"),
+          "¿Ha hablado con la persona titular y confirma que la transferencia es legítima?") }, "Liberar y enviar"),
         el("button", { type: "button", class: "btn btn-peligro pequeno", onclick: () => accion(t.id, "cancelar",
           "¿Cancelar definitivamente esta transferencia?") }, "Cancelar transferencia"),
       );
@@ -194,7 +194,7 @@
   async function refrescar() {
     try {
       const datos = await api("/api/panel");
-      $("#nombre-contacto").textContent = `${datos.cuenta.contacto_nombre} (${datos.cuenta.contacto_relacion})`;
+      $("#nombre-contacto").textContent = datos.cuenta.contacto_relacion ? `${datos.cuenta.contacto_nombre} (${datos.cuenta.contacto_relacion})` : datos.cuenta.contacto_nombre;
       $("#nombre-titular").textContent = datos.cuenta.titular;
       $("#palabra-auxilio").textContent = `«${datos.cuenta.palabra_seguridad}»`;
       $("#umbral").textContent = `${euros(datos.estado.umbral_verificacion)} o destino sospechoso`;
@@ -207,7 +207,7 @@
     }
   }
 
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) document.title = "SilverShield · Panel del contacto de confianza"; });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) document.title = "SilverShield · Panel del contacto de emergencia"; });
   $("#btn-reiniciar").addEventListener("click", async () => {
     if (!window.confirm("Se borrarán todas las transferencias y avisos de la demo. ¿Continuar?")) return;
     await api("/api/demo/reiniciar", "POST");

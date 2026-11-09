@@ -110,7 +110,7 @@ def _construir_contexto(transferencia: dict, cuenta: dict, mensajes: list[dict],
     )
     return f"""<transferencia>
 Cliente: {cuenta['titular']} ({cuenta.get('edad', '?')} años). Nombre de pila: {cuenta['nombre_corto']}.
-Persona de confianza: {cuenta.get('contacto_nombre')} ({cuenta.get('contacto_relacion')}).
+Contacto de emergencia: {cuenta.get('contacto_nombre')} ({cuenta.get('contacto_relacion') or 'relación no indicada'}).
 Importe: {euros_hablados(transferencia['importe'])}. Saldo disponible: {euros_hablados(cuenta['saldo'])}.
 Destinatario: {transferencia['beneficiario_nombre']}.
 Cuenta en: {nombre_pais(transferencia['pais'])}. Destinatario {'nuevo' if evaluacion.get('beneficiario_nuevo') else 'habitual'}.
@@ -248,7 +248,7 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
     lista_senales = [f"Menciona: {', '.join(ps)}" for ps in detectadas.values()]
     lista_senales += senales.get("indicadores", [])
     nombre = cuenta["nombre_corto"]
-    contacto = cuenta.get("contacto_nombre") or "su persona de confianza"
+    contacto = cuenta.get("contacto_nombre") or "su contacto de emergencia"
 
     if nivel >= 60 or (turno >= config.MAX_TURNOS_VERIFICACION and nivel >= 40):
         explicacion = _EXPLICACIONES.get(categoria, "Hay varias cosas que me hacen pensar en un engaño.")

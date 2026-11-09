@@ -3,7 +3,7 @@
 **Preparación**
 - Servidor arrancado con las claves de Anthropic y ElevenLabs en `.env`. El pie de la app debe mostrar "IA Claude activa" y "Voz ElevenLabs".
 - Ventana 1 (proyector): <http://localhost:8000>, en Chrome o Edge, con permiso de micrófono concedido.
-- Ventana 2 (al lado, o en un móvil): <http://localhost:8000/panel>, el panel de Carlos, el hijo. Pulse **"Reiniciar datos de la demo"**.
+- Ventana 2 (al lado, o en un móvil): <http://localhost:8000/panel>, el panel de Carlos, el contacto de emergencia. Pulse **"Reiniciar datos de la demo"**.
 - Haga una prueba de audio antes de salir al escenario.
 
 ## 1 · Lo normal no molesta (20 s)

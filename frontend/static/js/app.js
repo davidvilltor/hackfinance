@@ -25,6 +25,12 @@
   const euros = n => formatoEuros.format(n);
   const formatoFecha = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "long" });
 
+  // "Carlos (hijo)", "Lucía (vecina)"... o solo el nombre si no se indicó la relación.
+  function describirContacto(cuenta) {
+    const nombre = cuenta.contacto_nombre || "su contacto de emergencia";
+    return cuenta.contacto_relacion ? `${nombre} (${cuenta.contacto_relacion})` : nombre;
+  }
+
   function formatearIban(iban) {
     return iban.replace(/\s+/g, "").toUpperCase().replace(/(.{4})/g, "$1 ").trim();
   }
@@ -163,7 +169,7 @@
       $$('[data-dato="nombre"]').forEach(e => { e.textContent = datos.cuenta.nombre_corto; });
       $$('[data-dato="saldo"]').forEach(e => { e.textContent = euros(datos.cuenta.saldo); });
       $$('[data-dato="contacto"]').forEach(e => {
-        e.textContent = `${datos.cuenta.contacto_nombre} (${datos.cuenta.contacto_relacion})`;
+        e.textContent = describirContacto(datos.cuenta);
       });
       $$('[data-dato="tel-contacto"]').forEach(e => { e.href = `tel:${datos.cuenta.contacto_telefono.replace(/\s/g, "")}`; });
       pintarMovimientos(datos.movimientos);
@@ -609,7 +615,7 @@
     const parrafos = [];
     const acciones = document.createElement("div");
     acciones.className = "acciones";
-    const contacto = `${cuenta.contacto_nombre} (${cuenta.contacto_relacion})`;
+    const contacto = describirContacto(cuenta);
 
     if (datos.decision === "seguro") {
       caja.className = "veredicto seguro";
@@ -626,7 +632,7 @@
       titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-alerta"/></svg>';
       titulo.append("Le recomendamos NO enviar este dinero");
       parrafos.push("Hemos parado la transferencia. Su dinero está a salvo en su cuenta.");
-      parrafos.push(`Le recomendamos avisar a ${contacto}. Háblelo con calma con ${cuenta.contacto_nombre} antes de hacer nada más.`);
+      parrafos.push(`Le recomendamos avisar a su contacto de emergencia, ${contacto}. Háblelo con calma antes de hacer nada más.`);
       const llamar = document.createElement("a");
       llamar.className = "btn btn-primario";
       llamar.href = `tel:${cuenta.contacto_telefono.replace(/\s/g, "")}`;
