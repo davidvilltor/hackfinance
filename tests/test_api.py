@@ -1,4 +1,4 @@
-"""Pruebas de extremo a extremo de la API en modo local (sin claves de API)."""
+"""Pruebas de extremo a extremo de la API (Claude imitado por el simulador local, sin red)."""
 from backend import agente_silvershield, config
 
 IBAN_CARLOS = "ES9121000418450200051332"        # beneficiario habitual
@@ -24,7 +24,7 @@ def saldo(cliente):
     return cliente.get("/api/cuenta").json()["cuenta"]["saldo"]
 
 
-def test_paginas_y_estado(cliente):
+def test_paginas_y_estado(cliente, sin_ia):
     assert cliente.get("/").status_code == 200
     assert cliente.get("/panel").status_code == 200
     assert cliente.get("/static/js/app.js").status_code == 200
@@ -143,7 +143,7 @@ def test_audio_sin_elevenlabs_devuelve_503(cliente):
     assert cliente.get(mensaje["audio_url"]).status_code == 503
 
 
-def test_usa_la_respuesta_estructurada_de_claude(cliente, operador, monkeypatch):
+def test_usa_la_respuesta_estructurada_de_claude(cliente, operador, claude_falso):
     async def falso_claude(_contexto):
         return {
             "respuesta": "Nadie del banco le pedirá mover su dinero. La he parado.",
@@ -151,8 +151,7 @@ def test_usa_la_respuesta_estructurada_de_claude(cliente, operador, monkeypatch)
             "senales": ["Pide mover el dinero a una cuenta segura"],
             "resumen_para_contacto": "Falso empleado del banco.",
         }
-    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "clave-de-prueba")
-    monkeypatch.setattr(agente_silvershield, "_llamar_claude", falso_claude)
+    claude_falso(falso_claude)
     tid = crear(cliente, 2000)["transferencia"]["id"]
     cliente.post(f"/api/transferencias/{tid}/verificacion")
     datos = responder(cliente, tid, "El del banco me ha dicho que la mueva a una cuenta segura")
@@ -162,70 +161,87 @@ def test_usa_la_respuesta_estructurada_de_claude(cliente, operador, monkeypatch)
     assert t["categoria_estafa"] == "falso_banco"
 
 
-def test_si_claude_falla_usa_el_evaluador_local(cliente, monkeypatch):
-    async def claude_caido(_contexto):
-        raise TimeoutError("sin conexión")
-    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "clave-de-prueba")
-    monkeypatch.setattr(agente_silvershield, "_llamar_claude", claude_caido)
-    tid = crear(cliente, 2000)["transferencia"]["id"]
-    cliente.post(f"/api/transferencias/{tid}/verificacion")
-    datos = responder(cliente, tid, "Es para la comunidad de vecinos")
-    assert datos["motor"] == "reglas"
-
-
-def _claude_caido(monkeypatch):
-    async def claude_caido(_contexto):
-        raise TimeoutError("sin conexión")
-    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "clave-de-prueba")
-    monkeypatch.setattr(agente_silvershield, "_llamar_claude", claude_caido)
-
-
-def test_si_claude_falla_nunca_se_da_por_buena(cliente, operador, monkeypatch):
-    """Fallar de forma segura: sin IA, una respuesta legítima no se aprueba; queda retenida."""
-    _claude_caido(monkeypatch)
-    inicial = saldo(cliente)
-    tid = crear(cliente, 900, IBAN_CARLOS, "Carlos López", "Reforma")["transferencia"]["id"]
-    cliente.post(f"/api/transferencias/{tid}/verificacion")
-    responder(cliente, tid, "Es para pagar la reforma del baño de mi hijo")
-    datos = responder(cliente, tid, "Lo he decidido yo sola, nadie me ha llamado, le he llamado yo")
+def _comprobar_retenida_para_operador(cliente, tid, datos, saldo_inicial):
     assert datos["decision"] == "no_verificada" and datos["final"] is True
     assert datos["transferencia"]["estado"] == "retenida"
     assert datos["contacto_avisado"] is True
     assert cliente.post(f"/api/transferencias/{tid}/autorizar").status_code == 409
-    assert saldo(cliente) == inicial
+    assert saldo(cliente) == saldo_inicial
+
+
+def test_sin_clave_de_ia_la_verificacion_se_retiene_para_el_operador(cliente, sin_ia):
+    """Sin IA no hay chatbot de reserva: la transferencia queda retenida al instante."""
+    inicial = saldo(cliente)
+    tid = crear(cliente, 900, IBAN_CARLOS, "Carlos López", "Reforma")["transferencia"]["id"]
+    datos = cliente.post(f"/api/transferencias/{tid}/verificacion").json()
+    _comprobar_retenida_para_operador(cliente, tid, datos, inicial)
+    assert len(datos["mensajes"]) == 1 and "operador" in datos["mensajes"][0]["texto"]
+    # Solo un operador del banco puede pararla o liberarla.
+    assert cliente.post(f"/api/transferencias/{tid}/cancelar").status_code == 401
+    # No se puede abrir una conversación sobre una transferencia ya retenida.
+    assert cliente.post(f"/api/transferencias/{tid}/verificacion/mensajes",
+                        json={"texto": "Hola"}).status_code == 409
+
+
+def test_sin_clave_de_ia_el_operador_decide(operador, sin_ia):
+    inicial = saldo(operador)
+    tid = crear(operador, 900, IBAN_CARLOS, "Carlos López", "Reforma")["transferencia"]["id"]
+    operador.post(f"/api/transferencias/{tid}/verificacion")
+    panel = operador.get("/api/panel").json()
+    assert panel["alertas"][0]["tipo"] == "NO_VERIFICADA"
+    t = operador.get(f"/api/transferencias/{tid}").json()["transferencia"]
+    assert t["veredicto_ia"] == "no_verificada" and t["motor_ia"] == "sin_ia"
+    assert operador.post(f"/api/transferencias/{tid}/liberar").status_code == 200
+    assert saldo(operador) == inicial - 900
+
+
+def _claude_caido(claude_falso):
+    async def claude_caido(_contexto):
+        raise TimeoutError("sin conexión")
+    claude_falso(claude_caido)
+
+
+def test_si_claude_falla_queda_retenida_sin_chatbot_local(cliente, operador, claude_falso):
+    """Fallar de forma segura: sin conexión con la IA no se sigue con un evaluador local;
+    la transferencia queda retenida para un operador del banco."""
+    _claude_caido(claude_falso)
+    inicial = saldo(cliente)
+    tid = crear(cliente, 900, IBAN_CARLOS, "Carlos López", "Reforma")["transferencia"]["id"]
+    cliente.post(f"/api/transferencias/{tid}/verificacion")
+    datos = responder(cliente, tid, "Es para pagar la reforma del baño de mi hijo")
+    assert datos["motor"] == "sin_ia"
+    _comprobar_retenida_para_operador(cliente, tid, datos, inicial)
     assert cliente.get("/api/panel").json()["alertas"][0]["tipo"] == "NO_VERIFICADA"
 
 
-def test_si_claude_falla_en_el_ultimo_turno_tampoco_se_aprueba(cliente, monkeypatch):
-    _claude_caido(monkeypatch)
-    tid = crear(cliente, 700)["transferencia"]["id"]
+def test_si_claude_falla_a_mitad_tambien_se_retiene(cliente, claude_falso):
+    llamadas = []
+
+    async def claude_que_se_cae(_contexto):
+        llamadas.append(1)
+        if len(llamadas) > 1:
+            raise ConnectionError("sin conexión")
+        return {"respuesta": "¿Quién le ha pedido el dinero?", "decision": "preguntar",
+                "nivel_riesgo": 20, "categoria": "ninguna", "senales": [],
+                "resumen_para_contacto": "", "recordar": []}
+    claude_falso(claude_que_se_cae)
+    tid = crear(cliente, 2000)["transferencia"]["id"]
     cliente.post(f"/api/transferencias/{tid}/verificacion")
-    datos = None
-    for _ in range(config.MAX_TURNOS_VERIFICACION):
-        datos = responder(cliente, tid, "Pues para una cosa")
-        if datos["final"]:
-            break
-    assert datos["decision"] in {"riesgo", "no_verificada"}
+    assert responder(cliente, tid, "Es para una cosa")["decision"] == "preguntar"
+    datos = responder(cliente, tid, "Me lo ha pedido un amigo")
+    assert datos["decision"] == "no_verificada"
+    assert datos["transferencia"]["estado"] == "retenida"
 
 
-def test_si_claude_falla_una_estafa_clara_se_sigue_detectando(cliente, monkeypatch):
-    _claude_caido(monkeypatch)
-    tid = crear(cliente, 2500)["transferencia"]["id"]
-    cliente.post(f"/api/transferencias/{tid}/verificacion")
-    datos = responder(cliente, tid, "Me ha llamado un técnico de Microsoft, tengo un virus y "
-                                    "me ha hecho instalar AnyDesk")
-    assert datos["decision"] == "riesgo"
-
-
-def test_claude_no_puede_inventarse_una_decision(cliente, monkeypatch):
+def test_claude_no_puede_inventarse_una_decision(cliente, claude_falso):
     async def claude_raro(_contexto):
         return {"respuesta": "Vale", "decision": "no_verificada", "nivel_riesgo": 0,
                 "categoria": "ninguna", "senales": [], "resumen_para_contacto": ""}
-    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "clave-de-prueba")
-    monkeypatch.setattr(agente_silvershield, "_llamar_claude", claude_raro)
+    claude_falso(claude_raro)
     tid = crear(cliente, 2000)["transferencia"]["id"]
     cliente.post(f"/api/transferencias/{tid}/verificacion")
-    assert responder(cliente, tid, "Es para la comunidad de vecinos")["motor"] == "reglas"
+    datos = responder(cliente, tid, "Es para la comunidad de vecinos")
+    assert datos["motor"] == "sin_ia" and datos["transferencia"]["estado"] == "retenida"
 
 
 def test_la_respuesta_incluye_las_senales_para_explicar_el_bloqueo(cliente, operador):

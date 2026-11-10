@@ -77,7 +77,7 @@ def test_una_cuenta_usada_en_una_estafa_queda_marcada(cliente, operador):
     assert "CUENTA_CON_ALERTA" in {m["codigo"] for m in datos["evaluacion"]["motivos"]}
 
 
-def test_claude_guarda_y_recibe_la_memoria(cliente, operador, monkeypatch):
+def test_claude_guarda_y_recibe_la_memoria(cliente, operador, claude_falso):
     contextos = []
 
     async def falso_claude(contexto):
@@ -88,8 +88,7 @@ def test_claude_guarda_y_recibe_la_memoria(cliente, operador, monkeypatch):
             "recordar": ["Su prima Ayesha vive en Pakistán; le paga los estudios cada trimestre.",
                          "La clave secreta es girasol."],
         }
-    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "clave-de-prueba")
-    monkeypatch.setattr(agente_silvershield, "_llamar_claude", falso_claude)
+    claude_falso(falso_claude)
 
     tid = crear(cliente, 400)["transferencia"]["id"]
     cliente.post(f"/api/transferencias/{tid}/verificacion")

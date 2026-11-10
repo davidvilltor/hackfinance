@@ -7,13 +7,16 @@ Flujo de una transferencia:
         └─ importe >= 500 € o destino sospechoso ───► pendiente_decision
                ├─ /autorizar  ("conozco al destinatario") ─► completada
                ├─ /cancelar ───────────────────────────────► cancelada
-               └─ /verificacion (SilverShield) ────────────► en_verificacion
-                      └─ /verificacion/mensajes (conversación por voz)
+               └─ /verificacion (SilverShield)
+                      ├─ IA sin clave ─► retenida + aviso ("no_verificada")
+                      └─ en_verificacion
+                         └─ /verificacion/mensajes (conversación por voz)
                              ├─ "seguro" ─► verificada_segura ─► /autorizar ─► completada
                              ├─ "riesgo" ─► retenida + aviso al contacto de emergencia
                              │                └─ /liberar o /cancelar (operador del banco)
-                             └─ "no_verificada" (Claude falló) ─► retenida + aviso
-                                (fallar de forma segura: sin IA nada se da por bueno)
+                             └─ "no_verificada" (IA caída) ─► retenida + aviso
+                                (fallar de forma segura: sin IA no hay comprobación
+                                 automática; decide un operador del banco)
 
 Por motivos legales, solo un operador del banco puede liberar una transferencia
 retenida (tras hablar con el titular). El contacto de emergencia solo recibe avisos.
@@ -40,7 +43,7 @@ from backend import config, database as db
 from backend.acceso_operador import (
     abrir_sesion, cerrar_sesion, credenciales_validas, exigir_operador, operador_actual,
 )
-from backend.agente_silvershield import evaluar_turno, mensaje_apertura
+from backend.agente_silvershield import evaluar_turno, mensaje_apertura, resultado_no_verificada
 from backend.notifications import avisar_contacto
 from backend.reglas_riesgo import (
     IbanInvalido, euros_hablados, evaluar_transferencia, formatear_euros, normalizar_texto,
@@ -60,7 +63,8 @@ async def ciclo_de_vida(_app: FastAPI):
     db.inicializar_bd()
     log.info(
         "SilverShield listo. IA: %s | Voz ElevenLabs: %s",
-        f"Claude ({config.CLAUDE_MODEL})" if config.ia_disponible() else "evaluador local",
+        f"Claude ({config.CLAUDE_MODEL})" if config.ia_disponible()
+        else "NO configurada (las verificaciones quedarán retenidas para un operador)",
         "sí" if config.voz_disponible() else "voz del navegador",
     )
     if not config.OPERADORES:
@@ -208,7 +212,7 @@ async def favicon():
 async def estado():
     return {
         "ia": config.ia_disponible(),
-        "modelo": config.CLAUDE_MODEL if config.ia_disponible() else "evaluador local",
+        "modelo": config.CLAUDE_MODEL if config.ia_disponible() else "sin IA (se retiene para el operador)",
         "voz_elevenlabs": config.voz_disponible(),
         "umbral_verificacion": config.UMBRAL_VERIFICACION_EUR,
         "max_turnos": config.MAX_TURNOS_VERIFICACION,
@@ -326,9 +330,40 @@ async def iniciar_verificacion(transferencia_id: int):
             "mensajes": [_mensaje_publico(m) for m in db.obtener_mensajes(transferencia_id)],
         }
     cuenta = db.obtener_cuenta()
+    if not config.ia_disponible():
+        # Sin IA no hay comprobación automática: se retiene directamente para el operador.
+        log.error("Verificación #%s sin IA configurada: queda retenida.", transferencia_id)
+        resultado = resultado_no_verificada(cuenta)
+        aviso = db.guardar_mensaje(transferencia_id, "asistente", resultado.respuesta,
+                                   {"motor": resultado.motor})
+        t = _retener_no_verificada(t, cuenta, resultado)
+        return {
+            "transferencia": t,
+            "mensajes": [_mensaje_publico(aviso)],
+            "final": True,
+            "decision": resultado.decision,
+            "contacto_avisado": True,
+        }
     t = db.actualizar_transferencia(transferencia_id, estado=db.EN_VERIFICACION)
     saludo = db.guardar_mensaje(transferencia_id, "asistente", mensaje_apertura(t, cuenta))
-    return {"transferencia": t, "mensajes": [_mensaje_publico(saludo)]}
+    return {"transferencia": t, "mensajes": [_mensaje_publico(saludo)], "final": False}
+
+
+def _retener_no_verificada(t: dict, cuenta: dict, resultado) -> dict:
+    """La IA no está disponible: retiene la transferencia y avisa (operador + contacto)."""
+    t = db.actualizar_transferencia(
+        t["id"], estado=db.RETENIDA, fecha_resolucion=db.ahora(),
+        veredicto_ia=resultado.decision, nivel_riesgo_ia=resultado.nivel_riesgo,
+        categoria_estafa=resultado.categoria, senales_ia=resultado.senales,
+        resumen_ia=resultado.resumen_para_contacto, motor_ia=resultado.motor,
+    )
+    avisar_contacto(
+        cuenta, t["id"], "NO_VERIFICADA",
+        f"SilverShield no ha podido verificar una transferencia de "
+        f"{euros_hablados(t['importe'])} de {cuenta['titular']} a {t['beneficiario_nombre']} "
+        "por un problema técnico y la ha dejado retenida. Un operador del banco la revisará.",
+    )
+    return t
 
 
 def _recordar(resultado, t: dict, transferencia_id: int) -> None:
@@ -420,18 +455,13 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
             f"{resultado.resumen_para_contacto}".strip(),
         )
         contacto_avisado = True
-    elif resultado.decision == "no_verificada":
-        campos.update(estado=db.RETENIDA, fecha_resolucion=db.ahora())
-        avisar_contacto(
-            cuenta, transferencia_id, "NO_VERIFICADA",
-            f"SilverShield no ha podido verificar una transferencia de "
-            f"{euros_hablados(t['importe'])} de {cuenta['titular']} a {t['beneficiario_nombre']} "
-            "por un fallo técnico y la ha dejado retenida por precaución.",
-        )
-        contacto_avisado = True
     elif resultado.decision == "seguro":
         campos.update(estado=db.VERIFICADA_SEGURA)
-    t = db.actualizar_transferencia(transferencia_id, **campos)
+    if resultado.decision == "no_verificada":
+        t = _retener_no_verificada(t, cuenta, resultado)
+        contacto_avisado = True
+    else:
+        t = db.actualizar_transferencia(transferencia_id, **campos)
     _recordar(resultado, t, transferencia_id)
 
     return {

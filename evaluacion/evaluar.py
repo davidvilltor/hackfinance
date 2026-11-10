@@ -12,7 +12,8 @@ en cada llamada + caracteres de voz de ElevenLabs). No toca la base de datos ni 
 
 Uso (desde la raíz del proyecto):
     python -m evaluacion.evaluar                 # con Claude (necesita ANTHROPIC_API_KEY)
-    python -m evaluacion.evaluar --motor local   # con el evaluador local (gratis, sin red)
+    python -m evaluacion.evaluar --motor local   # con el simulador local (gratis, sin red;
+                                                 # la app nunca lo usa)
     python -m evaluacion.evaluar --motor ambos   # los dos, para compararlos
     python -m evaluacion.evaluar --solo E01,L05  # solo algunos casos
     python -m evaluacion.evaluar --conjunto extremos
@@ -39,9 +40,11 @@ from backend.reglas_riesgo import evaluar_transferencia  # noqa: E402
 from backend.voice_stress import analizar_senales  # noqa: E402
 from evaluacion.casos import CASOS  # noqa: E402
 from evaluacion.casos_extremos import EXTREMOS, MEMORIA  # noqa: E402
+from evaluacion.simulador_local import responder_como_claude  # noqa: E402
 
 CARPETA_RESULTADOS = Path(__file__).resolve().parent / "resultados"
 RETENIDA = {"riesgo", "no_verificada"}   # decisiones que paran el dinero
+CLAVE_SIMULADOR = "simulador-local"      # marca el modo --motor local (sin Claude real)
 
 # ---------------------------------------------------------------- precios (USD)
 # Claude: dólares por millón de tokens (entrada, salida). Fuente: tabla de precios de
@@ -99,7 +102,7 @@ async def simular(caso: dict, perfil: dict | None = None, memoria: dict | None =
         resultado = await agente.evaluar_turno(transferencia, cuenta, mensajes,
                                                analizar_senales(texto), memoria)
         tiempos_turno.append(int((time.perf_counter() - inicio) * 1000))
-        if resultado.tiempo_ia_ms is not None:
+        if resultado.tiempo_ia_ms is not None and config.ANTHROPIC_API_KEY != CLAVE_SIMULADOR:
             tiempos_ia.append(resultado.tiempo_ia_ms)
         tokens_entrada += resultado.tokens_entrada
         tokens_salida += resultado.tokens_salida
@@ -190,7 +193,7 @@ def informe_memoria(resumen: dict, resultados: list[dict], usar_memoria: bool) -
     lineas = [
         f"# Evaluación de la memoria por cliente · {'CON' if usar_memoria else 'SIN'} memoria",
         "",
-        f"Fecha: {datetime.now():%d/%m/%Y %H:%M} · Modelo: {config.CLAUDE_MODEL if config.ia_disponible() else 'evaluador local'}",
+        f"Fecha: {datetime.now():%d/%m/%Y %H:%M} · Modelo: {config.CLAUDE_MODEL if config.ia_disponible() else 'simulador local'}",
         "",
         "| Métrica | Resultado |",
         "|---|---|",
@@ -277,7 +280,7 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
         f"# Evaluación de SilverShield · motor: {motor}",
         "",
         f"Fecha: {datetime.now():%d/%m/%Y %H:%M} · Modelo: "
-        f"{config.CLAUDE_MODEL if motor == 'claude' else 'evaluador local'} · "
+        f"{config.CLAUDE_MODEL if motor == 'claude' else 'simulador local'} · "
         f"Máximo de turnos: {config.MAX_TURNOS_VERIFICACION}",
         "",
         "| Métrica | Resultado |",
@@ -348,9 +351,11 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
 
 
 async def evaluar_memoria(motor: str, usar_memoria: bool, paralelo: int) -> None:
-    clave_original = config.ANTHROPIC_API_KEY
+    clave_original, preguntar_original = config.ANTHROPIC_API_KEY, agente._preguntar_a_claude
     if motor == "local":
-        config.ANTHROPIC_API_KEY = None
+        # La app, sin IA, retiene todo para un operador; aquí se usa el simulador local.
+        config.ANTHROPIC_API_KEY = CLAVE_SIMULADOR
+        agente._preguntar_a_claude = responder_como_claude
     elif not config.ia_disponible():
         raise SystemExit("Falta ANTHROPIC_API_KEY en .env para evaluar con Claude.")
     semaforo = asyncio.Semaphore(paralelo)
@@ -369,6 +374,7 @@ async def evaluar_memoria(motor: str, usar_memoria: bool, paralelo: int) -> None
         modelo = config.CLAUDE_MODEL if motor == "claude" else "local"
     finally:
         config.ANTHROPIC_API_KEY = clave_original
+        agente._preguntar_a_claude = preguntar_original
     nombre = f"resultados_{modelo}_memoria_{'con' if usar_memoria else 'sin'}"
     (CARPETA_RESULTADOS / f"{nombre}.md").write_text(
         informe_memoria(resumen, resultados, usar_memoria), encoding="utf-8")
@@ -382,9 +388,11 @@ async def evaluar_memoria(motor: str, usar_memoria: bool, paralelo: int) -> None
 
 
 async def evaluar(motor: str, casos: list[dict], paralelo: int) -> tuple[dict, list[dict]]:
-    clave_original = config.ANTHROPIC_API_KEY
+    clave_original, preguntar_original = config.ANTHROPIC_API_KEY, agente._preguntar_a_claude
     if motor == "local":
-        config.ANTHROPIC_API_KEY = None
+        # La app, sin IA, retiene todo para un operador; aquí se usa el simulador local.
+        config.ANTHROPIC_API_KEY = CLAVE_SIMULADOR
+        agente._preguntar_a_claude = responder_como_claude
     elif not config.ia_disponible():
         raise SystemExit("Falta ANTHROPIC_API_KEY en .env para evaluar con Claude.")
     semaforo = asyncio.Semaphore(paralelo)
@@ -403,6 +411,7 @@ async def evaluar(motor: str, casos: list[dict], paralelo: int) -> tuple[dict, l
         resultados = await asyncio.gather(*(uno(c) for c in casos))
     finally:
         config.ANTHROPIC_API_KEY = clave_original
+        agente._preguntar_a_claude = preguntar_original
     return resumir(resultados), resultados
 
 

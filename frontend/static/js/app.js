@@ -155,7 +155,7 @@
       const info = await api("/api/estado");
       Voz.configurar({ elevenlabs: info.voz_elevenlabs });
       $("#punto-ia").classList.toggle("on", info.ia);
-      $("#txt-ia").textContent = info.ia ? "IA Claude activa" : "IA en modo local";
+      $("#txt-ia").textContent = info.ia ? "IA Claude activa" : "IA no disponible: revisa un operador";
       $("#punto-voz").classList.toggle("on", info.voz_elevenlabs);
       $("#txt-voz").textContent = info.voz_elevenlabs ? "Voz ElevenLabs" : "Voz del navegador";
     } catch (e) { /* el pie es informativo; no bloquea */ }
@@ -453,7 +453,14 @@
           if (m.rol === "asistente") estado.ultimoAsistente = m;
         }
         datos.mensajes.forEach(m => anadirBurbuja(m.rol, m.texto));
-        if (await decir(estado.ultimoAsistente)) cicloEscucha();
+        if (datos.final) {
+          // Sin IA disponible: la transferencia ya ha quedado retenida para un operador.
+          estado.finalizada = true;
+          mostrarVeredicto(datos);
+          await decir(estado.ultimoAsistente);
+        } else if (await decir(estado.ultimoAsistente)) {
+          cicloEscucha();
+        }
       } catch (e) {
         mostrarError(e.message);
       }
@@ -672,7 +679,7 @@
       explicacion = bloqueMotivosIA(datos);
       acciones.append(botonLlamarContacto(cuenta), crearBoton("btn-secundario", "Volver al inicio", volverInicio));
     } else if (datos.decision === "no_verificada") {
-      // Claude no respondió: por seguridad no se da por buena, queda retenida.
+      // IA sin clave o sin conexión: no hay comprobación automática, queda retenida.
       caja.className = "veredicto revision";
       titulo.innerHTML = '<svg aria-hidden="true"><use href="#i-reloj"/></svg>';
       titulo.append("No hemos podido terminar la comprobación");
