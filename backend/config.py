@@ -40,6 +40,10 @@ ELEVENLABS_VELOCIDAD = float(os.getenv("ELEVENLABS_VELOCIDAD", "1.0"))
 UMBRAL_VERIFICACION_EUR = float(os.getenv("UMBRAL_VERIFICACION_EUR", "500"))
 # Porcentaje del saldo a partir del cual una transferencia se considera inusual.
 PORCENTAJE_SALDO_INUSUAL = float(os.getenv("PORCENTAJE_SALDO_INUSUAL", "0.5"))
+# Memoria por cliente: si SilverShield ya verificó a un destinatario, un envío posterior
+# de hasta este múltiplo del mayor importe verificado se considera "lo de siempre" y no
+# se vuelve a verificar (salvo concepto sospechoso, país de riesgo o más de medio saldo).
+MARGEN_IMPORTE_HABITUAL = float(os.getenv("MARGEN_IMPORTE_HABITUAL", "1.5"))
 # País del banco del cliente: las cuentas de otros países se consideran "extranjeras".
 PAIS_LOCAL = os.getenv("PAIS_LOCAL", "ES").upper()
 # Lista ilustrativa basada en las jurisdicciones bajo vigilancia del GAFI/FATF y en

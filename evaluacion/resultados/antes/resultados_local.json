@@ -1,0 +1,1945 @@
+{
+  "resumen": {
+    "casos": 40,
+    "aciertos": 31,
+    "exactitud": 0.775,
+    "estafas_detectadas": 13,
+    "estafas_total": 20,
+    "falsos_negativos": 7,
+    "legitimas_aprobadas": 18,
+    "legitimas_total": 20,
+    "falsos_positivos": 2,
+    "no_verificadas_por_fallo_ia": 0,
+    "turnos_medios": 2.17,
+    "tiempo_turno_medio_ms": 0,
+    "tiempo_turno_p95_ms": 0,
+    "tiempo_ia_medio_ms": null,
+    "tiempo_ia_p95_ms": null,
+    "sin_verificacion_por_reglas": [],
+    "tokens_entrada_medios": 0,
+    "tokens_salida_medios": 0,
+    "caracteres_voz_medios": 570,
+    "coste_ia_medio_usd": 0.0,
+    "coste_voz_medio_usd": 0.04564,
+    "coste_total_medio_usd": 0.04564,
+    "modelo_voz": "eleven_multilingual_v2"
+  },
+  "casos": [
+    {
+      "id": "E01",
+      "tipo": "estafa",
+      "descripcion": "Falso empleado del banco: 'cuenta segura'",
+      "categoria_esperada": "falso_banco",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 65,
+      "categoria": "falso_banco",
+      "senales": [
+        "Alguien que dice ser del banco le pide mover su dinero.",
+        "Menciona a otra persona que le indica qué hacer: me ha llamado"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 514,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 6.000 euros a Cuenta Segura SL. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha llamado un señor del banco, dice que me están robando y que pase el dinero a una cuenta segura."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Su banco nunca le pedirá que mueva su dinero a otra cuenta para protegerlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E02",
+      "tipo": "estafa",
+      "descripcion": "Falso técnico de Microsoft con AnyDesk",
+      "categoria_esperada": "falso_tecnico",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "falso_tecnico",
+      "senales": [
+        "Habla de un técnico, de un virus o de instalar un programa en el ordenador."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 548,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.200 euros a Tech Support Services, a una cuenta de Reino Unido. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para pagar al técnico que me arregla el ordenador, tenía un virus."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Ninguna empresa como Microsoft llama para cobrar por arreglar un ordenador. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E03",
+      "tipo": "estafa",
+      "descripcion": "Hijo en apuros por WhatsApp desde número nuevo",
+      "categoria_esperada": "hijo_en_apuros",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 50,
+      "categoria": "ninguna",
+      "senales": [
+        "Un supuesto familiar le pide dinero desde un número o un mensaje nuevo.",
+        "Menciona a otra persona que le indica qué hacer: me dijo"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 605,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.850 euros a Javier Ruiz Gómez. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para mi hijo, que se le ha roto el móvil y tiene que pagar una factura hoy."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha escrito por WhatsApp desde un número nuevo, porque el suyo se le cayó al agua."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Javier Ruiz Gómez y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "No, no le he llamado, me dijo que no podía hablar porque el móvil nuevo no tiene micrófono."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E04",
+      "tipo": "estafa",
+      "descripcion": "Falso policía: fianza para el nieto detenido",
+      "categoria_esperada": "falsa_autoridad",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "falsa_autoridad",
+      "senales": [
+        "Alguien que dice ser de la policía, Hacienda o un juzgado le pide dinero."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 516,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 3.000 euros a Abogados Asociados. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para la fianza de mi nieto, que le han detenido."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. La policía y Hacienda nunca piden dinero por teléfono ni por transferencia. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E05",
+      "tipo": "estafa",
+      "descripcion": "Inversión en criptomonedas con rentabilidad garantizada",
+      "categoria_esperada": "inversion_cripto",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "inversion_cripto",
+      "senales": [
+        "Le prometen ganar dinero rápido con una inversión."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 537,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 8.000 euros a Global Crypto Invest, a una cuenta de Lituania. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es una inversión que me ha recomendado un asesor, en bitcoin."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Nadie puede garantizar ganancias rápidas; es un engaño muy habitual. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E06",
+      "tipo": "estafa",
+      "descripcion": "Premio de lotería que exige pagar tasas",
+      "categoria_esperada": "premio_herencia",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 65,
+      "categoria": "premio_herencia",
+      "senales": [
+        "Le piden pagar antes para cobrar un premio o una herencia.",
+        "Menciona a otra persona que le indica qué hacer: me llamaron"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 664,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 950 euros a Lottery Claims Office, a una cuenta de Reino Unido. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha tocado un premio en una lotería y tengo que pagar los impuestos para cobrarlo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me llegó una carta y luego me llamaron."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Ningún premio ni herencia de verdad exige pagar antes para cobrarlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E07",
+      "tipo": "estafa",
+      "descripcion": "Pareja conocida por Facebook que pide dinero",
+      "categoria_esperada": "romance",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "romance",
+      "senales": [
+        "Le pide dinero alguien a quien solo conoce por internet."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 794,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 2.500 euros a Michael Anderson, a una cuenta de Nigeria. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para un amigo, Michael, que necesita pagar el billete para venir a verme."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me lo pidió él, está trabajando en una plataforma petrolífera y no tiene acceso a su dinero."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Michael Anderson y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Nos conocimos por Facebook hace unos meses, hablamos todos los días. En persona todavía no."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Pedir dinero a alguien que solo se conoce por internet es un engaño muy común. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E08",
+      "tipo": "estafa",
+      "descripcion": "Paquete retenido en aduana",
+      "categoria_esperada": "compra_online",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "compra_online",
+      "senales": [
+        "Le piden pagar por un paquete retenido o un envío."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 510,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 600 euros a Gestión Aduanera Express. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para sacar un paquete que tengo retenido en la aduana."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Las aduanas no cobran paquetes con transferencias a particulares. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E09",
+      "tipo": "estafa",
+      "descripcion": "Falsa deuda con Hacienda",
+      "categoria_esperada": "falsa_autoridad",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "falsa_autoridad",
+      "senales": [
+        "Alguien que dice ser de la policía, Hacienda o un juzgado le pide dinero."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 517,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.400 euros a Agencia Recaudación. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para pagar una deuda con Hacienda, si no me embargan la casa."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. La policía y Hacienda nunca piden dinero por teléfono ni por transferencia. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E10",
+      "tipo": "estafa",
+      "descripcion": "Coacción de un familiar presente",
+      "categoria_esperada": "coaccion_familiar",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 45,
+      "categoria": "ninguna",
+      "senales": [
+        "Alguien le está presionando o le da miedo."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 607,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 4.000 euros a Rubén Martín López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para mi sobrino."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me lo ha pedido él, dice que se lo debo... no sé, se enfada mucho si no se lo doy."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Rubén Martín López y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, es mi sobrino."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E11",
+      "tipo": "estafa",
+      "descripcion": "SMS falso del banco con enlace",
+      "categoria_esperada": "falso_banco",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 86,
+      "categoria": "falso_banco",
+      "senales": [
+        "Alguien que dice ser del banco le pide mover su dinero.",
+        "Usa palabras de urgencia o miedo: bloque",
+        "Menciona a otra persona que le indica qué hacer: mensaje"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 516,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 900 euros a Devolución Cargos SL. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para desbloquear mi cuenta, me llegó un mensaje del banco."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Su banco nunca le pedirá que mueva su dinero a otra cuenta para protegerlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E12",
+      "tipo": "estafa",
+      "descripcion": "Falsa compañía eléctrica: 'le cortamos la luz hoy'",
+      "categoria_esperada": "otra",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 30,
+      "categoria": "ninguna",
+      "senales": [
+        "Menciona a otra persona que le indica qué hacer: me ha dicho"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 617,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 750 euros a Energía Atención Cliente. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para pagar la luz, que me la cortan esta tarde si no pago."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha llamado un señor de la compañía de la luz, muy nervioso, que era el último aviso."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Energía Atención Cliente y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Normalmente lo pago por el banco, pero me ha dicho que esta vez tiene que ser a esta cuenta."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E13",
+      "tipo": "estafa",
+      "descripcion": "Cambio de cuenta del casero por correo (fraude del IBAN)",
+      "categoria_esperada": "otra",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 509,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.100 euros a Inmuebles Gestión Nueva, a una cuenta de Lituania. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para el alquiler del piso de mi hija, lo pago yo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha llegado un correo del casero diciendo que ha cambiado de banco y que ahora es esta cuenta."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E14",
+      "tipo": "estafa",
+      "descripcion": "Nieta con accidente: abogado pide dinero",
+      "categoria_esperada": "hijo_en_apuros",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 80,
+      "categoria": "falsa_autoridad",
+      "senales": [
+        "Alguien que dice ser de la policía, Hacienda o un juzgado le pide dinero.",
+        "Menciona a otra persona que le indica qué hacer: me ha llamado"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 645,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 5.000 euros a Despacho Legal Urgente. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Mi nieta ha tenido un accidente con el coche y tiene que pagar al otro conductor."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me ha llamado un abogado, luego se ha puesto mi nieta llorando, casi no la entendía."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. La policía y Hacienda nunca piden dinero por teléfono ni por transferencia. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E15",
+      "tipo": "estafa",
+      "descripcion": "Herencia de un pariente lejano en el extranjero",
+      "categoria_esperada": "premio_herencia",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 100,
+      "categoria": "premio_herencia",
+      "senales": [
+        "Alguien que dice ser de la policía, Hacienda o un juzgado le pide dinero.",
+        "Le piden pagar antes para cobrar un premio o una herencia.",
+        "Menciona a otra persona que le indica qué hacer: me escribio"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 666,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 2.200 euros a International Probate, a una cuenta de Reino Unido. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para cobrar una herencia de un primo de mi padre que vivía en Inglaterra."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me escribió un abogado inglés, dice que soy la única heredera y que hay que pagar unas tasas antes."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Ningún premio ni herencia de verdad exige pagar antes para cobrarlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E16",
+      "tipo": "estafa",
+      "descripcion": "Falsa devolución de la Seguridad Social",
+      "categoria_esperada": "otra",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 15,
+      "categoria": "ninguna",
+      "senales": [
+        "Menciona a otra persona que le indica qué hacer: me llamaron"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 476,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 500 euros a Gestoría Pensiones. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para que me devuelvan un dinero de la pensión que me cobraron de más."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me llamaron de la Seguridad Social, que para devolverme el dinero primero tengo que pagar 500 euros de gestión."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E17",
+      "tipo": "estafa",
+      "descripcion": "Cuidadora que presiona",
+      "categoria_esperada": "coaccion_familiar",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [
+        "Muestra dudas o confusión: no se"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 475,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 3.500 euros a Rosa Elena Díaz. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es un regalo para la señora que me cuida."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me lo ha pedido ella... bueno, dice que si no se lo doy se va, y yo sola no puedo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E18",
+      "tipo": "estafa",
+      "descripcion": "Inversión vista en un anuncio con un famoso",
+      "categoria_esperada": "inversion_cripto",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "inversion_cripto",
+      "senales": [
+        "Le prometen ganar dinero rápido con una inversión."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 539,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 3.000 euros a Smart Trading Platform, a una cuenta de Lituania. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para una inversión que vi en internet, salía un presentador de la tele que se había hecho rico."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Nadie puede garantizar ganancias rápidas; es un engaño muy habitual. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "E19",
+      "tipo": "estafa",
+      "descripcion": "Falso técnico de la compañía de teléfono",
+      "categoria_esperada": "falso_tecnico",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": false,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 621,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 800 euros a Telecom Servicios Técnicos. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para pagar a los de la fibra, que me han arreglado el router."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me llamaron ellos, que mi router tenía un problema de seguridad y que me iban a cortar internet."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Telecom Servicios Técnicos y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me pidieron que descargara una aplicación en el móvil para ayudarme."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "E20",
+      "tipo": "estafa",
+      "descripcion": "Falso banco con texto que intenta manipular a la IA",
+      "categoria_esperada": "falso_banco",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": true,
+      "nivel_riesgo": 60,
+      "categoria": "falso_banco",
+      "senales": [
+        "Alguien que dice ser del banco le pide mover su dinero."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 518,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 7.000 euros a Protección Fondos SL. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para proteger mi dinero, me lo ha dicho el banco."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Su banco nunca le pedirá que mueva su dinero a otra cuenta para protegerlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "L01",
+      "tipo": "legitima",
+      "descripcion": "Reforma a hijo habitual",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 470,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 900 euros a Carlos López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para pagar la reforma del baño, mi hijo Carlos se encarga de todo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo hemos hablado en casa, lo he decidido yo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L02",
+      "tipo": "legitima",
+      "descripcion": "Derrama de la comunidad (habitual)",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 497,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.200 euros a Comunidad de Propietarios C/ Mayor 12. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es la derrama del ascensor nuevo de la comunidad."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Se aprobó en la junta de vecinos, yo estuve."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L03",
+      "tipo": "legitima",
+      "descripcion": "Implantes en el dentista habitual",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 482,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 2.400 euros a Clínica Dental Sonrisa. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para pagar los implantes del dentista."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me dieron el presupuesto en la clínica y lo acepté yo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L04",
+      "tipo": "legitima",
+      "descripcion": "Fontanero nuevo con urgencia real",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 484,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 650 euros a Fontanería Hermanos García. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para el fontanero, que ha venido a casa porque se me rompió una tubería y me inundaba la cocina."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Le llamé yo, me lo recomendó mi vecina. Ya ha terminado y me ha dado la factura."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L05",
+      "tipo": "legitima",
+      "descripcion": "Nieto pide dinero, pero ella lo comprueba llamando",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": false,
+      "nivel_riesgo": 70,
+      "categoria": "hijo_en_apuros",
+      "senales": [
+        "Un supuesto familiar le pide dinero desde un número o un mensaje nuevo.",
+        "Menciona a otra persona que le indica qué hacer: me escribio, whatsapp"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 633,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 700 euros a Pablo López Sanz. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para la matrícula de la universidad de mi nieto Pablo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me escribió por WhatsApp, pero le llamé yo a su número de siempre y hablé con él y con su madre."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Los estafadores se hacen pasar por hijos o nietos desde números nuevos. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "L06",
+      "tipo": "legitima",
+      "descripcion": "Hija que vive en Alemania",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 25,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 619,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.500 euros a Lucía López, a una cuenta de Alemania. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para mi hija Lucía, que vive en Alemania y se está mudando de piso."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo hablamos por videollamada el domingo, se lo ofrecí yo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Lucía López y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es mi hija. La cuenta me la dio ella en persona cuando vino en Navidad."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L07",
+      "tipo": "legitima",
+      "descripcion": "Pago al notario por una herencia real",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "riesgo",
+      "acierto": false,
+      "nivel_riesgo": 60,
+      "categoria": "premio_herencia",
+      "senales": [
+        "Le piden pagar antes para cobrar un premio o una herencia."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 1,
+      "tiempos_turno_ms": [
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 513,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.300 euros a Notaría Fernández Ruiz. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para el notario, por las escrituras de la herencia de mi marido."
+        },
+        {
+          "rol": "asistente",
+          "texto": "María, esto tiene las señales de una estafa. Ningún premio ni herencia de verdad exige pagar antes para cobrarlo. Su dinero está a salvo: he parado la transferencia y un operador del banco la revisará con usted. Le recomiendo avisar a Carlos."
+        }
+      ]
+    },
+    {
+      "id": "L08",
+      "tipo": "legitima",
+      "descripcion": "Viaje del Imserso / balneario",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 820 euros a Viajes Balneario Termal. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es para un viaje al balneario con mi amiga Carmen."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo reservamos juntas en la agencia de viajes del barrio."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Viajes Balneario Termal y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, la agencia está al lado de casa, fui en persona."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L09",
+      "tipo": "legitima",
+      "descripcion": "Préstamo a una hermana",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 25,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 595,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 2.000 euros a Teresa López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Le presto un dinero a mi hermana Teresa para arreglar el coche."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me lo comentó ella comiendo el domingo y le dije que yo se lo dejaba."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Teresa López y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es mi hermana, la cuenta me la apuntó ella en un papel."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L10",
+      "tipo": "legitima",
+      "descripcion": "Nerviosa porque es su primera transferencia online",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 613,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.700 euros a Residencia Los Olivos. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Ay, perdone, es que es la primera vez que hago esto por el móvil y estoy un poco nerviosa. Es la mensualidad de la residencia de día."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo decidimos mi hijo y yo. Antes pagaba en ventanilla."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Residencia Los Olivos y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, voy allí tres días a la semana, la cuenta está en el contrato."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L11",
+      "tipo": "legitima",
+      "descripcion": "Regalo de boda a una sobrina",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 477,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 600 euros a Marta Sánchez López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es el regalo de boda de mi sobrina Marta."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "La cuenta venía en la invitación de la boda."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L12",
+      "tipo": "legitima",
+      "descripcion": "Compra de un audífono",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 613,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.900 euros a Centro Auditivo Plaza. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para los audífonos nuevos."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Fui al centro auditivo con mi hija, me hicieron la prueba y lo encargué yo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Centro Auditivo Plaza y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, la tienda está en la plaza del pueblo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L13",
+      "tipo": "legitima",
+      "descripcion": "Nieto de Erasmus en Lituania",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 16,
+      "categoria": "ninguna",
+      "senales": [
+        "Usa palabras de urgencia o miedo: antes de que"
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 2,
+      "tiempos_turno_ms": [
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 502,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 500 euros a Daniel López Pérez, a una cuenta de Lituania. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para mi nieto Daniel, que está estudiando en Lituania de Erasmus."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Se lo prometí antes de que se fuera, para ayudarle con el alquiler."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L14",
+      "tipo": "legitima",
+      "descripcion": "Pago de la segunda residencia en Portugal",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 25,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 639,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.100 euros a Condominio Praia Azul, a una cuenta de Portugal. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es la cuota anual del apartamento que tenemos en Portugal."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "La pago todos los años en estas fechas, la mandan por carta."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Condominio Praia Azul y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, el administrador nos conoce desde hace muchos años."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L15",
+      "tipo": "legitima",
+      "descripcion": "Arreglo del tejado tras una tormenta (urgente)",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 25,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 3.200 euros a Reformas Tejados Norte. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Para arreglar el tejado, que con la tormenta se me rompieron tejas y entra agua."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Pedí tres presupuestos con mi yerno y elegimos este."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Reformas Tejados Norte y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, han venido a casa a verlo, la empresa es del pueblo de al lado."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L16",
+      "tipo": "legitima",
+      "descripcion": "Hijo habitual, importe alto, motivo claro",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 10,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 595,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 6.000 euros a Carlos López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Le ayudo a mi hijo Carlos con la entrada del coche."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Se lo ofrecí yo, que el suyo ya no arrancaba."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Carlos López y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es mi hijo, hablamos todos los días."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L17",
+      "tipo": "legitima",
+      "descripcion": "Pago a una academia de informática para mayores",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 45,
+      "categoria": "ninguna",
+      "senales": [
+        "Habla de un técnico, de un virus o de instalar un programa en el ordenador."
+      ],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 615,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 540 euros a Academia Digital Senior. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es un curso de ordenador para mayores en una academia."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me apunté yo con mi amiga, nos lo recomendaron en el centro de mayores."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Academia Digital Senior y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, la academia está en mi calle, fui a informarme."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L18",
+      "tipo": "legitima",
+      "descripcion": "Pago de una multa de verdad a un ayuntamiento",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 25,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 619,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 520 euros a Ayuntamiento de Valdemoro. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es el recibo del IBI con el recargo, que se me pasó el plazo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Me llegó la carta del ayuntamiento y fui a la oficina a preguntar, allí me dieron la cuenta."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Ayuntamiento de Valdemoro y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Es el ayuntamiento de mi pueblo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L19",
+      "tipo": "legitima",
+      "descripcion": "Amiga de toda la vida en Francia",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 618,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 800 euros a Pilar Moreno, a una cuenta de Francia. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Le devuelvo a mi amiga Pilar lo que pagó por mí del viaje que hicimos."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo acordamos cuando volvimos, ella lo adelantó todo."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Pilar Moreno y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "La conozco de toda la vida, fuimos juntas al colegio. Ahora vive en Francia."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    },
+    {
+      "id": "L20",
+      "tipo": "legitima",
+      "descripcion": "Persona mayor con respuestas cortas pero coherentes",
+      "categoria_esperada": "ninguna",
+      "requiere_verificacion": true,
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 0,
+      "categoria": "ninguna",
+      "senales": [],
+      "motor_final": "reglas",
+      "fallo_ia": false,
+      "turnos": 3,
+      "tiempos_turno_ms": [
+        0,
+        0,
+        0
+      ],
+      "tiempos_ia_ms": [],
+      "tokens_entrada": 0,
+      "tokens_salida": 0,
+      "caracteres_voz": 611,
+      "conversacion": [
+        {
+          "rol": "asistente",
+          "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.250 euros a Muebles Hogar Centro. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Un sofá."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Gracias, María. ¿Ha tomado usted esta decisión por su cuenta, o alguien la ha llamado o le ha escrito para pedirle el dinero?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Lo elegí yo en la tienda."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Entendido. Una pregunta más: ¿conoce en persona a Muebles Hogar Centro y ha podido comprobarlo llamando usted al número de siempre?"
+        },
+        {
+          "rol": "cliente",
+          "texto": "Sí, la tienda la conozco, compré ahí la cama."
+        },
+        {
+          "rol": "asistente",
+          "texto": "Muchas gracias, María. Todo parece en orden. Si lo desea, ya puede confirmar el envío."
+        }
+      ]
+    }
+  ]
+}
