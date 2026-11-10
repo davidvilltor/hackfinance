@@ -46,6 +46,10 @@ class ResultadoTurno(BaseModel):
     motor: str = "reglas"
     tiempo_ia_ms: int | None = None   # cuánto ha tardado Claude (None si no se usó)
     fallo_ia: bool = False            # Claude estaba configurado pero no respondió bien
+    # Tokens consumidos en la llamada a Claude (para medir el coste por verificación).
+    # La salida incluye el razonamiento interno del modelo, que también se factura.
+    tokens_entrada: int = 0
+    tokens_salida: int = 0
 
 
 ESQUEMA_RESPUESTA = {
@@ -153,6 +157,8 @@ def _extraer_json(respuesta) -> dict:
 
 
 async def _llamar_claude(contexto: str) -> dict:
+    """Llama a Claude y devuelve el JSON de la respuesta. Añade la clave "_uso" con
+    los tokens consumidos (el llamador la retira antes de validar)."""
     global _fallbacks_soportados
     cliente = _obtener_cliente()
     peticion = dict(
@@ -185,7 +191,14 @@ async def _llamar_claude(contexto: str) -> dict:
         raise RuntimeError("El modelo ha rechazado la petición")
     if respuesta.stop_reason == "max_tokens":
         raise RuntimeError("Respuesta truncada por max_tokens")
-    return _extraer_json(respuesta)
+    datos = _extraer_json(respuesta)
+    uso = respuesta.usage
+    datos["_uso"] = {
+        "entrada": (uso.input_tokens or 0) + (getattr(uso, "cache_read_input_tokens", 0) or 0)
+                   + (getattr(uso, "cache_creation_input_tokens", 0) or 0),
+        "salida": uso.output_tokens or 0,
+    }
+    return datos
 
 
 # --------------------------------------------------------------------------- heurística
@@ -321,11 +334,13 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
     datos: dict | None = None
     motor = "reglas"
     tiempo_ia_ms = None
+    uso = {"entrada": 0, "salida": 0}
     if config.ia_disponible():
         inicio = time.perf_counter()
         try:
             contexto = _construir_contexto(transferencia, cuenta, mensajes, senales, turno)
             datos = await _llamar_claude(contexto)
+            uso = datos.pop("_uso", uso)
             if datos.get("decision") not in ("preguntar", "seguro", "riesgo"):
                 raise ValueError(f"Decisión no permitida: {datos.get('decision')!r}")
             motor = "claude"
@@ -344,6 +359,7 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
         datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno)
         resultado = ResultadoTurno(**datos, motor="reglas")
     resultado.tiempo_ia_ms = tiempo_ia_ms
+    resultado.tokens_entrada, resultado.tokens_salida = uso["entrada"], uso["salida"]
     resultado.fallo_ia = config.ia_disponible() and resultado.motor != "claude"
 
     # Garantía: la conversación nunca se alarga más allá del máximo de turnos.
