@@ -23,6 +23,11 @@
 Nueva transferencia de 3.000 € a "Mi hijo Carlos" → verificar → *"Es para mi sobrino… mira qué girasoles más bonitos."*
 ➡️ La pantalla solo dice "Su operación está en revisión"; quien presiona no se entera de nada. En el panel aparece **PALABRA DE AUXILIO**.
 
+## 3b · La memoria (40 s, opcional)
+Enviar dinero → *Otra persona* → `Ayesha Khan`, `PK36 SCBL 0000 0011 2345 6702`, **400**, concepto *Estudios* → verificar → *"Es para mi prima Ayesha, que vive en Pakistán. Le ayudo con los estudios de enfermería."* → *"Lo decidí yo sola, se lo prometí a su madre."* → Enviar.
+➡️ Repita a la misma cuenta con **550 €**: se envía **sin preguntas** ("SilverShield ya conoce este envío habitual"). *"La primera vez pregunta; la segunda se acuerda de que tiene una prima en Pakistán."*
+➡️ En el panel, **Memoria de SilverShield** muestra lo que ha aprendido. Si quiere, pruebe con **4.000 €**: vuelve a verificar, porque es mucho más de lo habitual.
+
 ## 4 · Accesibilidad (15 s)
 Pulse **Letra: Muy grande** y **Alto contraste**, y enseñe los botones **Repetir** y **Prefiero escribir**.
 

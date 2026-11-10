@@ -1,9 +1,11 @@
 """Agente conversacional de verificación de SilverShield.
 
 Cada turno envía a Claude el contexto de la transferencia, las alertas del motor
-de reglas, los indicadores de voz y la conversación completa, y recibe una
-respuesta estructurada (JSON validado por esquema) con lo que hay que decir en
-voz alta y la decisión: seguir preguntando, "seguro" o "riesgo".
+de reglas, los indicadores de voz, la memoria de la clienta (lo aprendido en
+verificaciones anteriores) y la conversación completa, y recibe una respuesta
+estructurada (JSON validado por esquema) con lo que hay que decir en voz alta, la
+decisión (seguir preguntando, "seguro" o "riesgo") y los hechos que conviene
+recordar para la próxima vez.
 
 Si Claude no está configurado, un evaluador heurístico local mantiene la demo
 funcionando con la misma interfaz. Si Claude SÍ está configurado pero falla
@@ -50,6 +52,8 @@ class ResultadoTurno(BaseModel):
     # La salida incluye el razonamiento interno del modelo, que también se factura.
     tokens_entrada: int = 0
     tokens_salida: int = 0
+    # Hechos que SilverShield quiere recordar de esta clienta para la próxima vez.
+    recordar: list[str] = []
 
 
 ESQUEMA_RESPUESTA = {
@@ -61,9 +65,10 @@ ESQUEMA_RESPUESTA = {
         "categoria": {"type": "string", "enum": CATEGORIAS},
         "senales": {"type": "array", "items": {"type": "string"}},
         "resumen_para_contacto": {"type": "string"},
+        "recordar": {"type": "array", "items": {"type": "string"}},
     },
     "required": ["respuesta", "decision", "nivel_riesgo", "categoria", "senales",
-                 "resumen_para_contacto"],
+                 "resumen_para_contacto", "recordar"],
     "additionalProperties": False,
 }
 
@@ -105,8 +110,54 @@ def mensaje_apertura(transferencia: dict, cuenta: dict) -> str:
 
 # --------------------------------------------------------------------------- contexto
 
+MAX_RECUERDOS_POR_TURNO = 3
+MAX_LARGO_RECUERDO = 220
+
+
+def limpiar_recuerdos(recuerdos: list[str], cuenta: dict) -> list[str]:
+    """Filtra lo que se guarda en la memoria: pocos hechos, cortos y sin datos sensibles.
+    Nunca se guarda la palabra de auxilio (si apareciera, el hecho se descarta)."""
+    palabra = normalizar_texto(cuenta.get("palabra_seguridad") or "")
+    limpios = []
+    for texto in recuerdos or []:
+        texto = " ".join(str(texto).split())[:MAX_LARGO_RECUERDO]
+        if not texto or (palabra and palabra in normalizar_texto(texto)):
+            continue
+        limpios.append(texto)
+    return limpios[:MAX_RECUERDOS_POR_TURNO]
+
+
+def _texto_memoria(memoria: dict | None, transferencia: dict) -> str:
+    if not memoria:
+        return "Sin memoria previa de esta clienta."
+    perfil = memoria.get("perfil") or {}
+    lineas = []
+    if perfil.get("envios"):
+        maximo = perfil.get("importe_max_verificado")
+        lineas.append(
+            f"Envíos anteriores completados a esta misma cuenta: {perfil['envios']}"
+            f" (verificados por SilverShield: {perfil.get('envios_verificados', 0)}"
+            + (f"; el mayor importe verificado fue {euros_hablados(maximo)}" if maximo else "")
+            + ")."
+        )
+    else:
+        lineas.append("Es la primera vez que la clienta envía dinero a esta cuenta.")
+    if perfil.get("alerta"):
+        lineas.append("ATENCIÓN: esta cuenta ya apareció en un intento de estafa anterior.")
+    iban = transferencia.get("iban")
+    propios = [m for m in memoria.get("hechos", []) if m.get("iban") == iban]
+    otros = [m for m in memoria.get("hechos", []) if m.get("iban") != iban]
+    if propios:
+        lineas.append("Lo que recuerdas de verificaciones anteriores con este destinatario:")
+        lineas += [f"- ({m['fecha'][:10]}, {m['tipo']}) {m['texto']}" for m in propios]
+    if otros:
+        lineas.append("Alertas recientes de la clienta con otros destinatarios:")
+        lineas += [f"- ({m['fecha'][:10]}) {m['texto']}" for m in otros]
+    return "\n".join(lineas)
+
+
 def _construir_contexto(transferencia: dict, cuenta: dict, mensajes: list[dict],
-                        senales: dict, turno: int) -> str:
+                        senales: dict, turno: int, memoria: dict | None = None) -> str:
     evaluacion = transferencia.get("evaluacion") or {}
     motivos = evaluacion.get("motivos") or []
     lineas_motivos = "\n".join(f"- {m['texto']}" for m in motivos) or "- (ninguno)"
@@ -131,6 +182,10 @@ Concepto escrito por el cliente: {transferencia.get('concepto') or '(vacío)'}
 Alertas del motor de reglas (nivel {evaluacion.get('nivel', 'desconocido')}):
 {lineas_motivos}
 </transferencia>
+
+<memoria_cliente>
+{_texto_memoria(memoria, transferencia)}
+</memoria_cliente>
 
 <indicadores_voz>
 Nivel de estrés estimado en la última respuesta: {senales.get('nivel_porcentaje', 0)}% ({senales.get('estado', 'sin datos')})
@@ -260,7 +315,7 @@ _EXPLICACIONES = {
 
 
 def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
-                        senales: dict, turno: int) -> dict:
+                        senales: dict, turno: int, memoria: dict | None = None) -> dict:
     textos_cliente = " ".join(m["texto"] for m in mensajes if m["rol"] == "cliente")
     texto = normalizar_texto(textos_cliente)
     nivel_reglas = (transferencia.get("evaluacion") or {}).get("nivel", "bajo")
@@ -276,6 +331,9 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
         puntos += 15
     puntos -= 15 * len(legitimas)
     nivel = max(0, min(100, puntos))
+    if ((memoria or {}).get("perfil") or {}).get("alerta"):
+        # La cuenta ya apareció en un intento de estafa: ninguna explicación la vuelve segura.
+        nivel = max(nivel, 60)
 
     categoria = max(detectadas, key=lambda c: len(detectadas[c])) if detectadas else "ninguna"
     lista_senales = [_SENALES_SENCILLAS[cat] for cat in detectadas]
@@ -328,8 +386,10 @@ def _evaluar_heuristico(transferencia: dict, cuenta: dict, mensajes: list[dict],
 # --------------------------------------------------------------------------- API pública
 
 async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
-                        senales: dict) -> ResultadoTurno:
-    """Evalúa la última respuesta del cliente y devuelve el siguiente paso."""
+                        senales: dict, memoria: dict | None = None) -> ResultadoTurno:
+    """Evalúa la última respuesta del cliente y devuelve el siguiente paso.
+
+    `memoria` = {"perfil": historial con este destinatario, "hechos": recuerdos}."""
     turno = sum(1 for m in mensajes if m["rol"] == "cliente")
     datos: dict | None = None
     motor = "reglas"
@@ -338,7 +398,7 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
     if config.ia_disponible():
         inicio = time.perf_counter()
         try:
-            contexto = _construir_contexto(transferencia, cuenta, mensajes, senales, turno)
+            contexto = _construir_contexto(transferencia, cuenta, mensajes, senales, turno, memoria)
             datos = await _llamar_claude(contexto)
             uso = datos.pop("_uso", uso)
             if datos.get("decision") not in ("preguntar", "seguro", "riesgo"):
@@ -349,14 +409,14 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
             log.error("Fallo al consultar Claude, se usa el evaluador local: %s", error)
         tiempo_ia_ms = int((time.perf_counter() - inicio) * 1000)
     if datos is None:
-        datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno)
+        datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno, memoria)
 
     datos["nivel_riesgo"] = max(0, min(100, int(datos.get("nivel_riesgo", 0))))
     try:
         resultado = ResultadoTurno(**datos, motor=motor)
     except ValidationError as error:
         log.error("Respuesta con formato inesperado (%s); se usa el evaluador local.", error)
-        datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno)
+        datos = _evaluar_heuristico(transferencia, cuenta, mensajes, senales, turno, memoria)
         resultado = ResultadoTurno(**datos, motor="reglas")
     resultado.tiempo_ia_ms = tiempo_ia_ms
     resultado.tokens_entrada, resultado.tokens_salida = uso["entrada"], uso["salida"]
@@ -382,6 +442,9 @@ async def evaluar_turno(transferencia: dict, cuenta: dict, mensajes: list[dict],
     # Fallar de forma segura: sin la IA no se da ninguna transferencia por buena.
     if resultado.fallo_ia and resultado.decision == "seguro":
         _marcar_no_verificada(resultado, cuenta)
+    # Solo se recuerda algo cuando hay una decisión final.
+    resultado.recordar = (limpiar_recuerdos(resultado.recordar, cuenta)
+                          if resultado.decision in ("seguro", "riesgo") else [])
     return resultado
 
 

@@ -16,6 +16,7 @@ LONGITUD_IBAN = {
     "GR": 27, "HR": 21, "HU": 28, "IE": 22, "IR": 26, "IT": 27, "LB": 28, "LT": 20,
     "LU": 20, "LV": 21, "MA": 28, "MC": 27, "MT": 31, "NL": 18, "NO": 15, "PL": 28,
     "PT": 25, "RO": 24, "SE": 24, "SI": 19, "SK": 24, "TR": 26, "UA": 29, "VG": 24,
+    "PK": 24, "BR": 29, "DO": 28, "EG": 29, "TN": 24, "SA": 24, "IL": 23, "GE": 22,
 }
 
 NOMBRE_PAIS = {
@@ -26,7 +27,8 @@ NOMBRE_PAIS = {
     "GR": "Grecia", "HR": "Croacia", "HT": "Haití", "HU": "Hungría", "IE": "Irlanda",
     "IR": "Irán", "IT": "Italia", "KE": "Kenia", "KP": "Corea del Norte",
     "LB": "Líbano", "LT": "Lituania", "LU": "Luxemburgo", "LV": "Letonia",
-    "MA": "Marruecos", "MC": "Mónaco", "MM": "Myanmar", "MT": "Malta", "NG": "Nigeria",
+    "MA": "Marruecos", "PK": "Pakistán", "BR": "Brasil", "DO": "República Dominicana",
+    "EG": "Egipto", "TN": "Túnez", "SA": "Arabia Saudí", "IL": "Israel", "GE": "Georgia", "MC": "Mónaco", "MM": "Myanmar", "MT": "Malta", "NG": "Nigeria",
     "NL": "Países Bajos", "NO": "Noruega", "PH": "Filipinas", "PL": "Polonia",
     "PT": "Portugal", "RO": "Rumanía", "SE": "Suecia", "SI": "Eslovenia",
     "SK": "Eslovaquia", "SY": "Siria", "TR": "Turquía", "UA": "Ucrania",
@@ -48,7 +50,11 @@ PALABRAS_CONCEPTO_SOSPECHOSO = [
 REGLAS_QUE_ACTIVAN = {
     "IMPORTE_ELEVADO", "PAIS_ALTO_RIESGO", "EXTRANJERO_NUEVO",
     "CONCEPTO_SOSPECHOSO", "PORCENTAJE_SALDO",
+    "IMPORTE_INUSUAL_DESTINATARIO", "CUENTA_CON_ALERTA",
 }
+# Reglas que impiden saltarse la verificación aunque el destino sea habitual.
+REGLAS_SIEMPRE_VERIFICAR = {"CONCEPTO_SOSPECHOSO", "PAIS_ALTO_RIESGO", "PORCENTAJE_SALDO",
+                            "IMPORTE_INUSUAL_DESTINATARIO", "CUENTA_CON_ALERTA"}
 
 PESOS = {
     "IMPORTE_ELEVADO": 30,
@@ -57,6 +63,8 @@ PESOS = {
     "CONCEPTO_SOSPECHOSO": 30,
     "PORCENTAJE_SALDO": 20,
     "BENEFICIARIO_NUEVO": 10,
+    "IMPORTE_INUSUAL_DESTINATARIO": 30,
+    "CUENTA_CON_ALERTA": 60,
 }
 
 
@@ -125,8 +133,13 @@ def evaluar_transferencia(
     concepto: str,
     beneficiario_conocido: bool,
     saldo: float,
+    perfil: dict | None = None,
 ) -> dict:
     """Aplica las reglas y devuelve un dict serializable con la evaluación.
+
+    `perfil` es la memoria de SilverShield sobre este destinatario (ver
+    database.perfil_destinatario): si ya se verificó antes, cuánto se le envió
+    como máximo tras verificar y si la cuenta apareció en un intento de estafa.
 
     - Importe >= umbral (500 € por defecto) -> siempre se pide confirmación.
     - Por debajo del umbral, se pide confirmación si la cuenta es de un país de
@@ -168,10 +181,30 @@ def evaluar_transferencia(
     if not beneficiario_conocido and not extranjero:
         anadir("BENEFICIARIO_NUEVO", "Es la primera vez que envía dinero a esta persona.")
 
+    # --- Parámetros personalizados (memoria por cliente) ---
+    perfil = perfil or {}
+    maximo = perfil.get("importe_max_verificado")
+    limite_habitual = maximo * config.MARGEN_IMPORTE_HABITUAL if maximo else None
+    if perfil.get("alerta"):
+        anadir("CUENTA_CON_ALERTA",
+               "Esta cuenta ya apareció en un intento de estafa anterior.")
+    if limite_habitual and importe > limite_habitual:
+        anadir("IMPORTE_INUSUAL_DESTINATARIO",
+               f"Es bastante más de lo que suele enviar a esta persona "
+               f"(hasta ahora, como mucho {formatear_euros(maximo)}).")
+
     codigos = {m["codigo"] for m in motivos}
     requiere = bool(codigos & REGLAS_QUE_ACTIVAN)
+    # Lo de siempre: destinatario ya verificado por SilverShield e importe dentro de
+    # lo habitual. No se vuelve a molestar a la persona.
+    destino_habitual = bool(
+        perfil.get("verificado") and limite_habitual and importe <= limite_habitual
+        and not codigos & REGLAS_SIEMPRE_VERIFICAR
+    )
+    if destino_habitual:
+        requiere = False
     puntuacion = min(100, sum(PESOS[c] for c in codigos))
-    if puntuacion >= 60 or "PAIS_ALTO_RIESGO" in codigos:
+    if puntuacion >= 60 or codigos & {"PAIS_ALTO_RIESGO", "CUENTA_CON_ALERTA"}:
         nivel = "alto"
     elif puntuacion >= 30:
         nivel = "medio"
@@ -194,4 +227,6 @@ def evaluar_transferencia(
         "extranjero": extranjero,
         "beneficiario_nuevo": not beneficiario_conocido,
         "palabras_concepto": palabras,
+        "destino_habitual_verificado": destino_habitual,
+        "importe_habitual_max": maximo,
     }

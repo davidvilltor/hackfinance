@@ -93,7 +93,24 @@ CREATE TABLE IF NOT EXISTS alertas (
     canal TEXT NOT NULL,
     destinatario TEXT
 );
+-- Memoria de SilverShield sobre la clienta: lo que aprende en cada verificación.
+--   contexto: hechos de una transferencia legítima ("su prima Ayesha vive en Pakistán...")
+--   alerta:   intentos de estafa o coacción ("intentaron estafarla con un falso técnico...")
+CREATE TABLE IF NOT EXISTS memoria (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha TEXT NOT NULL,
+    tipo TEXT NOT NULL CHECK (tipo IN ('contexto', 'alerta')),
+    iban TEXT,
+    beneficiario TEXT,
+    texto TEXT NOT NULL,
+    transferencia_id INTEGER REFERENCES transferencias(id)
+);
 """
+
+# Formas de completar una transferencia que cuentan como "verificada" para la memoria.
+# (No cuenta "habitual_verificado": así el importe habitual no puede ir creciendo
+# sin que nadie lo vuelva a comprobar.)
+VIAS_VERIFICADAS = ("verificada_ia", "liberada_operador")
 
 
 def ahora() -> str:
@@ -154,7 +171,7 @@ def _sembrar(db: sqlite3.Connection) -> None:
 
 def reiniciar_demo() -> None:
     with conectar() as db:
-        for tabla in ("alertas", "mensajes", "transferencias", "beneficiarios", "cuenta"):
+        for tabla in ("memoria", "alertas", "mensajes", "transferencias", "beneficiarios", "cuenta"):
             db.execute(f"DELETE FROM {tabla}")
         db.execute("DELETE FROM sqlite_sequence")
         _sembrar(db)
@@ -310,3 +327,68 @@ def listar_alertas(limite: int = 30) -> list[dict]:
             "SELECT * FROM alertas ORDER BY id DESC LIMIT ?", (limite,)
         ).fetchall()
         return [dict(f) for f in filas]
+
+
+# ---------------------------------------------------------------- Memoria por cliente
+
+def guardar_memoria(tipo: str, textos: list[str], iban: str | None, beneficiario: str | None,
+                    transferencia_id: int | None) -> int:
+    with conectar() as db:
+        for texto in textos:
+            db.execute(
+                "INSERT INTO memoria (fecha, tipo, iban, beneficiario, texto, transferencia_id) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (ahora(), tipo, iban, beneficiario, texto, transferencia_id),
+            )
+    return len(textos)
+
+
+def listar_memoria(limite: int = 100) -> list[dict]:
+    with conectar() as db:
+        filas = db.execute("SELECT * FROM memoria ORDER BY id DESC LIMIT ?", (limite,)).fetchall()
+        return [dict(f) for f in filas]
+
+
+def memoria_para(iban: str) -> list[dict]:
+    """Lo que SilverShield debe recordar al verificar una transferencia a `iban`:
+    los hechos sobre ese destinatario y las alertas recientes de la clienta."""
+    with conectar() as db:
+        propios = db.execute(
+            "SELECT * FROM memoria WHERE iban = ? ORDER BY id DESC LIMIT 8", (iban,)
+        ).fetchall()
+        alertas = db.execute(
+            "SELECT * FROM memoria WHERE tipo = 'alerta' AND (iban IS NULL OR iban != ?) "
+            "ORDER BY id DESC LIMIT 5", (iban,)
+        ).fetchall()
+    return [dict(f) for f in reversed(propios)] + [dict(f) for f in reversed(alertas)]
+
+
+def borrar_memoria(memoria_id: int) -> bool:
+    with conectar() as db:
+        return db.execute("DELETE FROM memoria WHERE id = ?", (memoria_id,)).rowcount > 0
+
+
+def perfil_destinatario(iban: str) -> dict:
+    """Historial de la clienta con este destinatario, para personalizar las reglas."""
+    marcas = ",".join("?" * len(VIAS_VERIFICADAS))
+    with conectar() as db:
+        envios = db.execute(
+            "SELECT COUNT(*), MAX(fecha) FROM transferencias WHERE iban = ? AND estado = ?",
+            (iban, COMPLETADA),
+        ).fetchone()
+        verificadas = db.execute(
+            f"SELECT COUNT(*), MAX(importe) FROM transferencias "
+            f"WHERE iban = ? AND estado = ? AND via IN ({marcas})",
+            (iban, COMPLETADA, *VIAS_VERIFICADAS),
+        ).fetchone()
+        alerta = db.execute(
+            "SELECT 1 FROM memoria WHERE iban = ? AND tipo = 'alerta' LIMIT 1", (iban,)
+        ).fetchone()
+    return {
+        "envios": envios[0],
+        "ultimo_envio": envios[1],
+        "verificado": verificadas[0] > 0,
+        "envios_verificados": verificadas[0],
+        "importe_max_verificado": verificadas[1],
+        "alerta": alerta is not None,
+    }
