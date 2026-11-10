@@ -11,6 +11,7 @@
     "falsos_positivos": 2,
     "no_verificadas_por_fallo_ia": 0,
     "turnos_medios": 2.17,
+    "llamadas_ia_medias": 0,
     "tiempo_turno_medio_ms": 0,
     "tiempo_turno_p95_ms": 0,
     "tiempo_ia_medio_ms": null,
@@ -48,6 +49,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 514,
       "conversacion": [
         {
@@ -86,6 +89,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 548,
       "conversacion": [
         {
@@ -127,6 +132,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 605,
       "conversacion": [
         {
@@ -181,6 +188,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 516,
       "conversacion": [
         {
@@ -219,6 +228,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 537,
       "conversacion": [
         {
@@ -259,6 +270,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 664,
       "conversacion": [
         {
@@ -307,6 +320,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 794,
       "conversacion": [
         {
@@ -361,6 +376,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 510,
       "conversacion": [
         {
@@ -399,6 +416,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 517,
       "conversacion": [
         {
@@ -439,6 +458,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 607,
       "conversacion": [
         {
@@ -495,6 +516,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 516,
       "conversacion": [
         {
@@ -535,6 +558,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 617,
       "conversacion": [
         {
@@ -588,6 +613,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 509,
       "conversacion": [
         {
@@ -636,6 +663,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 645,
       "conversacion": [
         {
@@ -685,6 +714,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 666,
       "conversacion": [
         {
@@ -732,6 +763,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 476,
       "conversacion": [
         {
@@ -779,6 +812,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 475,
       "conversacion": [
         {
@@ -825,6 +860,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 539,
       "conversacion": [
         {
@@ -863,6 +900,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 621,
       "conversacion": [
         {
@@ -917,6 +956,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 518,
       "conversacion": [
         {
@@ -954,6 +995,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 470,
       "conversacion": [
         {
@@ -999,6 +1042,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 497,
       "conversacion": [
         {
@@ -1044,6 +1089,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 482,
       "conversacion": [
         {
@@ -1089,6 +1136,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 484,
       "conversacion": [
         {
@@ -1137,6 +1186,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 633,
       "conversacion": [
         {
@@ -1183,6 +1234,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 619,
       "conversacion": [
         {
@@ -1237,6 +1290,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 513,
       "conversacion": [
         {
@@ -1275,6 +1330,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 615,
       "conversacion": [
         {
@@ -1329,6 +1386,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 595,
       "conversacion": [
         {
@@ -1383,6 +1442,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 613,
       "conversacion": [
         {
@@ -1436,6 +1497,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 477,
       "conversacion": [
         {
@@ -1482,6 +1545,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 613,
       "conversacion": [
         {
@@ -1537,6 +1602,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 502,
       "conversacion": [
         {
@@ -1583,6 +1650,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 639,
       "conversacion": [
         {
@@ -1637,6 +1706,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 615,
       "conversacion": [
         {
@@ -1691,6 +1762,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 595,
       "conversacion": [
         {
@@ -1747,6 +1820,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 615,
       "conversacion": [
         {
@@ -1801,6 +1876,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 619,
       "conversacion": [
         {
@@ -1855,6 +1932,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 618,
       "conversacion": [
         {
@@ -1909,6 +1988,8 @@
       "tiempos_ia_ms": [],
       "tokens_entrada": 0,
       "tokens_salida": 0,
+      "llamadas_ia": 0,
+      "recordar": [],
       "caracteres_voz": 611,
       "conversacion": [
         {

@@ -18,6 +18,12 @@ Flujo de una transferencia:
 Por motivos legales, solo un operador del banco puede liberar una transferencia
 retenida (tras hablar con el titular). El contacto de emergencia solo recibe avisos.
 Las rutas del operador exigen haber iniciado sesión (ver acceso_operador.py).
+
+Memoria por cliente: al terminar cada verificación, SilverShield guarda lo que ha
+aprendido (hechos de una transferencia legítima o el patrón de un intento de
+estafa). La próxima vez, las reglas usan el historial con ese destinatario (un
+envío "de lo de siempre" ya verificado no se vuelve a preguntar) y Claude recibe
+esos recuerdos como contexto para preguntar menos y detectar cambios.
 """
 import asyncio
 import logging
@@ -245,6 +251,7 @@ async def crear_transferencia(datos: NuevaTransferencia):
         concepto=datos.concepto,
         beneficiario_conocido=db.beneficiario_conocido(iban),
         saldo=cuenta["saldo"],
+        perfil=db.perfil_destinatario(iban),
     )
     estado_inicial = db.PENDIENTE_DECISION if evaluacion["requiere_confirmacion"] else db.COMPLETADA
     t = db.crear_transferencia(
@@ -252,7 +259,8 @@ async def crear_transferencia(datos: NuevaTransferencia):
         db.PENDIENTE_DECISION, evaluacion,
     )
     if estado_inicial == db.COMPLETADA:
-        t = _completar(t["id"], via="directa")
+        via = "habitual_verificado" if evaluacion["destino_habitual_verificado"] else "directa"
+        t = _completar(t["id"], via=via)
     return {"transferencia": t, "evaluacion": evaluacion, "saldo": db.obtener_cuenta()["saldo"]}
 
 
@@ -323,6 +331,19 @@ async def iniciar_verificacion(transferencia_id: int):
     return {"transferencia": t, "mensajes": [_mensaje_publico(saludo)]}
 
 
+def _recordar(resultado, t: dict, transferencia_id: int) -> None:
+    """Guarda en la memoria de la clienta lo aprendido en una verificación terminada."""
+    if resultado.decision == "seguro" and resultado.recordar:
+        db.guardar_memoria("contexto", resultado.recordar, t["iban"], t["beneficiario_nombre"],
+                           transferencia_id)
+    elif resultado.decision == "riesgo":
+        hechos = resultado.recordar or [
+            f"Intento de estafa detectado ({resultado.categoria}) al enviar "
+            f"{euros_hablados(t['importe'])} a {t['beneficiario_nombre']}."
+        ]
+        db.guardar_memoria("alerta", hechos, t["iban"], t["beneficiario_nombre"], transferencia_id)
+
+
 def _contiene_palabra_seguridad(texto: str, palabra: str | None) -> bool:
     return bool(palabra) and normalizar_texto(palabra) in normalizar_texto(texto)
 
@@ -360,6 +381,11 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
             f"URGENTE: {cuenta['titular']} ha usado su palabra de auxilio al intentar enviar "
             f"{euros_hablados(t['importe'])} a {t['beneficiario_nombre']}. Llámele o acuda en persona.",
         )
+        # Se recuerda la coacción (sin la palabra) para futuras verificaciones.
+        db.guardar_memoria("alerta", [
+            f"Usó su palabra de auxilio (posible coacción) al intentar enviar "
+            f"{euros_hablados(t['importe'])} a {t['beneficiario_nombre']}."
+        ], t["iban"], t["beneficiario_nombre"], transferencia_id)
         return {
             "respuesta": _mensaje_publico(respuesta),
             "decision": "revision",
@@ -369,7 +395,8 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
             "tiempo_ms": int((time.perf_counter() - inicio) * 1000),
         }
 
-    resultado = await evaluar_turno(t, cuenta, mensajes, senales)
+    memoria = {"perfil": db.perfil_destinatario(t["iban"]), "hechos": db.memoria_para(t["iban"])}
+    resultado = await evaluar_turno(t, cuenta, mensajes, senales, memoria)
     tiempo_ms = int((time.perf_counter() - inicio) * 1000)
     respuesta = db.guardar_mensaje(transferencia_id, "asistente", resultado.respuesta, {
         "motor": resultado.motor, "tiempo_ms": tiempo_ms, "tiempo_ia_ms": resultado.tiempo_ia_ms,
@@ -405,6 +432,7 @@ async def responder_verificacion(transferencia_id: int, datos: RespuestaCliente)
     elif resultado.decision == "seguro":
         campos.update(estado=db.VERIFICADA_SEGURA)
     t = db.actualizar_transferencia(transferencia_id, **campos)
+    _recordar(resultado, t, transferencia_id)
 
     return {
         "respuesta": _mensaje_publico(respuesta),
@@ -455,8 +483,24 @@ async def datos_panel(operador: str = Depends(exigir_operador)):
         "cuenta": cuenta,
         "transferencias": db.listar_transferencias(limite=50),
         "alertas": db.listar_alertas(),
+        "memoria": db.listar_memoria(),
         "estado": await estado(),
     }
+
+
+@app.get("/api/memoria")
+async def ver_memoria(_operador: str = Depends(exigir_operador)):
+    """Todo lo que SilverShield recuerda de la clienta (solo para el operador)."""
+    return {"memoria": db.listar_memoria()}
+
+
+@app.delete("/api/memoria/{memoria_id}")
+async def borrar_recuerdo(memoria_id: int, operador: str = Depends(exigir_operador)):
+    """El operador puede borrar un recuerdo erróneo (por ejemplo, un falso positivo)."""
+    if not db.borrar_memoria(memoria_id):
+        raise HTTPException(status_code=404, detail="Recuerdo no encontrado")
+    log.info("El operador «%s» ha borrado el recuerdo #%s", operador, memoria_id)
+    return {"ok": True}
 
 
 @app.post("/api/demo/reiniciar")

@@ -1,27 +1,28 @@
 {
   "resumen": {
     "casos": 40,
-    "aciertos": 39,
-    "exactitud": 0.975,
+    "aciertos": 40,
+    "exactitud": 1.0,
     "estafas_detectadas": 20,
     "estafas_total": 20,
     "falsos_negativos": 0,
-    "legitimas_aprobadas": 19,
+    "legitimas_aprobadas": 20,
     "legitimas_total": 20,
-    "falsos_positivos": 1,
+    "falsos_positivos": 0,
     "no_verificadas_por_fallo_ia": 0,
-    "turnos_medios": 2.02,
-    "tiempo_turno_medio_ms": 5401,
-    "tiempo_turno_p95_ms": 9456,
-    "tiempo_ia_medio_ms": 5400,
-    "tiempo_ia_p95_ms": 9456,
+    "turnos_medios": 1.62,
+    "llamadas_ia_medias": 1.62,
+    "tiempo_turno_medio_ms": 5954,
+    "tiempo_turno_p95_ms": 9305,
+    "tiempo_ia_medio_ms": 5953,
+    "tiempo_ia_p95_ms": 9305,
     "sin_verificacion_por_reglas": [],
-    "tokens_entrada_medios": 6379,
-    "tokens_salida_medios": 835,
-    "caracteres_voz_medios": 790,
-    "coste_ia_medio_usd": 0.04223,
-    "coste_voz_medio_usd": 0.06325,
-    "coste_total_medio_usd": 0.10548,
+    "tokens_entrada_medios": 9316,
+    "tokens_salida_medios": 675,
+    "caracteres_voz_medios": 690,
+    "coste_ia_medio_usd": 0.05077,
+    "coste_voz_medio_usd": 0.05523,
+    "coste_total_medio_usd": 0.106,
     "modelo_voz": "eleven_multilingual_v2"
   },
   "casos": [
@@ -37,22 +38,25 @@
       "categoria": "falso_banco",
       "senales": [
         "Un señor que dice ser del banco la ha llamado por teléfono.",
-        "Le ha pedido pasar su dinero a una supuesta cuenta segura.",
-        "Le ha asustado diciendo que le están robando.",
-        "El banco nunca pide mover el dinero por teléfono."
+        "Le pide pasar su dinero a una supuesta cuenta segura.",
+        "Le asusta diciendo que le están robando."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        6094
+        7694
       ],
       "tiempos_ia_ms": [
-        6094
+        7694
       ],
-      "tokens_entrada": 3077,
-      "tokens_salida": 449,
-      "caracteres_voz": 726,
+      "tokens_entrada": 5691,
+      "tokens_salida": 436,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Un falso empleado del banco la llamó para que pasara 6.000 euros a una supuesta cuenta segura, diciéndole que le estaban robando."
+      ],
+      "caracteres_voz": 650,
       "conversacion": [
         {
           "rol": "asistente",
@@ -64,7 +68,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por contármelo, ha hecho muy bien en comprobarlo. Esto tiene todas las señales de un engaño: el banco nunca llama para pedir que mueva su dinero a otra cuenta, y una cuenta llamada Cuenta Segura es un truco habitual de los estafadores. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que avise a Carlos y que, si vuelve a llamar ese señor, cuelgue sin darle ningún dato."
+          "texto": "María, gracias por contármelo, ha hecho muy bien en consultarlo. Esto es un engaño muy conocido: un banco de verdad nunca llama para pedir que mueva su dinero a otra cuenta para protegerlo. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que cuelgue si vuelven a llamarla y que avise a Carlos para contárselo."
         }
       ]
     },
@@ -76,27 +80,31 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 95,
+      "nivel_riesgo": 92,
       "categoria": "falso_tecnico",
       "senales": [
-        "Le salió un aviso en la pantalla con un teléfono.",
-        "Dicen ser de Microsoft, que nunca llama ni cobra así.",
-        "Le piden pagar a una cuenta nueva en otro país."
+        "Le salió un aviso en la pantalla con un teléfono para llamar.",
+        "Dijeron ser de Microsoft, que nunca llama ni cobra así.",
+        "Le piden pagar a una cuenta nueva en el extranjero."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        5423,
-        10220
+        7393,
+        6076
       ],
       "tiempos_ia_ms": [
-        5423,
-        10220
+        7393,
+        6075
       ],
-      "tokens_entrada": 6344,
-      "tokens_salida": 1029,
-      "caracteres_voz": 906,
+      "tokens_entrada": 11577,
+      "tokens_salida": 833,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Un falso técnico que decía ser de Microsoft, contactado por un aviso de virus en pantalla, le pidió 1.200 euros a una cuenta de Reino Unido."
+      ],
+      "caracteres_voz": 904,
       "conversacion": [
         {
           "rol": "asistente",
@@ -108,7 +116,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María, entiendo que quiera tener el ordenador bien. Cuénteme, ¿cómo contactó con este técnico: le llamó él a usted, le salió un aviso en la pantalla o fue usted quien lo buscó?"
+          "texto": "Gracias, María. Para entenderlo mejor, ¿cómo empezó todo: llamó usted a este técnico porque ya lo conocía, o le salió un aviso en la pantalla o alguien la llamó a usted para decirle que tenía un virus?"
         },
         {
           "rol": "cliente",
@@ -116,7 +124,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, esto tiene todas las señas de un engaño, porque Microsoft nunca pone avisos en la pantalla con un teléfono ni cobra por transferencia a una cuenta de otro país. Esté tranquila: su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que, mientras tanto, no vuelva a llamar a ese número ni deje que nadie entre en su ordenador."
+          "texto": "Gracias por contármelo, María. Ese aviso en la pantalla con un teléfono es un engaño muy conocido: Microsoft nunca pone avisos así ni cobra por transferencia a una cuenta extranjera. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que avise a Carlos y que no vuelva a llamar a ese número ni deje que nadie entre en su ordenador."
         }
       ]
     },
@@ -128,28 +136,30 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 90,
+      "nivel_riesgo": 85,
       "categoria": "hijo_en_apuros",
       "senales": [
-        "Le han escrito desde un número nuevo diciendo ser su hijo.",
+        "Dicen que a su hijo se le ha roto el móvil.",
         "Le meten prisa para que pague hoy.",
-        "El dinero va a una persona que no es su hijo.",
+        "La cuenta está a nombre de otra persona, no de su hijo.",
         "No ha podido hablar con su hijo por su número de siempre."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        7996,
-        9023
+        10096
       ],
       "tiempos_ia_ms": [
-        7996,
-        9023
+        10096
       ],
-      "tokens_entrada": 6275,
-      "tokens_salida": 1406,
-      "caracteres_voz": 887,
+      "tokens_entrada": 5675,
+      "tokens_salida": 865,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Alguien que decía ser su hijo, con el móvil roto, le pidió 1.850 euros para pagar una factura urgente a una cuenta a nombre de Javier Ruiz Gómez."
+      ],
+      "caracteres_voz": 702,
       "conversacion": [
         {
           "rol": "asistente",
@@ -161,15 +171,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María, entiendo que quiera ayudar a su hijo. ¿Cómo se lo ha pedido él: por un mensaje desde un número nuevo, o ha hablado usted con él llamándole a su número de siempre?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Me ha escrito por WhatsApp desde un número nuevo, porque el suyo se le cayó al agua."
-        },
-        {
-          "rol": "asistente",
-          "texto": "María, esto se parece mucho a un engaño muy frecuente: alguien escribe desde un número nuevo haciéndose pasar por un hijo y pide dinero con prisa, y además la cuenta es de otra persona, Javier Ruiz Gómez. Esté tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que llame usted a Carlos a su número de siempre y le cuente lo que ha pasado antes de enviar nada."
+          "texto": "María, gracias por contármelo. Este mensaje se parece mucho a un engaño muy común: alguien se hace pasar por un hijo, dice que se le ha roto el móvil y pide pagar una factura con prisa, y además la cuenta no está a nombre de su hijo. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que llame usted a su hijo a su número de siempre y que avise también a Carlos."
         }
       ]
     },
@@ -181,28 +183,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 92,
-      "categoria": "hijo_en_apuros",
+      "nivel_riesgo": 90,
+      "categoria": "falsa_autoridad",
       "senales": [
-        "Le ha llamado alguien que dice ser policía.",
-        "Le piden dinero para sacar a su nieto de la cárcel.",
-        "No ha podido hablar directamente con su nieto.",
-        "Es la primera vez que envía dinero a este destinatario."
+        "Le ha llamado alguien que dice ser policía y luego un abogado.",
+        "Le piden dinero para sacar a su nieto de un apuro.",
+        "No ha podido hablar con su nieto ni con sus padres.",
+        "La policía nunca pide pagar fianzas por transferencia."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        5607,
-        9456
+        7391,
+        5912
       ],
       "tiempos_ia_ms": [
-        5607,
-        9456
+        7391,
+        5912
       ],
-      "tokens_entrada": 6284,
-      "tokens_salida": 1271,
-      "caracteres_voz": 960,
+      "tokens_entrada": 11537,
+      "tokens_salida": 971,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Un supuesto policía y un supuesto abogado la llamaron diciendo que su nieto estaba detenido y le pidieron 3.000 euros de fianza por transferencia a «Abogados Asociados»."
+      ],
+      "caracteres_voz": 951,
       "conversacion": [
         {
           "rol": "asistente",
@@ -214,7 +220,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, debe de estar muy preocupada por su nieto. ¿Cómo se ha enterado de la detención: le ha llamado alguien, como un abogado o un policía, o ha hablado usted directamente con su nieto?"
+          "texto": "Entiendo, María, debe de estar preocupada por su nieto. Antes de seguir, me gustaría saber una cosa. ¿Cómo se ha enterado de lo de su nieto: la ha llamado alguien, como un abogado o un policía, o ha hablado usted directamente con él o con sus padres?"
         },
         {
           "rol": "cliente",
@@ -222,7 +228,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por contármelo. Esto se parece mucho a un engaño conocido, porque la policía nunca llama para pedir dinero y una fianza no se paga por transferencia a alguien que llama por teléfono. Puede estar tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará; mientras tanto, le recomiendo que avise a Carlos y que llame usted misma a su nieto al número de siempre, sin usar ningún teléfono que le hayan dado en esas llamadas."
+          "texto": "María, gracias por contármelo. Esto se parece mucho a un engaño conocido: la policía y los abogados de verdad nunca llaman para pedir que se pague una fianza por transferencia, y en España las fianzas no se pagan así. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que llame ahora a Carlos y a su nieto a sus números de siempre para comprobar que está bien."
         }
       ]
     },
@@ -234,28 +240,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 92,
+      "nivel_riesgo": 95,
       "categoria": "inversion_cripto",
       "senales": [
-        "Le han llamado sin que usted lo pidiera para ofrecerle una inversión.",
+        "Un desconocido la llamó para ofrecerle invertir.",
         "Le prometen duplicar el dinero en tres meses.",
-        "Le aseguran que no hay ningún riesgo.",
-        "El dinero va a una empresa de bitcoin en el extranjero."
+        "Le dicen que la inversión es segura, y ninguna lo es.",
+        "Es una cuenta nueva en otro país y más de la mitad de sus ahorros."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        4494,
-        4804
+        6313,
+        5277
       ],
       "tiempos_ia_ms": [
-        4494,
-        4804
+        6313,
+        5277
       ],
-      "tokens_entrada": 6359,
-      "tokens_salida": 780,
-      "caracteres_voz": 832,
+      "tokens_entrada": 11605,
+      "tokens_salida": 888,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Un supuesto asesor la llamó por teléfono para que invirtiera 8.000 euros en bitcoin con Global Crypto Invest, prometiéndole duplicar el dinero en tres meses."
+      ],
+      "caracteres_voz": 859,
       "conversacion": [
         {
           "rol": "asistente",
@@ -267,7 +277,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias por contármelo, María. ¿Cómo conoció a ese asesor: la llamó él, le escribió, o lo encontró usted por su cuenta?"
+          "texto": "Gracias por contármelo, María. Para entenderlo mejor, ¿cómo conoció a este asesor: fue usted a verle a una oficina, o se puso él en contacto con usted por teléfono o por internet?"
         },
         {
           "rol": "cliente",
@@ -275,7 +285,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por su confianza. Nadie puede garantizar que el dinero se duplique en tres meses, y los asesores de verdad no llaman por sorpresa para pedir que se invierta en bitcoin: esto tiene todas las características de un engaño muy frecuente. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que hable con Carlos antes de hacer nada más."
+          "texto": "María, le agradezco mucho que me lo cuente. Nadie puede prometer duplicar el dinero en tres meses de forma segura, y que un desconocido la llame para ofrecerle invertir en bitcoin es una forma de engaño muy habitual. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que lo hable con Carlos antes de hacer nada."
         }
       ]
     },
@@ -290,22 +300,26 @@
       "nivel_riesgo": 95,
       "categoria": "premio_herencia",
       "senales": [
-        "Le piden pagar antes de cobrar un premio.",
+        "Le piden pagar para poder cobrar un premio.",
         "El dinero va a una cuenta nueva en el extranjero.",
-        "Las loterías de verdad no cobran tasas por adelantado."
+        "Un premio de verdad nunca cobra impuestos por adelantado."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        6160
+        5094
       ],
       "tiempos_ia_ms": [
-        6159
+        5094
       ],
-      "tokens_entrada": 3109,
-      "tokens_salida": 516,
-      "caracteres_voz": 684,
+      "tokens_entrada": 5723,
+      "tokens_salida": 413,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Intentaron que pagara 950 euros a una supuesta oficina de loterías de Reino Unido como impuestos para cobrar un premio falso."
+      ],
+      "caracteres_voz": 651,
       "conversacion": [
         {
           "rol": "asistente",
@@ -317,7 +331,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, le entiendo, pero las loterías de verdad nunca piden pagar impuestos o tasas por adelantado para cobrar un premio: eso es un engaño muy habitual. Su dinero está a salvo, porque he parado la transferencia y un operador del banco la revisará y la llamará. Mientras tanto, le recomiendo que se lo cuente a Carlos y que no envíe dinero ni dé datos a quien le ha hablado de ese premio."
+          "texto": "María, gracias por contármelo con tanta claridad. Ningún premio de verdad pide pagar dinero por adelantado para poder cobrarlo, así que esto parece un engaño, y sus novecientos cincuenta euros están a salvo porque la transferencia está parada. Un operador del banco la revisará y la llamará, y le recomiendo que hable hoy mismo con Carlos y se lo cuente."
         }
       ]
     },
@@ -329,28 +343,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 92,
+      "nivel_riesgo": 90,
       "categoria": "romance",
       "senales": [
-        "Le piden dinero para pagar un billete y venir a verla.",
+        "La idea de enviar el dinero partió de él, no de usted.",
         "Dice que trabaja en una plataforma petrolífera y no puede usar su dinero.",
-        "El dinero va a una cuenta nueva en Nigeria.",
-        "Fue él quien le pidió el dinero."
+        "Le pide que le pague el billete para venir a verla.",
+        "La cuenta es nueva y está en Nigeria."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        4363,
-        8469
+        8010,
+        6178
       ],
       "tiempos_ia_ms": [
-        4363,
-        8469
+        8010,
+        6177
       ],
-      "tokens_entrada": 6358,
-      "tokens_salida": 1137,
-      "caracteres_voz": 845,
+      "tokens_entrada": 11578,
+      "tokens_salida": 1010,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Un hombre llamado Michael Anderson, que dice trabajar en una plataforma petrolífera, le pidió 2.500 euros a una cuenta de Nigeria para pagarse el billete y venir a verla."
+      ],
+      "caracteres_voz": 910,
       "conversacion": [
         {
           "rol": "asistente",
@@ -362,7 +380,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María, es muy bonito que quiera ayudar a un amigo. Para entenderlo mejor: ¿conoce usted a Michael en persona, o se han conocido por internet o por teléfono?"
+          "texto": "Gracias por contármelo, María. Es muy normal querer ver a un amigo. ¿Conoce usted a Michael en persona, o le ha conocido por internet o por teléfono?"
         },
         {
           "rol": "cliente",
@@ -370,7 +388,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, la historia de un amigo que trabaja en una plataforma petrolífera, no puede usar su dinero y pide ayuda para pagar el billete es un engaño muy conocido, y quien la cuenta nunca llega a venir. Su dinero está a salvo, porque la transferencia está parada y un operador del banco la revisará y la llamará. Le recomiendo que hable con Carlos y se lo cuente con calma antes de enviar nada."
+          "texto": "María, gracias por su confianza. Lo que me cuenta se parece mucho a un engaño muy conocido: una persona que trabaja lejos, en una plataforma o en el ejército, que no puede usar su propio dinero y pide que le paguen el viaje; quien de verdad quiere venir a verla no necesita su dinero para hacerlo. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que hable de esto con Carlos antes de hacer nada."
         }
       ]
     },
@@ -382,28 +400,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 90,
+      "nivel_riesgo": 88,
       "categoria": "compra_online",
       "senales": [
         "Le ha llegado un mensaje al móvil con un enlace.",
-        "Le piden pagar una aduana por transferencia.",
         "Le meten prisa diciendo que devolverán el paquete.",
+        "Le piden pagar por transferencia para recibir un paquete.",
         "Es la primera vez que envía dinero a este destinatario."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        3320,
-        7469
+        4341,
+        5560
       ],
       "tiempos_ia_ms": [
-        3320,
-        7469
+        4341,
+        5560
       ],
-      "tokens_entrada": 6282,
-      "tokens_salida": 811,
-      "caracteres_voz": 904,
+      "tokens_entrada": 11509,
+      "tokens_salida": 808,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Recibió un mensaje en el móvil con un enlace que le pedía 600 euros para sacar un paquete de la aduana, a nombre de Gestión Aduanera Express."
+      ],
+      "caracteres_voz": 873,
       "conversacion": [
         {
           "rol": "asistente",
@@ -415,7 +437,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, gracias por contármelo. ¿Cómo se enteró de que tenía ese paquete retenido: le llegó un mensaje, una llamada o un correo, o lo comprobó usted misma con la tienda donde lo compró?"
+          "texto": "Entiendo, María, gracias por contármelo. Me gustaría saber una cosa más. ¿Cómo se enteró de que el paquete estaba retenido: le llamaron o le escribieron, o lo comprobó usted por su cuenta?"
         },
         {
           "rol": "cliente",
@@ -423,7 +445,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, ese mensaje tiene toda la pinta de ser un engaño muy común: las empresas de paquetería y la aduana no piden pagar por transferencia a través de un enlace en un mensaje, y meter prisa es un truco de los estafadores. Tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que no pulse ese enlace ni escriba ningún dato en él, y que se lo cuente a Carlos."
+          "texto": "María, esto tiene todas las señales de un engaño muy conocido: llegan mensajes al móvil con un enlace y una amenaza para que se pague deprisa un paquete. Las aduanas y las empresas de mensajería de verdad no piden pagar así, y su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará. Le recomiendo que no pulse ese enlace y que se lo cuente a Carlos cuanto antes."
         }
       ]
     },
@@ -438,25 +460,29 @@
       "nivel_riesgo": 92,
       "categoria": "falsa_autoridad",
       "senales": [
-        "Alguien que dice ser de Hacienda la ha llamado por teléfono.",
-        "Le meten prisa para que pague hoy mismo.",
-        "Le han asustado con quitarle la casa.",
-        "El dinero iría a una cuenta que no conoce."
+        "Alguien que dice ser de Hacienda le ha llamado por teléfono.",
+        "Le meten prisa para que pague hoy.",
+        "Le amenazan con embargarle la casa.",
+        "Es la primera vez que envía dinero a esta cuenta."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        5431,
-        8522
+        5310,
+        5580
       ],
       "tiempos_ia_ms": [
-        5431,
-        8522
+        5309,
+        5580
       ],
-      "tokens_entrada": 6331,
-      "tokens_salida": 1212,
-      "caracteres_voz": 851,
+      "tokens_entrada": 11580,
+      "tokens_salida": 806,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Alguien que se hizo pasar por Hacienda la llamó por teléfono para exigirle 1.400 euros con urgencia, amenazándola con embargarle la casa."
+      ],
+      "caracteres_voz": 858,
       "conversacion": [
         {
           "rol": "asistente",
@@ -468,7 +494,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, es normal preocuparse con algo así. ¿Cómo se enteró de esa deuda? ¿Le llegó una carta a casa o alguien la llamó o le escribió un mensaje?"
+          "texto": "Entiendo, María, es normal querer resolver algo así cuanto antes. ¿Cómo se enteró usted de esa deuda: le llegó una carta oficial o fue a una oficina de Hacienda, o se lo dijo alguien por teléfono o por mensaje?"
         },
         {
           "rol": "cliente",
@@ -476,7 +502,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, esto tiene todas las señales de un engaño: Hacienda nunca llama por teléfono para exigir un pago urgente ni amenaza con quitarle la casa ese mismo día, siempre avisa por carta oficial. Esté tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y le cuente lo ocurrido, y si vuelven a llamarla, cuelgue sin dar ningún dato."
+          "texto": "María, Hacienda nunca llama por teléfono para exigir un pago urgente ni amenaza con quitarle la casa en el mismo día; eso es lo que hacen los estafadores para meter prisa. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que hable hoy mismo con Carlos y le cuente lo que ha pasado antes de hacer nada más."
         }
       ]
     },
@@ -491,24 +517,29 @@
       "nivel_riesgo": 75,
       "categoria": "coaccion_familiar",
       "senales": [
-        "Su sobrino se enfada si no le da el dinero.",
         "No tiene claro para qué es el dinero.",
-        "Le dice que se lo debe, pero usted no está segura."
+        "La idea del pago no ha partido de usted.",
+        "Su sobrino se enfada si no le da el dinero.",
+        "Es mucho dinero para una persona nueva."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2364,
-        7879
+        6892,
+        9384
       ],
       "tiempos_ia_ms": [
-        2364,
-        7879
+        6892,
+        9383
       ],
-      "tokens_entrada": 6165,
-      "tokens_salida": 767,
-      "caracteres_voz": 789,
+      "tokens_entrada": 11394,
+      "tokens_salida": 836,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Su sobrino Rubén le pidió 4.000 euros diciendo que se los debía y enfadándose si no se los daba, sin que ella supiera explicar el motivo."
+      ],
+      "caracteres_voz": 817,
       "conversacion": [
         {
           "rol": "asistente",
@@ -520,7 +551,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. ¿Para qué necesita su sobrino este dinero y cómo le llegó a usted la petición?"
+          "texto": "Muy bien, María, gracias. ¿Me cuenta para qué necesita el dinero su sobrino y cómo le llegó a usted esa petición?"
         },
         {
           "rol": "cliente",
@@ -528,7 +559,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por contármelo con tanta sinceridad; nadie debería sentirse presionado ni con miedo a que alguien se enfade para dar su dinero, y menos si no tiene claro para qué es. Su dinero está a salvo, porque la transferencia está parada y un operador del banco la revisará y la llamará con calma. Le recomiendo que hable de esto con Carlos, para que pueda contar con su apoyo antes de decidir nada."
+          "texto": "Gracias por contármelo, María, y no se preocupe, ha hecho muy bien en hablarlo. Si usted no tiene claro para qué es el dinero y su sobrino se enfada cuando no se lo da, eso es una presión que nadie debería sentir con su propio dinero, así que de momento la transferencia está parada y sus ahorros están a salvo. Un operador del banco la revisará y la llamará, y le recomiendo que hable con calma de esto con Carlos antes de decidir nada."
         }
       ]
     },
@@ -543,22 +574,27 @@
       "nivel_riesgo": 92,
       "categoria": "falso_banco",
       "senales": [
-        "Un mensaje le pide pagar para desbloquear su cuenta.",
-        "El banco nunca pide dinero para desbloquear una cuenta.",
-        "Es la primera vez que envía dinero a esta empresa."
+        "Un mensaje que dice ser del banco le pide dinero.",
+        "El banco nunca cobra por desbloquear una cuenta.",
+        "El destinatario es una empresa que no conoce.",
+        "Le dicen que su cuenta está bloqueada para asustarla."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        6417
+        5223
       ],
       "tiempos_ia_ms": [
-        6417
+        5222
       ],
-      "tokens_entrada": 3121,
-      "tokens_salida": 549,
-      "caracteres_voz": 668,
+      "tokens_entrada": 5735,
+      "tokens_salida": 428,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Recibió un mensaje que se hacía pasar por el banco y le pedía 900 euros a Devolución Cargos SL para desbloquear su cuenta."
+      ],
+      "caracteres_voz": 618,
       "conversacion": [
         {
           "rol": "asistente",
@@ -570,7 +606,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por contármelo: su banco nunca le pedirá dinero para desbloquear su cuenta, así que ese mensaje parece un engaño de alguien que se hace pasar por el banco. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que no conteste a ese mensaje ni pulse ningún enlace, y que avise a Carlos para contarle lo que ha pasado."
+          "texto": "María, gracias por contármelo, ha hecho muy bien en comprobarlo. El banco nunca pide dinero para desbloquear una cuenta, así que ese mensaje parece un engaño de alguien que se hace pasar por nosotros. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que se lo cuente a Carlos."
         }
       ]
     },
@@ -582,28 +618,30 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 88,
+      "nivel_riesgo": 85,
       "categoria": "otra",
       "senales": [
-        "Le han llamado por teléfono sin que usted lo pidiera.",
+        "Le amenazan con cortarle la luz esta misma tarde.",
         "Le meten prisa para que pague hoy.",
-        "Le amenazan con cortarle la luz esta tarde.",
-        "El dinero iría a una cuenta nueva."
+        "Le piden pagar por transferencia a una cuenta nueva.",
+        "Es mucho dinero para una factura de la luz."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        3230,
-        9151
+        8435
       ],
       "tiempos_ia_ms": [
-        3229,
-        9151
+        8434
       ],
-      "tokens_entrada": 6220,
-      "tokens_salida": 1026,
-      "caracteres_voz": 867,
+      "tokens_entrada": 5656,
+      "tokens_salida": 702,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Alguien haciéndose pasar por la compañía de la luz le pidió 750 euros por transferencia amenazándola con cortarle el suministro esa misma tarde."
+      ],
+      "caracteres_voz": 686,
       "conversacion": [
         {
           "rol": "asistente",
@@ -615,15 +653,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, y es normal que eso le preocupe. Dígame una cosa: ¿cómo se ha enterado de que le van a cortar la luz esta tarde, le han llamado o le han escrito?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Me ha llamado un señor de la compañía de la luz, muy nervioso, que era el último aviso."
-        },
-        {
-          "rol": "asistente",
-          "texto": "María, las compañías de la luz no cortan el suministro de un día para otro con una llamada, ni piden pagar con prisa a una cuenta nueva, así que esto tiene toda la pinta de un engaño. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que, si quiere quedarse tranquila, llame usted misma a su compañía al teléfono que aparece en su factura."
+          "texto": "María, esto tiene toda la pinta de ser un engaño, porque las compañías de la luz de verdad no cortan el suministro de un día para otro ni exigen pagar por transferencia con amenazas. Su dinero está a salvo, porque la transferencia está parada y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y, si quiere, que llame usted a su compañía al número que viene en su factura de siempre."
         }
       ]
     },
@@ -638,25 +668,28 @@
       "nivel_riesgo": 85,
       "categoria": "otra",
       "senales": [
-        "Le ha llegado un correo diciendo que la cuenta del casero ha cambiado.",
-        "La nueva cuenta está en otro país, en Lituania.",
-        "Es la primera vez que envía dinero a esta cuenta.",
-        "No se ha comprobado por teléfono con el casero ni con su hija."
+        "Le han avisado por correo de que el casero ha cambiado de cuenta.",
+        "La nueva cuenta está en el extranjero y es la primera vez que paga ahí.",
+        "Nadie ha confirmado el cambio llamando al casero por su teléfono de siempre."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        3842,
-        10005
+        5831,
+        7322
       ],
       "tiempos_ia_ms": [
-        3842,
-        10005
+        5831,
+        7322
       ],
-      "tokens_entrada": 6301,
-      "tokens_salida": 979,
-      "caracteres_voz": 1005,
+      "tokens_entrada": 11545,
+      "tokens_salida": 1021,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Recibió un correo, supuestamente del casero del piso de su hija, que le pedía pagar el alquiler en una nueva cuenta de Lituania."
+      ],
+      "caracteres_voz": 1015,
       "conversacion": [
         {
           "rol": "asistente",
@@ -668,7 +701,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. Es la primera vez que paga a esta cuenta de Lituania. ¿Quién le dio estos datos para pagar, se los dio su hija o le llegó un mensaje o una llamada diciendo que la cuenta había cambiado?"
+          "texto": "Gracias, María, es un gesto muy bonito ayudar a su hija. Como la cuenta es nueva y está en el extranjero, quiero estar seguro de que todo está bien. ¿Le dio estos datos su propia hija, hablando con ella en persona o por su teléfono de siempre, o le llegaron por otra vía?"
         },
         {
           "rol": "cliente",
@@ -676,7 +709,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, un correo que dice que el casero ha cambiado de cuenta, y además a una cuenta en el extranjero, es un engaño muy frecuente: los estafadores copian el aspecto de esos correos para quedarse con el pago del alquiler. Esté tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que su hija llame al casero a su número de siempre, no al que venga en el correo, para comprobarlo."
+          "texto": "María, un correo que avisa de un cambio de cuenta bancaria es uno de los engaños más frecuentes, porque cualquiera puede hacerse pasar por el casero, y además esta cuenta está en Lituania. Su dinero está a salvo, porque la transferencia está parada y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que su hija confirme el cambio llamando al casero a su teléfono de siempre, nunca a uno que venga en ese correo."
         }
       ]
     },
@@ -688,28 +721,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 90,
+      "nivel_riesgo": 92,
       "categoria": "hijo_en_apuros",
       "senales": [
-        "Le ha llamado alguien que dice ser abogado.",
-        "La voz de su nieta casi no se entendía.",
-        "Le piden dinero con mucha prisa.",
-        "Es la primera vez que envía dinero a ese despacho."
+        "La llamada la hizo un supuesto abogado, no su nieta.",
+        "No ha podido hablar con calma con su nieta ni comprobarlo.",
+        "Le meten prisa para pagar un accidente.",
+        "El dinero va a un despacho que no conoce."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        4499,
-        8375
+        5369,
+        8434
       ],
       "tiempos_ia_ms": [
-        4499,
-        8375
+        5369,
+        8434
       ],
-      "tokens_entrada": 6312,
-      "tokens_salida": 1114,
-      "caracteres_voz": 851,
+      "tokens_entrada": 11556,
+      "tokens_salida": 968,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Un supuesto abogado la llamó diciendo que su nieta había tenido un accidente de coche y le pidió 5.000 euros para pagar al otro conductor, con una joven llorando al teléfono."
+      ],
+      "caracteres_voz": 986,
       "conversacion": [
         {
           "rol": "asistente",
@@ -721,7 +758,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Siento mucho lo de su nieta, María, entiendo que esté preocupada. Para ayudarla bien, cuénteme: ¿cómo se ha enterado del accidente, le ha llamado o escrito alguien?"
+          "texto": "Siento mucho lo de su nieta, María, entiendo que esté preocupada por ella. ¿Cómo se ha enterado usted del accidente: ha hablado con su nieta en su número de siempre, o le ha llamado o escrito otra persona, como un abogado?"
         },
         {
           "rol": "cliente",
@@ -729,7 +766,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, esto se parece mucho a un engaño muy conocido: llama alguien que dice ser abogado, se pone una persona llorando a la que casi no se entiende y piden dinero con prisa. Quédese tranquila, la transferencia está parada y su dinero está a salvo, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que llame usted misma a su nieta al número de siempre para comprobar que está bien."
+          "texto": "María, gracias por contármelo, entiendo que se haya asustado. Esto se parece mucho a un engaño muy conocido: llama un falso abogado, ponen a alguien llorando para que parezca su nieta y piden dinero con prisa a un despacho, y un accidente de verdad nunca se arregla así. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que llame ahora a Carlos y también a su nieta a su número de siempre para comprobar que está bien."
         }
       ]
     },
@@ -741,28 +778,29 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 92,
+      "nivel_riesgo": 85,
       "categoria": "premio_herencia",
       "senales": [
-        "Le piden pagar tasas antes de cobrar una herencia.",
-        "Le escribió un abogado al que usted no conocía.",
-        "El dinero va a una cuenta nueva en el extranjero.",
-        "Le dicen que es usted la única heredera."
+        "Le piden pagar antes de cobrar una herencia.",
+        "La herencia viene de un familiar lejano del extranjero.",
+        "El dinero va a una empresa nueva en otro país."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        7356,
-        4829
+        8027
       ],
       "tiempos_ia_ms": [
-        7356,
-        4829
+        8027
       ],
-      "tokens_entrada": 6360,
-      "tokens_salida": 875,
-      "caracteres_voz": 954,
+      "tokens_entrada": 5710,
+      "tokens_salida": 697,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Le pidieron 2.200 euros para una supuesta empresa inglesa llamada International Probate a cambio de cobrar la herencia de un primo de su padre en Inglaterra."
+      ],
+      "caracteres_voz": 720,
       "conversacion": [
         {
           "rol": "asistente",
@@ -774,15 +812,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María. Pagar dinero por adelantado para poder cobrar una herencia es algo que conviene revisar con calma. ¿Cómo se enteró usted de esta herencia: la llamó o le escribió alguien, o se lo contó algún familiar o un notario que usted ya conocía?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Me escribió un abogado inglés, dice que soy la única heredera y que hay que pagar unas tasas antes."
-        },
-        {
-          "rol": "asistente",
-          "texto": "María, gracias por contármelo. Cuando una herencia es de verdad, los gastos se descuentan de la propia herencia y nadie le pide pagar tasas por adelantado a una cuenta extranjera; esto tiene todas las señales de un engaño muy conocido. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que hable con Carlos antes de hacer nada más."
+          "texto": "María, gracias por contármelo. Las herencias de verdad no piden pagar por adelantado para cobrarlas, y los avisos de herencias de familiares lejanos en el extranjero son un engaño muy habitual, así que su dinero está a salvo porque he dejado la transferencia parada y un operador del banco la revisará y la llamará. Le recomiendo que hable con Carlos antes de hacer nada y que no envíe dinero a quien le dio esta noticia."
         }
       ]
     },
@@ -794,27 +824,29 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 92,
-      "categoria": "falsa_autoridad",
+      "nivel_riesgo": 85,
+      "categoria": "otra",
       "senales": [
-        "Le llamaron diciendo que eran de la Seguridad Social.",
-        "Le piden pagar antes para devolverle un dinero.",
+        "Le piden pagar para devolverle un dinero que es suyo.",
+        "Las devoluciones de la pensión nunca cuestan dinero.",
         "Es la primera vez que envía dinero a esta gestoría."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        3963,
-        4428
+        9255
       ],
       "tiempos_ia_ms": [
-        3963,
-        4428
+        9255
       ],
-      "tokens_entrada": 6230,
-      "tokens_salida": 653,
-      "caracteres_voz": 773,
+      "tokens_entrada": 5658,
+      "tokens_salida": 850,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Una supuesta Gestoría Pensiones le pidió 500 euros para devolverle un dinero de la pensión que le habrían cobrado de más."
+      ],
+      "caracteres_voz": 576,
       "conversacion": [
         {
           "rol": "asistente",
@@ -826,15 +858,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, gracias por explicármelo. ¿Cómo se enteró de esa devolución: le llamó o le escribió alguien de esa gestoría, o fue usted quien la buscó?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Me llamaron de la Seguridad Social, que para devolverme el dinero primero tengo que pagar 500 euros de gestión."
-        },
-        {
-          "rol": "asistente",
-          "texto": "María, esto tiene todas las señales de un engaño: la Seguridad Social nunca llama para pedir dinero, y nadie le cobra por devolverle algo que es suyo. Tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que se lo cuente a Carlos y que no haga ningún pago a quien la llamó."
+          "texto": "María, cuando a alguien le cobran de más en la pensión, se lo devuelven sin pedirle que pague nada antes, así que esto parece un engaño. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que se lo cuente a Carlos antes de hacer nada más."
         }
       ]
     },
@@ -849,25 +873,29 @@
       "nivel_riesgo": 85,
       "categoria": "coaccion_familiar",
       "senales": [
-        "La idea del dinero no fue suya, se lo ha pedido la cuidadora.",
-        "Le ha dicho que se irá si no le da el dinero.",
-        "Usted depende de su ayuda en el día a día.",
-        "Es una cantidad grande a una cuenta nueva."
+        "El dinero se lo ha pedido la persona que la cuida.",
+        "Le ha dicho que se irá si no se lo da.",
+        "Es una cantidad grande para un regalo.",
+        "Es la primera vez que le envía dinero."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2584,
-        9319
+        5324,
+        5730
       ],
       "tiempos_ia_ms": [
-        2584,
-        9319
+        5324,
+        5730
       ],
-      "tokens_entrada": 6199,
-      "tokens_salida": 1074,
-      "caracteres_voz": 860,
+      "tokens_entrada": 11455,
+      "tokens_salida": 817,
+      "llamadas_ia": 2,
+      "recordar": [
+        "La señora que la cuida, Rosa Elena Díaz, le pidió 3.500 euros como regalo amenazando con dejar de cuidarla si no se los daba."
+      ],
+      "caracteres_voz": 880,
       "conversacion": [
         {
           "rol": "asistente",
@@ -879,7 +907,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué detalle tan bonito, María. Dígame una cosa: ¿la idea de hacerle este regalo fue suya, o fue ella o alguien más quien le habló del dinero?"
+          "texto": "Qué detalle tan bonito, María. Como es una cantidad importante, quiero asegurarme de que todo está en orden. ¿La idea de hacerle este regalo ha sido suya, o ha sido ella u otra persona quien le ha comentado o pedido algo?"
         },
         {
           "rol": "cliente",
@@ -887,7 +915,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, gracias por contármelo con tanta confianza: si alguien le pide dinero diciendo que, si no, se marcha, eso no es un regalo libre, es una forma de presión, y usted no tiene que pagar para que la cuiden bien. Su dinero está a salvo porque la transferencia está parada, y una persona del banco la revisará y la llamará con calma. Le recomiendo que hable hoy mismo con Carlos y le cuente lo que está pasando, para que no tenga que resolverlo usted sola."
+          "texto": "Gracias por contármelo, María, entiendo que se sienta en un apuro. Un regalo de verdad nace de usted, y cuando alguien pide dinero amenazando con dejarla sola, eso es una presión que no está bien, aunque sea una persona cercana. Su dinero está a salvo porque la transferencia está parada, un operador del banco la revisará y la llamará, y le recomiendo que hable de esto con Carlos cuanto antes."
         }
       ]
     },
@@ -902,22 +930,27 @@
       "nivel_riesgo": 90,
       "categoria": "inversion_cripto",
       "senales": [
-        "La inversión la vio en un anuncio de internet.",
-        "El anuncio usaba a un famoso que dice haberse hecho rico.",
-        "El dinero va a una empresa de inversión desconocida en otro país."
+        "Vio la inversión en un anuncio de internet.",
+        "El anuncio usaba a un famoso de la tele que se había hecho rico.",
+        "Le prometen ganar mucho dinero fácilmente.",
+        "Es una plataforma desconocida con cuenta en el extranjero."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        8996
+        5732
       ],
       "tiempos_ia_ms": [
-        8996
+        5732
       ],
-      "tokens_entrada": 3074,
-      "tokens_salida": 800,
-      "caracteres_voz": 712,
+      "tokens_entrada": 5688,
+      "tokens_salida": 474,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Intentó invertir 3.000 euros en Smart Trading Platform tras ver un anuncio en internet con un presentador de televisión que prometía hacerse rico."
+      ],
+      "caracteres_voz": 679,
       "conversacion": [
         {
           "rol": "asistente",
@@ -929,7 +962,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, esos anuncios en los que sale un famoso que se ha hecho rico son un engaño muy frecuente: usan su cara sin permiso y nadie puede prometer ganancias así. Esté tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que se lo cuente a Carlos y que, mientras tanto, no envíe dinero ni dé datos a quien le contacte por esa inversión."
+          "texto": "María, gracias por contármelo. Esos anuncios con famosos que se han hecho ricos son falsos: usan su cara sin permiso para engañar a la gente, y ninguna inversión de verdad promete ganar dinero fácil. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que se lo cuente también a Carlos antes de hacer nada más."
         }
       ]
     },
@@ -941,28 +974,32 @@
       "requiere_verificacion": true,
       "decision": "riesgo",
       "acierto": true,
-      "nivel_riesgo": 85,
+      "nivel_riesgo": 88,
       "categoria": "falso_tecnico",
       "senales": [
-        "La llamaron sin que usted lo pidiera.",
+        "La llamaron ellos, usted no había pedido ningún arreglo.",
         "Le dijeron que su router tenía un problema de seguridad.",
-        "La amenazaron con cortarle internet.",
+        "La amenazaron con cortarle internet si no pagaba.",
         "Le piden pagar por transferencia a una cuenta nueva."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        4271,
-        9327
+        5233,
+        9305
       ],
       "tiempos_ia_ms": [
-        4271,
-        9327
+        5233,
+        9305
       ],
-      "tokens_entrada": 6241,
-      "tokens_salida": 1221,
-      "caracteres_voz": 929,
+      "tokens_entrada": 11465,
+      "tokens_salida": 1235,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Recibió una llamada de un supuesto técnico de la fibra que decía que su router tenía un problema de seguridad y le amenazaba con cortar internet si no pagaba 800 euros por transferencia a Telecom Servicios Técnicos."
+      ],
+      "caracteres_voz": 907,
       "conversacion": [
         {
           "rol": "asistente",
@@ -974,7 +1011,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entendido, María, gracias por contármelo. ¿Fue usted quien llamó a su compañía de internet para pedir el arreglo, o fueron ellos quienes la llamaron o vinieron a su casa sin que usted lo pidiera?"
+          "texto": "Entendido, María, gracias por contármelo. Para quedarme tranquilo, ¿fue usted quien llamó a su compañía para que le arreglaran el router, o fueron ellos quienes se pusieron en contacto con usted?"
         },
         {
           "rol": "cliente",
@@ -982,7 +1019,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, esto se parece mucho a un engaño conocido: las compañías de internet no llaman por su cuenta para avisar de problemas de seguridad, ni piden pagar un arreglo por transferencia amenazando con cortar el servicio. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que se lo cuente a Carlos y que, si vuelven a llamar, cuelgue y no deje que nadie le instale programas en el ordenador."
+          "texto": "María, esto parece un engaño: las compañías de internet de verdad no llaman para avisar de problemas de seguridad ni amenazan con cortar el servicio para cobrar por transferencia. Esté tranquila, su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que se lo cuente a Carlos y que, si tiene alguna duda con su internet, llame usted al número que aparece en su factura."
         }
       ]
     },
@@ -998,22 +1035,26 @@
       "categoria": "falso_banco",
       "senales": [
         "Alguien que dice ser del banco le ha pedido mover su dinero.",
-        "Le han dicho que lo pase a una cuenta segura.",
-        "Es más de la mitad de sus ahorros.",
+        "Le han dicho que es para proteger sus ahorros en una cuenta segura.",
+        "Es más de la mitad del dinero que tiene en la cuenta.",
         "Es la primera vez que envía dinero a esta empresa."
       ],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        7379
+        5566
       ],
       "tiempos_ia_ms": [
-        7379
+        5566
       ],
-      "tokens_entrada": 3102,
-      "tokens_salida": 620,
-      "caracteres_voz": 666,
+      "tokens_entrada": 5716,
+      "tokens_salida": 461,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Alguien que se hizo pasar por su banco le pidió transferir 7.000 euros a Protección Fondos SL como cuenta segura para proteger su dinero."
+      ],
+      "caracteres_voz": 621,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1025,7 +1066,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "María, el banco nunca pide a nadie que mueva su dinero a otra cuenta para protegerlo, así que quien le ha dicho eso no es su banco, sino alguien que intenta engañarla. Esté tranquila: la transferencia está parada, su dinero está a salvo y un operador del banco revisará el caso y la llamará. Le recomiendo que avise ahora a Carlos y que no haga caso a nadie que la vuelva a llamar con este asunto."
+          "texto": "María, gracias por contármelo, ha hecho muy bien en comprobarlo. Su banco nunca le pedirá que mueva su dinero a otra cuenta para protegerlo, así que esto tiene toda la pinta de ser un engaño. Su dinero está a salvo porque la transferencia está parada; un operador del banco la revisará y la llamará, y le recomiendo que se lo cuente hoy mismo a Carlos."
         }
       ]
     },
@@ -1037,21 +1078,26 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 10,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        5466
+        15232
       ],
       "tiempos_ia_ms": [
-        5466
+        15231
       ],
-      "tokens_entrada": 3014,
-      "tokens_salida": 457,
-      "caracteres_voz": 421,
+      "tokens_entrada": 5628,
+      "tokens_salida": 449,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Carlos López es su hijo y suele recibir transferencias suyas.",
+        "Carlos se encarga de la reforma del baño de María y ella le envía dinero para pagarla."
+      ],
+      "caracteres_voz": 472,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1063,7 +1109,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muchas gracias, María. Todo parece en orden: el dinero va a la cuenta de siempre de su hijo Carlos y el motivo está claro. Puede confirmar el envío cuando quiera."
+          "texto": "Muchas gracias, María. Si es para la reforma de su baño y es su hijo Carlos, a quien ya le ha enviado dinero otras veces, quien se encarga de todo, está todo en orden. Puede confirmar el envío cuando usted quiera."
         }
       ]
     },
@@ -1082,14 +1128,19 @@
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        5204
+        5904
       ],
       "tiempos_ia_ms": [
-        5204
+        5904
       ],
-      "tokens_entrada": 3045,
-      "tokens_salida": 354,
-      "caracteres_voz": 457,
+      "tokens_entrada": 5659,
+      "tokens_salida": 515,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Paga a la Comunidad de Propietarios de la calle Mayor 12, donde vive, que es un destinatario habitual.",
+        "Esta vez pagó 1.200 euros de derrama por el ascensor nuevo de la comunidad."
+      ],
+      "caracteres_voz": 449,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1101,7 +1152,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. Es un pago a su comunidad de siempre, con un motivo claro, así que todo parece en orden. Puede confirmar el envío cuando lo desee."
+          "texto": "Muy bien, María, muchas gracias. Es un pago a su comunidad de siempre y el motivo está claro, así que todo parece en orden. Puede confirmar el envío cuando quiera."
         }
       ]
     },
@@ -1113,21 +1164,26 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 5,
+      "nivel_riesgo": 10,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 1,
       "tiempos_turno_ms": [
-        5065
+        5907
       ],
       "tiempos_ia_ms": [
-        5065
+        5907
       ],
-      "tokens_entrada": 3020,
-      "tokens_salida": 414,
-      "caracteres_voz": 439,
+      "tokens_entrada": 5634,
+      "tokens_salida": 452,
+      "llamadas_ia": 1,
+      "recordar": [
+        "La Clínica Dental Sonrisa es su dentista habitual.",
+        "Le paga los tratamientos dentales, en este caso unos implantes."
+      ],
+      "caracteres_voz": 441,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1139,7 +1195,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias. Es una clínica a la que ya ha pagado otras veces y el motivo está claro, así que todo parece en orden. Puede confirmar el envío cuando quiera."
+          "texto": "Muy bien, María, gracias. Es una clínica a la que ya ha pagado otras veces y el motivo está claro, así que todo parece en orden. Puede confirmar el envío cuando lo desee."
         }
       ]
     },
@@ -1151,23 +1207,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 5,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        3681,
-        4207
+        6005,
+        4589
       ],
       "tiempos_ia_ms": [
-        3681,
-        4206
+        6005,
+        4589
       ],
-      "tokens_entrada": 6314,
-      "tokens_salida": 576,
-      "caracteres_voz": 671,
+      "tokens_entrada": 11540,
+      "tokens_salida": 669,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Fontanería Hermanos García es el fontanero que le recomendó su vecina y que María llamó ella misma.",
+        "Le pagó 650 euros por reparar una tubería rota de la cocina, con el trabajo ya hecho y con factura."
+      ],
+      "caracteres_voz": 597,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1179,7 +1240,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, qué mal rato con la cocina inundada. ¿Llamó usted misma a esta fontanería o fue alguien quien se la recomendó o se presentó en su casa sin avisar?"
+          "texto": "Vaya susto con la cocina, María, me alegro de que ya tenga quien se lo arregle. ¿Al fontanero lo llamó usted y ya le ha dejado la tubería arreglada?"
         },
         {
           "rol": "cliente",
@@ -1187,7 +1248,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, eso tiene todo el sentido. Usted llamó al fontanero por recomendación de su vecina, ya ha hecho el trabajo y le ha dado la factura, así que todo parece en orden. Puede confirmar el envío de los 650 euros cuando quiera."
+          "texto": "Muchas gracias, María. Todo parece en orden: lo llamó usted por recomendación de su vecina, el trabajo ya está hecho y tiene la factura. Puede confirmar el envío cuando quiera."
         }
       ]
     },
@@ -1199,23 +1260,29 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 10,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2744,
-        4710
+        3789,
+        4171
       ],
       "tiempos_ia_ms": [
-        2743,
-        4710
+        3789,
+        4171
       ],
-      "tokens_entrada": 6229,
-      "tokens_salida": 472,
-      "caracteres_voz": 651,
+      "tokens_entrada": 11433,
+      "tokens_salida": 534,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Pablo López Sanz es su nieto y estudia en la universidad.",
+        "Le ayudó con 700 euros para la matrícula de la universidad.",
+        "Ella lo comprobó llamándole a su número de siempre y hablando con él y con su madre."
+      ],
+      "caracteres_voz": 613,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1227,7 +1294,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué detalle tan bonito ayudar a Pablo con sus estudios, María. ¿Cómo surgió la idea de enviarle este dinero: lo decidió usted o se lo pidió alguien por teléfono o por mensaje?"
+          "texto": "Qué bien, María, una ayuda muy bonita para su nieto. ¿Esto lo ha hablado con Pablo en persona o por su teléfono de siempre?"
         },
         {
           "rol": "cliente",
@@ -1235,7 +1302,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien hecho, María, llamar usted misma a Pablo a su número de siempre es justo lo más seguro. Todo parece en orden, así que puede confirmar el envío cuando quiera. Que le vaya muy bien a Pablo con sus estudios."
+          "texto": "Muy bien hecho, María, llamarle usted a su número de siempre es justo lo que hay que hacer. Además ha hablado con él y con su madre, así que todo parece en orden. Puede confirmar el envío de los 700 euros a Pablo cuando quiera."
         }
       ]
     },
@@ -1252,20 +1319,24 @@
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 3,
+      "turnos": 2,
       "tiempos_turno_ms": [
-        2677,
-        6255,
-        3602
+        4123,
+        4053
       ],
       "tiempos_ia_ms": [
-        2677,
-        6255,
-        3601
+        4122,
+        4052
       ],
-      "tokens_entrada": 9581,
-      "tokens_salida": 851,
-      "caracteres_voz": 901,
+      "tokens_entrada": 11480,
+      "tokens_salida": 541,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Su hija Lucía vive en Alemania.",
+        "Le envió 1.500 euros para ayudarla con la mudanza de piso; fue idea de María.",
+        "Lo hablaron por videollamada antes de hacer el envío."
+      ],
+      "caracteres_voz": 619,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1277,7 +1348,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué bien, María, una mudanza siempre trae gastos. ¿Cómo le pidió Lucía esta ayuda: se lo dijo hablando con ella por teléfono, o le llegó un mensaje desde un número nuevo?"
+          "texto": "Muy bien, María, gracias por contármelo. Ayudar a una hija con la mudanza es algo muy normal. ¿Esto lo ha hablado con Lucía en persona o llamándola usted a su teléfono de siempre?"
         },
         {
           "rol": "cliente",
@@ -1285,15 +1356,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, eso suena a una ayuda pensada con calma entre ustedes. Solo me queda una cosa por saber. ¿El número de cuenta de Lucía se lo dio ella misma en esa videollamada, o le llegó después por un mensaje o un correo?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Es mi hija. La cuenta me la dio ella en persona cuando vino en Navidad."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Perfecto, María, todo parece en orden: es una ayuda para su hija, la decidió usted hablando con ella y la cuenta se la dio Lucía en persona. Puede confirmar el envío cuando quiera. Que le vaya muy bien la mudanza a Lucía."
+          "texto": "Perfecto, María, muchas gracias. Si lo hablaron por videollamada y la idea fue suya, todo parece en orden. Puede confirmar el envío a Lucía cuando quiera."
         }
       ]
     },
@@ -1305,23 +1368,29 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 10,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2689,
-        5482
+        3407,
+        3566
       ],
       "tiempos_ia_ms": [
-        2689,
-        5482
+        3407,
+        3565
       ],
-      "tokens_entrada": 6296,
-      "tokens_salida": 541,
-      "caracteres_voz": 632,
+      "tokens_entrada": 11509,
+      "tokens_salida": 491,
+      "llamadas_ia": 2,
+      "recordar": [
+        "La Notaría Fernández Ruiz lleva las escrituras de la herencia de su marido.",
+        "Fue en persona a la notaría con sus hijos y allí le dieron la factura.",
+        "Es un pago puntual por un trámite notarial."
+      ],
+      "caracteres_voz": 572,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1333,7 +1402,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, y siento mucho lo de su marido. Los trámites de una herencia son algo habitual. ¿Ha ido usted en persona a esa notaría, o el pago se lo han pedido por teléfono, correo o mensaje?"
+          "texto": "Gracias, María, entiendo. Es un trámite muy habitual. ¿Ha ido usted a esa notaría, o la cuenta para pagar se la han dado por teléfono o por mensaje?"
         },
         {
           "rol": "cliente",
@@ -1341,7 +1410,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muchas gracias, María. Si fue usted en persona a la notaría con sus hijos y le dieron allí la factura, todo parece en orden. Puede confirmar el envío cuando lo desee."
+          "texto": "Muchas gracias, María. Si fue usted en persona con sus hijos y allí le dieron la factura, todo parece en orden. Puede confirmar el envío cuando lo desee."
         }
       ]
     },
@@ -1353,23 +1422,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 5,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2778,
-        5655
+        4045,
+        3977
       ],
       "tiempos_ia_ms": [
-        2778,
-        5655
+        4045,
+        3977
       ],
-      "tokens_entrada": 6190,
-      "tokens_salida": 561,
-      "caracteres_voz": 674,
+      "tokens_entrada": 11442,
+      "tokens_salida": 541,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Viajes Balneario Termal es la agencia del barrio donde reservó en persona un viaje al balneario.",
+        "Hizo el viaje junto con su amiga Carmen; fue idea de ellas, sin llamadas ni mensajes de terceros."
+      ],
+      "caracteres_voz": 665,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1381,7 +1455,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué buen plan, María, seguro que lo disfrutan mucho. ¿Cómo encontró este viaje: lo buscaron ustedes mismas o alguien la llamó o le escribió para ofrecérselo?"
+          "texto": "Qué buen plan, María, un balneario con su amiga Carmen. Cuénteme, ¿cómo encontraron ese viaje: lo buscaron ustedes, por ejemplo en una agencia o por el Imserso, o alguien les llamó o les escribió para ofrecérselo?"
         },
         {
           "rol": "cliente",
@@ -1389,7 +1463,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muchas gracias, María. Un viaje reservado en persona en la agencia de su barrio, junto a su amiga, tiene todo el sentido y no veo nada raro. Todo parece en orden, así que puede confirmar el envío cuando quiera, y que disfruten mucho del balneario."
+          "texto": "Muy bien, María, si lo reservaron ustedes mismas en la agencia del barrio, todo parece en orden. Puede confirmar el envío cuando quiera. Que disfruten mucho del balneario con Carmen."
         }
       ]
     },
@@ -1401,23 +1475,29 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 5,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        3251,
-        5376
+        4193,
+        3863
       ],
       "tiempos_ia_ms": [
-        3251,
-        5376
+        4192,
+        3863
       ],
-      "tokens_entrada": 6269,
-      "tokens_salida": 515,
-      "caracteres_voz": 613,
+      "tokens_entrada": 11477,
+      "tokens_salida": 501,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Teresa López es su hermana.",
+        "Le prestó 2.000 euros para arreglar el coche.",
+        "Lo hablaron en persona en una comida familiar el domingo y fue María quien se ofreció a prestárselo."
+      ],
+      "caracteres_voz": 592,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1429,7 +1509,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. Ayudar a una hermana es algo muy normal. ¿Cómo le pidió Teresa el dinero: se lo dijo en persona, la llamó desde su número de siempre o le escribió un mensaje?"
+          "texto": "Muy bien, María, gracias por contármelo. ¿Se lo ha pedido su hermana hablando con usted en persona o por su teléfono de siempre, o le ha llegado por un mensaje?"
         },
         {
           "rol": "cliente",
@@ -1437,7 +1517,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María. Si se lo pidió su hermana en persona y fue usted quien decidió prestárselo, todo parece en orden. Puede confirmar el envío cuando quiera."
+          "texto": "Perfecto, María, muchas gracias. Si se lo contó su hermana en persona y fue usted quien le ofreció el dinero, todo parece en orden. Puede confirmar el envío cuando quiera."
         }
       ]
     },
@@ -1454,20 +1534,24 @@
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 3,
+      "turnos": 2,
       "tiempos_turno_ms": [
-        4037,
-        3771,
-        4466
+        5574,
+        4936
       ],
       "tiempos_ia_ms": [
-        4037,
-        3771,
-        4466
+        5574,
+        4935
       ],
-      "tokens_entrada": 9656,
-      "tokens_salida": 844,
-      "caracteres_voz": 950,
+      "tokens_entrada": 11533,
+      "tokens_salida": 755,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Residencia Los Olivos es el centro de día al que acude María.",
+        "Le paga una mensualidad de unos 1.700 euros.",
+        "Antes pagaba en ventanilla y decidió con su hijo Carlos pasar a pagarla por el móvil."
+      ],
+      "caracteres_voz": 753,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1479,7 +1563,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "No se preocupe, María, lo está haciendo muy bien y vamos con calma. Una residencia de día es un gasto normal. ¿Cómo le dieron el número de cuenta para pagar, se lo dieron en la propia residencia o le llegó por una llamada o un mensaje?"
+          "texto": "No se preocupe, María, es normal estar nerviosa la primera vez, lo está haciendo muy bien. Para pagar la mensualidad del centro de día, ¿le dieron ellos los datos para pagar en persona o en un papel, o alguien la ha llamado o le ha escrito para pedirle el pago?"
         },
         {
           "rol": "cliente",
@@ -1487,15 +1571,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, pagar por el móvil es muy cómodo y es lógico que lo hayan decidido así. Solo me falta una cosa. ¿El número de cuenta de la residencia se lo dieron en persona en la propia residencia, o le llegó por un mensaje, un correo o una llamada?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Sí, voy allí tres días a la semana, la cuenta está en el contrato."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Perfecto, María, si el número de cuenta viene en el contrato de la residencia, todo encaja. La transferencia parece en orden y puede confirmar el envío cuando quiera. Lo ha hecho usted muy bien."
+          "texto": "Muy bien, María, todo parece en orden: es la mensualidad de su centro de día y lo han decidido usted y su hijo. Puede confirmar el envío cuando quiera. Y recuerde que nadie del banco le pedirá nunca contraseñas ni códigos."
         }
       ]
     },
@@ -1507,23 +1583,26 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 5,
+      "nivel_riesgo": 10,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        3792,
-        4298
+        8275
       ],
       "tiempos_ia_ms": [
-        3792,
-        4298
+        8275
       ],
-      "tokens_entrada": 6190,
-      "tokens_salida": 614,
-      "caracteres_voz": 653,
+      "tokens_entrada": 5649,
+      "tokens_salida": 522,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Su sobrina Marta Sánchez López se casa y María le envió 600 euros como regalo de boda.",
+        "Es un regalo puntual por la boda, no un pago habitual."
+      ],
+      "caracteres_voz": 427,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1535,15 +1614,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué bonito, María, enhorabuena por la boda de su sobrina. Para quedarnos tranquilos, ¿cómo le llegó el número de cuenta de Marta: se lo dio ella en persona o por teléfono, o le llegó por un mensaje?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "La cuenta venía en la invitación de la boda."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Perfecto, María, es muy habitual que la cuenta venga en la invitación de boda. Todo parece en orden, así que puede confirmar el envío cuando quiera. Que disfruten mucho de la boda de Marta."
+          "texto": "Qué bonito, María, un regalo de boda para su sobrina Marta. Todo parece en orden, así que puede confirmar el envío cuando quiera. Que disfruten mucho de la boda."
         }
       ]
     },
@@ -1555,23 +1626,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 5,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2880,
-        5632
+        3646,
+        5881
       ],
       "tiempos_ia_ms": [
-        2880,
-        5632
+        3646,
+        5881
       ],
-      "tokens_entrada": 6212,
-      "tokens_salida": 573,
-      "caracteres_voz": 652,
+      "tokens_entrada": 11406,
+      "tokens_salida": 532,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Centro Auditivo Plaza es el centro donde María encargó sus audífonos nuevos.",
+        "Fue en persona con su hija, le hicieron la prueba auditiva y pagó 1.900 euros por los audífonos."
+      ],
+      "caracteres_voz": 578,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1583,7 +1659,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. Unos audífonos nuevos son una buena inversión. ¿Ha estado usted en persona en el Centro Auditivo Plaza para probárselos o le contactaron ellos por teléfono o por mensaje?"
+          "texto": "Muy bien, María, gracias. ¿Fue usted misma al Centro Auditivo Plaza y allí le dieron los datos para pagar los audífonos?"
         },
         {
           "rol": "cliente",
@@ -1591,7 +1667,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Perfecto, María, muchas gracias. Si fue usted misma al centro, le hicieron la prueba y lo encargó en persona, todo parece en orden. Puede confirmar el envío cuando quiera."
+          "texto": "Perfecto, María, muchas gracias por contármelo. Todo parece en orden: fue usted en persona al centro, le hicieron la prueba y encargó los audífonos. Puede confirmar el envío cuando quiera."
         }
       ]
     },
@@ -1603,25 +1679,29 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 10,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 3,
+      "turnos": 2,
       "tiempos_turno_ms": [
-        2018,
-        4141,
-        4916
+        4304,
+        4139
       ],
       "tiempos_ia_ms": [
-        2018,
-        4141,
-        4916
+        4304,
+        4139
       ],
-      "tokens_entrada": 9553,
-      "tokens_salida": 781,
-      "caracteres_voz": 843,
+      "tokens_entrada": 11492,
+      "tokens_salida": 634,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Su nieto Daniel López Pérez estudia de Erasmus en Lituania.",
+        "Le ayuda con el alquiler; se lo prometió en persona antes de que se fuera.",
+        "Primer envío de 500 euros a su cuenta de Lituania."
+      ],
+      "caracteres_voz": 630,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1633,7 +1713,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué bien, María, una experiencia estupenda para Daniel. ¿La idea de enviarle el dinero ha sido suya, o se lo ha pedido él por mensaje o por teléfono?"
+          "texto": "Qué bien que su nieto Daniel esté de Erasmus, María. Solo una cosa más: ¿cómo se enteró usted de que necesitaba este dinero, lo habló con él directamente o le llegó un mensaje?"
         },
         {
           "rol": "cliente",
@@ -1641,15 +1721,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué detalle tan bonito, María, cumplir esa promesa. Solo una cosa más: ¿el número de cuenta se lo dio Daniel en persona o hablando con él por teléfono a su número de siempre?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Es mi nieto. Hablo con él por videollamada cada semana y la cuenta la apuntó su padre."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Muchas gracias, María, todo encaja muy bien: es una promesa que usted le hizo a Daniel y la cuenta la apuntó su padre. Todo parece en orden, así que puede confirmar el envío cuando quiera. Que Daniel disfrute mucho de su Erasmus."
+          "texto": "Muy bien, María, gracias por contármelo. Todo parece en orden: es una ayuda que usted le prometió a su nieto antes de irse. Puede confirmar el envío cuando quiera."
         }
       ]
     },
@@ -1659,33 +1731,31 @@
       "descripcion": "Pago de la segunda residencia en Portugal",
       "categoria_esperada": "ninguna",
       "requiere_verificacion": true,
-      "decision": "riesgo",
-      "acierto": false,
-      "nivel_riesgo": 60,
-      "categoria": "otra",
-      "senales": [
-        "La cuenta es distinta a la de otros años.",
-        "El cambio de cuenta llegó solo por carta.",
-        "Nadie de la administración le ha confirmado el cambio por teléfono."
-      ],
+      "decision": "seguro",
+      "acierto": true,
+      "nivel_riesgo": 15,
+      "categoria": "ninguna",
+      "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 4,
+      "turnos": 2,
       "tiempos_turno_ms": [
-        3705,
-        3430,
-        7054,
-        10604
+        7986,
+        8889
       ],
       "tiempos_ia_ms": [
-        3705,
-        3430,
-        7053,
-        10603
+        7985,
+        8888
       ],
-      "tokens_entrada": 12995,
-      "tokens_salida": 1812,
-      "caracteres_voz": 1434,
+      "tokens_entrada": 11504,
+      "tokens_salida": 1101,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Tiene un apartamento en Portugal y paga cada año la cuota anual de la comunidad al Condominio Praia Azul.",
+        "La petición de pago le llega por carta todos los años en estas fechas.",
+        "En esta ocasión fueron 1.100 euros."
+      ],
+      "caracteres_voz": 851,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1697,7 +1767,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, gracias por contármelo. Veo que es la primera vez que envía dinero a esta cuenta. ¿Cómo le llegó el número de cuenta para pagar la cuota este año?"
+          "texto": "Entendido, María, gracias. Como es la primera vez que paga a esta cuenta, quiero comprobar una cosa. ¿Cómo le llegó la petición de pago: es la de todos los años del administrador, o le han escrito o llamado para decirle que esta vez pague a una cuenta nueva?"
         },
         {
           "rol": "cliente",
@@ -1705,23 +1775,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entendido, María, es un pago habitual. Lo único que me llama la atención es que este año la cuenta es distinta a la de otros años. ¿Ha podido confirmar ese cambio de cuenta llamando usted misma a la administración del apartamento al teléfono de siempre?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Sí, el administrador nos conoce desde hace muchos años."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Me alegra que tengan tan buena relación con él, María. Solo quiero asegurarme de una cosa, porque a veces llegan cartas falsas con una cuenta cambiada. ¿Ha hablado usted con el administrador por teléfono y le ha confirmado él mismo que este año la cuenta es nueva?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "No, estoy sola."
-        },
-        {
-          "rol": "asistente",
-          "texto": "María, como este año la cuenta es nueva y nadie de la administración se lo ha confirmado por teléfono, prefiero ser prudente, porque a veces llegan cartas falsas que imitan a las de siempre para cambiar la cuenta. Su dinero está a salvo: la transferencia está parada y un operador del banco la revisará y la llamará. Mientras tanto, le recomiendo que se lo cuente a Carlos y que llame usted al administrador, al teléfono de siempre, para confirmar la cuenta."
+          "texto": "Muy bien, María, todo parece en orden: es la cuota de siempre de su apartamento y le llega por carta como cada año. Solo un consejo: si alguna vez le dicen que la cuenta ha cambiado, confírmelo antes llamando usted al administrador al teléfono de siempre. Si lo desea, ya puede confirmar el envío."
         }
       ]
     },
@@ -1733,27 +1787,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 15,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 4,
+      "turnos": 2,
       "tiempos_turno_ms": [
-        3212,
-        7025,
-        4480,
-        10403
+        4123,
+        5406
       ],
       "tiempos_ia_ms": [
-        3212,
-        7025,
-        4479,
-        10403
+        4122,
+        5406
       ],
-      "tokens_entrada": 13127,
-      "tokens_salida": 2028,
-      "caracteres_voz": 1306,
+      "tokens_entrada": 11546,
+      "tokens_salida": 693,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Reformas Tejados Norte es la empresa que arregla su tejado tras los daños de una tormenta.",
+        "La eligió ella misma junto con su yerno después de pedir tres presupuestos."
+      ],
+      "caracteres_voz": 688,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1765,7 +1820,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, con el agua entrando es normal querer arreglarlo pronto. ¿Cómo conoció a esta empresa de reformas: la buscó usted o alguien se presentó en su casa o la llamó para ofrecérselo?"
+          "texto": "Vaya, María, siento lo de la tormenta, es un disgusto que entre agua en casa. Cuénteme, ¿cómo dio usted con esta empresa de reformas: la buscó y la llamó usted, o fueron ellos quienes se acercaron a ofrecerle el arreglo?"
         },
         {
           "rol": "cliente",
@@ -1773,23 +1828,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, comparar tres presupuestos es una forma muy sensata de hacerlo. Una última cosa: el número de cuenta al que paga, ¿venía en el presupuesto que le dio la empresa o se lo han enviado después por mensaje, correo o llamada?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Sí, han venido a casa a verlo, la empresa es del pueblo de al lado."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Qué bien que hayan ido a verlo en persona y que sea una empresa de la zona, María. Solo me falta una cosa: el número de cuenta, ¿venía escrito en el presupuesto en papel o se lo mandaron después por mensaje, correo o teléfono?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "No, estoy sola."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Gracias, María, todo parece en orden: es para arreglar su tejado, comparó tres presupuestos con su yerno y la empresa, que es de la zona, ha ido a verlo a su casa. Si el número de cuenta coincide con el del presupuesto en papel, puede confirmar el envío cuando quiera. Si se lo cambiaron después por mensaje o correo, llame antes a la empresa al número de siempre para comprobarlo."
+          "texto": "Muy bien hecho, María, pedir tres presupuestos con su yerno es justo lo más prudente. Todo parece en orden, así que puede confirmar el envío cuando quiera. Que le dejen pronto el tejado como nuevo."
         }
       ]
     },
@@ -1801,23 +1840,26 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 5,
+      "nivel_riesgo": 10,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 2,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        7479,
-        5072
+        6550
       ],
       "tiempos_ia_ms": [
-        7479,
-        5072
+        6550
       ],
-      "tokens_entrada": 6138,
-      "tokens_salida": 838,
-      "caracteres_voz": 591,
+      "tokens_entrada": 5630,
+      "tokens_salida": 558,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Su hijo Carlos López es destinatario habitual de sus transferencias.",
+        "Le ayudó con 6.000 euros para la entrada de un coche."
+      ],
+      "caracteres_voz": 462,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1829,15 +1871,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué bien que pueda echarle una mano a Carlos con el coche, María. Solo una pregunta más: ¿esto lo ha hablado con él en persona o llamándole a su número de siempre?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Se lo ofrecí yo, que el suyo ya no arrancaba."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Muchas gracias, María, así da gusto. Todo parece en orden: Carlos es su destinatario de siempre y la idea ha salido de usted. Si lo desea, ya puede confirmar el envío."
+          "texto": "Muchas gracias, María. Ayudar a su hijo Carlos con la entrada del coche, y a una cuenta a la que ya le ha enviado dinero otras veces, parece todo en orden. Puede confirmar el envío cuando usted quiera."
         }
       ]
     },
@@ -1849,23 +1883,29 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 10,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        1830,
-        6403
+        4773,
+        6917
       ],
       "tiempos_ia_ms": [
-        1830,
-        6403
+        4773,
+        6916
       ],
-      "tokens_entrada": 6188,
-      "tokens_salida": 601,
-      "caracteres_voz": 658,
+      "tokens_entrada": 11420,
+      "tokens_salida": 491,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Academia Digital Senior es una academia donde María hace un curso de ordenador para mayores.",
+        "Se apuntó ella misma junto a una amiga, por recomendación del centro de mayores.",
+        "Pagó 540 euros por el curso."
+      ],
+      "caracteres_voz": 657,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1877,7 +1917,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, aprender a usar el ordenador es una idea estupenda. ¿Cómo conoció esta academia: la buscó usted o alguien la llamó o le escribió para ofrecerle el curso?"
+          "texto": "Qué buena idea, María, un curso así puede serle muy útil. Cuénteme, ¿cómo conoció esta academia: fue usted a informarse en persona, o fueron ellos los que la llamaron o le escribieron?"
         },
         {
           "rol": "cliente",
@@ -1885,7 +1925,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Gracias, María, todo tiene sentido: es un curso que eligió usted con su amiga y que les recomendaron en el centro de mayores. No veo nada extraño, así que todo parece en orden. Si lo desea, ya puede confirmar el envío."
+          "texto": "Muchas gracias, María, así da gusto. Si se apuntó usted con su amiga por recomendación del centro de mayores, todo parece en orden. Puede confirmar el envío cuando quiera, y que disfrute mucho del curso."
         }
       ]
     },
@@ -1897,23 +1937,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 10,
+      "nivel_riesgo": 8,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        3727,
-        4352
+        4543,
+        4173
       ],
       "tiempos_ia_ms": [
-        3727,
-        4352
+        4543,
+        4173
       ],
-      "tokens_entrada": 6346,
-      "tokens_salida": 576,
-      "caracteres_voz": 703,
+      "tokens_entrada": 11560,
+      "tokens_salida": 583,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Pagó al Ayuntamiento de Valdemoro el recibo del IBI con recargo por haberse pasado el plazo.",
+        "Se enteró por una carta del ayuntamiento y fue ella misma a la oficina, donde le dieron la cuenta."
+      ],
+      "caracteres_voz": 632,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1925,7 +1970,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Entiendo, María, a veces los plazos se pasan sin darnos cuenta. ¿Cómo se enteró usted de este recargo y de dónde sacó el número de cuenta para pagarlo: de una carta en papel, de una llamada o de un mensaje en el móvil?"
+          "texto": "Entendido, María, gracias por contármelo. ¿Cómo se enteró usted de que tenía que pagarlo: le llegó una carta, fue usted al ayuntamiento, o la llamó o le escribió alguien para avisarla?"
         },
         {
           "rol": "cliente",
@@ -1933,7 +1978,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien hecho, María, ir a la oficina a preguntar es la mejor forma de asegurarse. Todo parece en orden: es un pago al ayuntamiento y la cuenta se la dieron allí en persona. Si lo desea, puede confirmar el envío."
+          "texto": "Muy bien, María, así da gusto: usted fue en persona a la oficina del ayuntamiento y allí le dieron la cuenta. Todo parece en orden. Si lo desea, puede confirmar el envío ahora."
         }
       ]
     },
@@ -1945,27 +1990,27 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 15,
+      "nivel_riesgo": 10,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
-      "turnos": 4,
+      "turnos": 1,
       "tiempos_turno_ms": [
-        2549,
-        4021,
-        3485,
-        6035
+        5892
       ],
       "tiempos_ia_ms": [
-        2549,
-        4021,
-        3485,
-        6035
+        5892
       ],
-      "tokens_entrada": 12926,
-      "tokens_salida": 1134,
-      "caracteres_voz": 1091,
+      "tokens_entrada": 5680,
+      "tokens_salida": 478,
+      "llamadas_ia": 1,
+      "recordar": [
+        "Pilar Moreno es una amiga de María con la que hizo un viaje.",
+        "Le devolvió 800 euros que Pilar había adelantado por ella en ese viaje.",
+        "La cuenta de Pilar está en Francia."
+      ],
+      "caracteres_voz": 478,
       "conversacion": [
         {
           "rol": "asistente",
@@ -1977,31 +2022,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Qué bien que pudieran hacer ese viaje juntas, María. Pilar es una amiga que conoce en persona y con la que viajó, ¿verdad?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "Lo acordamos cuando volvimos, ella lo adelantó todo."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Entiendo, María, es normal querer devolverle a Pilar lo que adelantó. Solo una cosa más: el número de esa cuenta de Francia, ¿se lo dio Pilar en persona o le llegó por un mensaje o un correo?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "La conozco de toda la vida, fuimos juntas al colegio. Ahora vive en Francia."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Qué bonito conservar una amistad desde el colegio, María. Solo me queda una duda: el número de esa cuenta, ¿se lo dio Pilar en persona o por teléfono, o le llegó en un mensaje o un correo?"
-        },
-        {
-          "rol": "cliente",
-          "texto": "No, estoy sola."
-        },
-        {
-          "rol": "asistente",
-          "texto": "Gracias, María. Devolverle a su amiga Pilar lo que adelantó del viaje es algo normal y todo parece en orden, así que puede confirmar el envío si lo desea. Solo un consejo: si el número de cuenta le llegó por mensaje o correo, conviene que se lo confirme a Pilar llamándola usted misma al número de siempre."
+          "texto": "Muchas gracias, María. Devolverle a su amiga Pilar lo que adelantó por usted en el viaje que hicieron juntas es algo muy normal, y todo parece en orden. Puede confirmar el envío cuando lo desee."
         }
       ]
     },
@@ -2013,23 +2034,28 @@
       "requiere_verificacion": true,
       "decision": "seguro",
       "acierto": true,
-      "nivel_riesgo": 8,
+      "nivel_riesgo": 5,
       "categoria": "ninguna",
       "senales": [],
       "motor_final": "claude",
       "fallo_ia": false,
       "turnos": 2,
       "tiempos_turno_ms": [
-        2671,
-        6087
+        3359,
+        3545
       ],
       "tiempos_ia_ms": [
-        2671,
-        6087
+        3359,
+        3545
       ],
-      "tokens_entrada": 6163,
-      "tokens_salida": 597,
-      "caracteres_voz": 614,
+      "tokens_entrada": 11383,
+      "tokens_salida": 446,
+      "llamadas_ia": 2,
+      "recordar": [
+        "Muebles Hogar Centro es una tienda de muebles a la que fue ella en persona.",
+        "Pagó 1.250 euros por un sofá que eligió ella misma en la tienda."
+      ],
+      "caracteres_voz": 578,
       "conversacion": [
         {
           "rol": "asistente",
@@ -2041,7 +2067,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Muy bien, María, un sofá nuevo siempre se agradece. ¿Cómo encontró usted esta tienda: fue usted a verla en persona, o le llegó alguna oferta por teléfono, mensaje o internet?"
+          "texto": "Muy bien, María, un sofá nuevo siempre es una alegría. ¿Lo eligió usted en persona en la tienda, o lo vio en internet o se lo ofreció alguien por teléfono?"
         },
         {
           "rol": "cliente",
@@ -2049,7 +2075,7 @@
         },
         {
           "rol": "asistente",
-          "texto": "Perfecto, María. Si lo eligió usted misma en la tienda y el pago es para ese sofá, todo parece en orden. Puede confirmar el envío cuando lo desee, y que lo disfrute mucho."
+          "texto": "Perfecto, María, si lo eligió usted misma en la tienda, todo parece en orden. Puede confirmar el envío cuando quiera. Que disfrute mucho de su sofá nuevo."
         }
       ]
     }

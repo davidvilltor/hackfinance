@@ -1,0 +1,554 @@
+{
+  "resumen": {
+    "casos": 5,
+    "aciertos": 5,
+    "pasos_correctos": 10,
+    "pasos": 10,
+    "segundos_sin_verificacion": 0,
+    "preguntas_segundo_paso": 1.6,
+    "llamadas_ia_segundo_paso": 1.6,
+    "llamadas_ia_totales": 16
+  },
+  "casos": [
+    {
+      "id": "M01",
+      "descripcion": "Prima en Pakistán: la segunda vez es lo de siempre",
+      "pasos": [
+        {
+          "id": "M01.1",
+          "tipo": "legitima",
+          "descripcion": "Prima en Pakistán: la segunda vez es lo de siempre",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 15,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            6529,
+            9404
+          ],
+          "tiempos_ia_ms": [
+            6529,
+            9404
+          ],
+          "tokens_entrada": 11485,
+          "tokens_salida": 1121,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Ayesha Khan vive en Pakistán y María la llama su prima; es hija de su mejor amiga.",
+            "María le ayuda con los estudios de enfermería; la primera vez fueron 400 euros.",
+            "La ayuda fue idea de María, por una promesa a la madre de Ayesha."
+          ],
+          "caracteres_voz": 670,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 400 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para mi prima Ayesha, que vive en Pakistán. Le ayudo con los estudios de enfermería."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Qué detalle tan bonito, María, ayudar a su prima con sus estudios. Solo una cosa más: ¿cómo habla usted con Ayesha normalmente, y fue idea suya mandarle este dinero o se lo ha pedido alguien hace poco?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Lo decidí yo sola hace tiempo, se lo prometí a su madre, que era mi mejor amiga."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muchas gracias, María, es una promesa muy bonita. Todo parece en orden: el motivo es claro y la decisión ha sido suya. Puede confirmar el envío de los cuatrocientos euros cuando quiera."
+            }
+          ]
+        },
+        {
+          "id": "M01.2",
+          "tipo": "legitima",
+          "descripcion": "Prima en Pakistán: la segunda vez es lo de siempre",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 10,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 1,
+          "tiempos_turno_ms": [
+            5616
+          ],
+          "tiempos_ia_ms": [
+            5616
+          ],
+          "tokens_entrada": 5651,
+          "tokens_salida": 463,
+          "llamadas_ia": 1,
+          "recordar": [
+            "Su prima Ayesha Khan vive en Pakistán y estudia en la universidad.",
+            "María le envía dinero cada trimestre para la universidad; esta vez fueron 550 euros.",
+            "Es una costumbre suya con un familiar y el banco ya la tenía como destinataria habitual."
+          ],
+          "caracteres_voz": 440,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 550 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es lo de siempre para mi prima Ayesha, para el trimestre de la universidad."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muchas gracias, María. Si es lo de siempre para su prima Ayesha y su trimestre de universidad, todo parece en orden. Puede confirmar el envío cuando quiera."
+            }
+          ]
+        }
+      ],
+      "acierto": true
+    },
+    {
+      "id": "M02",
+      "descripcion": "Prima en Pakistán: la segunda vez el importe se dispara y la historia cambia",
+      "pasos": [
+        {
+          "id": "M02.1",
+          "tipo": "legitima",
+          "descripcion": "Prima en Pakistán: la segunda vez el importe se dispara y la historia cambia",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 15,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            4623,
+            7018
+          ],
+          "tiempos_ia_ms": [
+            4623,
+            7018
+          ],
+          "tokens_entrada": 11488,
+          "tokens_salida": 900,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Ayesha Khan vive en Pakistán; María la llama su prima y es hija de su mejor amiga.",
+            "María la ayuda con los estudios de enfermería; esta vez le ha enviado 400 euros.",
+            "Fue decisión propia de María, por una promesa que hizo a la madre de Ayesha."
+          ],
+          "caracteres_voz": 657,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 400 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para mi prima Ayesha, que vive en Pakistán. Le ayudo con los estudios de enfermería."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Qué detalle tan bonito ayudar a su prima con la enfermería, María. Solo una cosa más para quedarnos tranquilas. ¿Esto lo han hablado ustedes dos directamente, por ejemplo llamándola usted a su número de siempre o en familia?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Lo decidí yo sola hace tiempo, se lo prometí a su madre, que era mi mejor amiga."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Qué bonito que cumpla esa promesa, María. Todo parece en orden: el motivo está claro y la decisión es suya. Si lo desea, ya puede confirmar el envío."
+            }
+          ]
+        },
+        {
+          "id": "M02.2",
+          "tipo": "estafa",
+          "descripcion": "Prima en Pakistán: la segunda vez el importe se dispara y la historia cambia",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "riesgo",
+          "acierto": true,
+          "nivel_riesgo": 85,
+          "categoria": "hijo_en_apuros",
+          "senales": [
+            "La llamada vino de un supuesto abogado, no de su prima.",
+            "Le dicen que su prima no puede hablar con usted.",
+            "Le meten prisa para pagar la fianza hoy.",
+            "No ha podido comprobarlo por su cuenta."
+          ],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            8707,
+            9260
+          ],
+          "tiempos_ia_ms": [
+            8707,
+            9260
+          ],
+          "tokens_entrada": 11566,
+          "tokens_salida": 1524,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Un supuesto abogado la llamó diciendo que su prima Ayesha estaba detenida en Pakistán y le pidió 4.000 euros urgentes para la fianza, sin dejarla hablar con ella."
+          ],
+          "caracteres_voz": 984,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 4.000 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para mi prima Ayesha. Un abogado me ha llamado: está detenida y necesita pagar la fianza hoy."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Entiendo, María, es una situación que preocupa mucho. Hay personas que llaman haciéndose pasar por abogados para pedir dinero urgente, por eso quiero estar seguro. ¿Ha podido hablar usted con Ayesha o con alguien de su familia, llamándoles al número de siempre?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Me llamó el abogado, ella no puede hablar."
+            },
+            {
+              "rol": "asistente",
+              "texto": "María, cuando un desconocido llama diciendo que un familiar está detenido, que no puede hablar y que hay que pagar hoy, casi siempre es un engaño, y nadie de verdad pide una fianza así por teléfono. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que avise a Carlos y que intenten hablar con Ayesha o con su familia en el número de siempre antes de enviar nada."
+            }
+          ]
+        }
+      ],
+      "acierto": true
+    },
+    {
+      "id": "M03",
+      "descripcion": "Prima en Pakistán: pago anual más alto pero coherente con lo recordado",
+      "pasos": [
+        {
+          "id": "M03.1",
+          "tipo": "legitima",
+          "descripcion": "Prima en Pakistán: pago anual más alto pero coherente con lo recordado",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 15,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            4464,
+            7701
+          ],
+          "tiempos_ia_ms": [
+            4463,
+            7700
+          ],
+          "tokens_entrada": 11468,
+          "tokens_salida": 964,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Su prima Ayesha vive en Pakistán y estudia enfermería; María la ayuda a pagar los estudios.",
+            "María decidió ayudarla ella sola hace tiempo, por una promesa a la madre de Ayesha, que era su mejor amiga.",
+            "El primer envío fue de 400 euros."
+          ],
+          "caracteres_voz": 620,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 400 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para mi prima Ayesha, que vive en Pakistán. Le ayudo con los estudios de enfermería."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Qué bonito que la ayude con sus estudios, María. Solo una cosa más: ¿habla usted con su prima Ayesha de vez en cuando, por ejemplo llamándola usted o viéndose en persona?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Lo decidí yo sola hace tiempo, se lo prometí a su madre, que era mi mejor amiga."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muchas gracias, María, qué gesto tan bonito cumplir esa promesa. Todo parece en orden: la idea es suya y el motivo está claro. Puede confirmar el envío cuando quiera."
+            }
+          ]
+        },
+        {
+          "id": "M03.2",
+          "tipo": "legitima",
+          "descripcion": "Prima en Pakistán: pago anual más alto pero coherente con lo recordado",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 20,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            3958,
+            10360
+          ],
+          "tiempos_ia_ms": [
+            3957,
+            10360
+          ],
+          "tokens_entrada": 11457,
+          "tokens_salida": 1190,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Ayesha Khan vive en Pakistán, estudia en la universidad y María le envía dinero de forma habitual para sus estudios.",
+            "Este año le pagó la matrícula anual completa, 1.500 euros, con la carta de la universidad.",
+            "María habla con Ayesha por videollamada y dice que la decisión de pagar es suya; no ha contado qué relación tienen."
+          ],
+          "caracteres_voz": 655,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.500 euros a Ayesha Khan, a una cuenta de Pakistán. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para Ayesha, esta vez es la matrícula de todo el año, por eso es más. Me mandó la carta de la universidad."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Gracias, María, se lo explica muy bien. Veo que ya le ha enviado dinero otras veces. ¿Me cuenta quién es Ayesha para usted y cómo la conoció?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Lo decido yo, como siempre. Hablé con ella por videollamada el domingo."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muchas gracias, María. Es alguien a quien ya ha enviado dinero antes, la decisión es suya, habla con ella por videollamada y tiene la carta de la universidad, así que todo parece en orden. Puede confirmar el envío cuando quiera."
+            }
+          ]
+        }
+      ],
+      "acierto": true
+    },
+    {
+      "id": "M04",
+      "descripcion": "Cuenta usada antes en una estafa: la segunda vez la clienta da otra historia",
+      "pasos": [
+        {
+          "id": "M04.1",
+          "tipo": "estafa",
+          "descripcion": "Cuenta usada antes en una estafa: la segunda vez la clienta da otra historia",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "riesgo",
+          "acierto": true,
+          "nivel_riesgo": 88,
+          "categoria": "falso_tecnico",
+          "senales": [
+            "Le salió un aviso de virus en la pantalla del ordenador.",
+            "Le piden dinero para arreglar ese supuesto virus.",
+            "El pago es para una empresa nueva que usted no conocía."
+          ],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 1,
+          "tiempos_turno_ms": [
+            9470
+          ],
+          "tiempos_ia_ms": [
+            9470
+          ],
+          "tokens_entrada": 5665,
+          "tokens_salida": 762,
+          "llamadas_ia": 1,
+          "recordar": [
+            "Una supuesta empresa de soporte técnico llamada «Soporte Técnico Global» le pidió 1.500 euros para arreglar un falso aviso de virus en su ordenador."
+          ],
+          "caracteres_voz": 690,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.500 euros a Soporte Técnico Global. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para el técnico que me arregla el ordenador, me salió un aviso de virus."
+            },
+            {
+              "rol": "asistente",
+              "texto": "María, esto tiene toda la pinta de un engaño muy conocido: esos avisos de virus que salen en la pantalla son falsos y los ponen personas que luego cobran por un arreglo que no hace falta. Su dinero está a salvo porque la transferencia está parada, y un operador del banco la revisará y la llamará. Le recomiendo que no siga las indicaciones de ese técnico, que apague el ordenador y que se lo cuente hoy mismo a Carlos."
+            }
+          ]
+        },
+        {
+          "id": "M04.2",
+          "tipo": "estafa",
+          "descripcion": "Cuenta usada antes en una estafa: la segunda vez la clienta da otra historia",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "riesgo",
+          "acierto": true,
+          "nivel_riesgo": 80,
+          "categoria": "falso_tecnico",
+          "senales": [
+            "El dinero es para su sobrino, pero la cuenta es de una empresa.",
+            "La empresa se llama Soporte Técnico Global, como los falsos técnicos de ordenador.",
+            "No ha explicado quién le dio esa cuenta."
+          ],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 2,
+          "tiempos_turno_ms": [
+            5858,
+            8872
+          ],
+          "tiempos_ia_ms": [
+            5858,
+            8872
+          ],
+          "tokens_entrada": 11426,
+          "tokens_salida": 1230,
+          "llamadas_ia": 2,
+          "recordar": [
+            "Intentó enviar 600 euros con el concepto regalo a una cuenta de Soporte Técnico Global, diciendo que era para su sobrino, sin aclarar quién le dio esa cuenta."
+          ],
+          "caracteres_voz": 957,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 600 euros a Soporte Técnico Global. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es un regalo para mi sobrino."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Gracias, María, qué detalle con su sobrino. Me llama la atención que la cuenta esté a nombre de una empresa llamada Soporte Técnico Global, y no de su sobrino. ¿Le dio él mismo esa cuenta, o se la ha pedido alguien por teléfono o mientras le ayudaba con el ordenador?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Lo he decidido yo."
+            },
+            {
+              "rol": "asistente",
+              "texto": "María, gracias por contármelo, y entiendo que la decisión es suya. Pero un regalo para su sobrino no debería ir a una empresa llamada Soporte Técnico Global, y así actúan quienes se hacen pasar por técnicos de ordenador, así que he dejado la transferencia parada: su dinero está a salvo y un operador del banco la revisará y la llamará. Le recomiendo que hable hoy mismo con Carlos y se lo cuente antes de hacer nada más."
+            }
+          ]
+        }
+      ],
+      "acierto": true
+    },
+    {
+      "id": "M05",
+      "descripcion": "Hijo habitual: segunda parte de una reforma ya verificada",
+      "pasos": [
+        {
+          "id": "M05.1",
+          "tipo": "legitima",
+          "descripcion": "Hijo habitual: segunda parte de una reforma ya verificada",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 10,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 1,
+          "tiempos_turno_ms": [
+            5836
+          ],
+          "tiempos_ia_ms": [
+            5835
+          ],
+          "tokens_entrada": 5634,
+          "tokens_salida": 486,
+          "llamadas_ia": 1,
+          "recordar": [
+            "Su hijo Carlos López se encarga de la reforma del baño de su casa.",
+            "Le envía dinero a Carlos para pagar la reforma por partes; esta fue la primera parte, de 900 euros."
+          ],
+          "caracteres_voz": 442,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 900 euros a Carlos López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es para pagar la primera parte de la reforma del baño, mi hijo Carlos se encarga de todo."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muchas gracias, María. Todo parece en orden: es para la reforma de su baño y el dinero va a su hijo Carlos, a quien ya ha enviado dinero antes. Puede confirmar el envío cuando quiera."
+            }
+          ]
+        },
+        {
+          "id": "M05.2",
+          "tipo": "legitima",
+          "descripcion": "Hijo habitual: segunda parte de una reforma ya verificada",
+          "categoria_esperada": "-",
+          "requiere_verificacion": true,
+          "decision": "seguro",
+          "acierto": true,
+          "nivel_riesgo": 10,
+          "categoria": "ninguna",
+          "senales": [],
+          "motor_final": "claude",
+          "fallo_ia": false,
+          "turnos": 1,
+          "tiempos_turno_ms": [
+            7821
+          ],
+          "tiempos_ia_ms": [
+            7821
+          ],
+          "tokens_entrada": 5627,
+          "tokens_salida": 667,
+          "llamadas_ia": 1,
+          "recordar": [
+            "Carlos López es un destinatario habitual de sus envíos.",
+            "Le envió 1.200 euros para pagar la segunda parte de la reforma de su baño."
+          ],
+          "caracteres_voz": 437,
+          "conversacion": [
+            {
+              "rol": "asistente",
+              "texto": "Hola, María. Soy SilverShield, el asistente de seguridad de su banco. Quiere enviar 1.200 euros a Carlos López. Antes de enviarlo le haré un par de preguntas sencillas. Yo nunca le pediré contraseñas ni códigos. Para empezar, cuénteme: ¿para qué es este dinero?"
+            },
+            {
+              "rol": "cliente",
+              "texto": "Es la segunda parte de la reforma del baño, la que faltaba."
+            },
+            {
+              "rol": "asistente",
+              "texto": "Muy bien, María, gracias. Es un pago a una persona a la que ya suele enviar dinero y el motivo está claro, así que todo parece en orden. Puede confirmar el envío cuando quiera."
+            }
+          ]
+        }
+      ],
+      "acierto": true
+    }
+  ]
+}

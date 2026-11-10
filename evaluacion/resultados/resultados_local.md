@@ -1,6 +1,6 @@
 # Evaluación de SilverShield · motor: local
 
-Fecha: 09/11/2026 18:33 · Modelo: evaluador local · Máximo de turnos: 4
+Fecha: 10/11/2026 18:32 · Modelo: evaluador local · Máximo de turnos: 4
 
 | Métrica | Resultado |
 |---|---|
@@ -11,6 +11,7 @@ Fecha: 09/11/2026 18:33 · Modelo: evaluador local · Máximo de turnos: 4
 | Falsos positivos (legítima retenida) | 2 |
 | Retenidas por fallo técnico de la IA | 0 |
 | Preguntas medias por conversación | 2,17 |
+| Llamadas a Claude por conversación | 0 |
 | Tiempo medio de respuesta por turno | 0,0 s (p95: 0,0 s) |
 
 ## Coste por verificación (medido)

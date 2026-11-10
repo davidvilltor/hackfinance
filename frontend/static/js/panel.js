@@ -18,6 +18,7 @@
     directa: "Sin alertas", autorizada_cliente: "Autorizada por el cliente (sin verificación)",
     verificada_ia: "Verificada por SilverShield", liberada_operador: "Liberada por un operador del banco",
     liberada_contacto: "Liberada (versión anterior)",
+    habitual_verificado: "Envío habitual ya verificado por SilverShield (sin preguntas)",
   };
   const CATEGORIAS = {
     ninguna: "Ninguna", falso_banco: "Falso empleado del banco", falso_tecnico: "Falso servicio técnico",
@@ -69,6 +70,35 @@
   }
 
   // ------------------------------------------------------------------ pintar
+  function pintarMemoria(memoria) {
+    const lista = $("#lista-memoria");
+    lista.replaceChildren();
+    if (!memoria || !memoria.length) {
+      lista.append(el("li", { class: "vacio" }, "Todavía no ha aprendido nada de esta clienta."));
+      return;
+    }
+    for (const m of memoria) {
+      lista.append(el("li", { class: `recuerdo ${m.tipo}` },
+        el("span", { class: "tipo" }, m.tipo === "alerta" ? "Alerta" : "Contexto"),
+        " ", el("span", { class: "cuando" }, `· ${fechaHora(m.fecha)}${m.beneficiario ? ` · ${m.beneficiario}` : ""}`),
+        el("p", {}, m.texto),
+        el("button", {
+          type: "button", class: "btn btn-texto",
+          "aria-label": `Borrar el recuerdo: ${m.texto}`,
+          onclick: async () => {
+            if (!window.confirm("¿Borrar este recuerdo? SilverShield dejará de tenerlo en cuenta.")) return;
+            try {
+              await api(`/api/memoria/${m.id}`, "DELETE");
+              refrescar();
+            } catch (e) {
+              window.alert(e.message);
+            }
+          },
+        }, "Borrar"),
+      ));
+    }
+  }
+
   function pintarAlertas(alertas) {
     const lista = $("#lista-alertas");
     const nuevas = alertasVistas === null ? new Set() :
@@ -176,6 +206,8 @@
             el("div", {}, el("dt", {}, "País"), el("dd", {}, ev.pais_nombre || t.pais)),
             el("div", {}, el("dt", {}, "Concepto"), el("dd", {}, t.concepto || "—")),
             el("div", {}, el("dt", {}, "Resolución"), el("dd", {}, VIAS[t.via] || (t.estado === "cancelada" ? "Cancelada" : "—"))),
+            ev.destino_habitual_verificado ? el("div", {}, el("dt", {}, "Memoria"),
+              el("dd", {}, "Destino ya verificado e importe habitual: no se volvió a preguntar")) : null,
             t.operador ? el("div", {}, el("dt", {}, "Operador"), el("dd", {}, t.operador)) : null,
           )),
         bloque("Alertas del motor de reglas", lista((ev.motivos || []).map(m => m.texto), "Ninguna alerta.")),
@@ -229,6 +261,7 @@
       $("#motor-ia").textContent = datos.estado.ia ? `Claude · ${datos.estado.modelo}` : "Evaluador local (sin clave de Anthropic)";
       $("#motor-voz").textContent = datos.estado.voz_elevenlabs ? "ElevenLabs" : "Voz del navegador";
       pintarAlertas(datos.alertas);
+      pintarMemoria(datos.memoria);
       pintarTabla(datos.transferencias);
     } catch (e) {
       console.warn("No se pudo actualizar el panel", e);

@@ -65,6 +65,15 @@ Rutas protegidas: `/panel`, `/api/panel`, el detalle `GET /api/transferencias/{i
 - La palabra de auxilio nunca se envía a la pantalla del cliente.
 - Todo el texto del usuario se pinta con `textContent`, sin inyectar HTML.
 
+**Memoria por cliente.** Al cerrar cada verificación ("seguro" o "riesgo"), Claude devuelve en el campo `recordar` de uno a tres hechos cortos: quién es el destinatario y su relación con la clienta, para qué suele ser el dinero, cómo lo ha comprobado ella, o el patrón de un intento de estafa. El servidor los filtra (máximo 3, máximo 220 caracteres, nunca la palabra de auxilio) y los guarda en la tabla `memoria` como `contexto` o `alerta`, asociados a la cuenta destino. La memoria se usa en dos sitios:
+
+- **Reglas personalizadas** (`perfil_destinatario` + `evaluar_transferencia`): si SilverShield ya verificó a ese destinatario y el importe no supera 1,5 veces el mayor importe *verificado* (`MARGEN_IMPORTE_HABITUAL`), la transferencia se envía sin preguntar (`via = habitual_verificado`). No se aplica si el concepto suena a estafa, el país es de alto riesgo o se envía más de medio saldo. Lo enviado sin verificar **no** sube el límite, así que el importe "habitual" no puede ir creciendo a escondidas. Si el importe se dispara, salta la regla `IMPORTE_INUSUAL_DESTINATARIO`; si la cuenta tiene una alerta, `CUENTA_CON_ALERTA` (riesgo alto, verificación obligatoria).
+- **Contexto de Claude**: cada turno incluye un bloque `<memoria_cliente>` con el historial con ese destinatario, los hechos recordados y las alertas recientes. El prompt le enseña a no repetir lo que ya sabe y a tratar como alarma lo que no encaja. La memoria se marca como datos, no como instrucciones (defensa ante *prompt injection*).
+
+El operador ve la memoria en su panel y puede borrar un recuerdo erróneo (por ejemplo, la alerta de un falso positivo), con lo que la cuenta deja de estar marcada.
+
+**Prompt con ejemplos.** En lugar de describir los tipos de estafa, el prompt enseña con 29 ejemplos concretos: 15 de estafa o presión, 11 de situaciones normales que suenan raras (urgencias reales, países lejanos, nervios, palabras como "Hacienda") y 3 de uso de la memoria. Los ejemplos están escritos para no coincidir con ningún caso de la evaluación. Junto con reglas de decisión rápida ("no repitas una pregunta", "no exijas detalles que una persona normal no sabría"), redujeron las preguntas un 20-35 % y eliminaron los falsos positivos de la evaluación.
+
 **Palabra de auxilio.** La coacción familiar no siempre se detecta con preguntas, porque la persona que presiona puede estar delante escuchando. Una palabra secreta, configurada de antemano con el contacto de emergencia, permite pedir ayuda sin que el agresor lo note: la respuesta es neutra ("un operador del banco revisará la operación y le llamará", lo mismo que en cualquier otra retención) y el aviso al operador y al contacto se hace en silencio.
 
 ## Del prototipo a producción

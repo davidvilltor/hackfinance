@@ -1,4 +1,9 @@
-"""Evaluación de SilverShield con 40 casos (20 estafas y 20 legítimas difíciles).
+"""Evaluación de SilverShield con casos de prueba.
+
+Conjuntos:
+  base      40 casos (20 estafas y 20 legítimas difíciles)            -> casos.py
+  extremos  20 casos más difíciles (estafas sutiles, legítimas trampa) -> casos_extremos.py
+  memoria   5 casos en dos pasos para medir la memoria por cliente      -> casos_extremos.py
 
 Simula cada conversación turno a turno con el mismo agente que usa la app
 (`agente_silvershield.evaluar_turno`) y mide aciertos, falsos positivos, falsos
@@ -10,6 +15,9 @@ Uso (desde la raíz del proyecto):
     python -m evaluacion.evaluar --motor local   # con el evaluador local (gratis, sin red)
     python -m evaluacion.evaluar --motor ambos   # los dos, para compararlos
     python -m evaluacion.evaluar --solo E01,L05  # solo algunos casos
+    python -m evaluacion.evaluar --conjunto extremos
+    python -m evaluacion.evaluar --conjunto memoria              # con memoria
+    python -m evaluacion.evaluar --conjunto memoria --sin-memoria  # para comparar
 
 Los resultados se guardan en evaluacion/resultados/ (Markdown + JSON).
 """
@@ -30,6 +38,7 @@ from backend.database import DATOS_DEMO  # noqa: E402
 from backend.reglas_riesgo import evaluar_transferencia  # noqa: E402
 from backend.voice_stress import analizar_senales  # noqa: E402
 from evaluacion.casos import CASOS  # noqa: E402
+from evaluacion.casos_extremos import EXTREMOS, MEMORIA  # noqa: E402
 
 CARPETA_RESULTADOS = Path(__file__).resolve().parent / "resultados"
 RETENIDA = {"riesgo", "no_verificada"}   # decisiones que paran el dinero
@@ -59,13 +68,17 @@ def coste_voz(caracteres: int) -> float | None:
     return None if precio is None else caracteres * precio / 1000
 
 
-async def simular(caso: dict) -> dict:
-    """Ejecuta una conversación completa y devuelve lo que ha pasado."""
+async def simular(caso: dict, perfil: dict | None = None, memoria: dict | None = None,
+                  conocido: bool | None = None) -> dict:
+    """Ejecuta una conversación completa y devuelve lo que ha pasado.
+
+    `perfil` y `memoria` simulan lo que la app guarda de verificaciones anteriores."""
     cuenta = dict(DATOS_DEMO["cuenta"])
     conocidos = {iban for _, _, iban in DATOS_DEMO["beneficiarios"]}
     evaluacion = evaluar_transferencia(
         importe=caso["importe"], iban=caso["iban"], concepto=caso["concepto"],
-        beneficiario_conocido=caso["iban"] in conocidos, saldo=cuenta["saldo"],
+        beneficiario_conocido=caso["iban"] in conocidos if conocido is None else conocido,
+        saldo=cuenta["saldo"], perfil=perfil,
     )
     transferencia = {
         "beneficiario_nombre": caso["beneficiario"], "iban": caso["iban"],
@@ -76,10 +89,15 @@ async def simular(caso: dict) -> dict:
     tiempos_turno, tiempos_ia = [], []
     tokens_entrada = tokens_salida = 0
     resultado = None
-    for texto in caso["respuestas"]:
+    # "Lo de siempre" (destino ya verificado e importe habitual): no hay conversación.
+    respuestas = [] if evaluacion.get("destino_habitual_verificado") else caso["respuestas"]
+    if not respuestas:
+        mensajes = []
+    for texto in respuestas:
         mensajes.append({"rol": "cliente", "texto": texto})
         inicio = time.perf_counter()
-        resultado = await agente.evaluar_turno(transferencia, cuenta, mensajes, analizar_senales(texto))
+        resultado = await agente.evaluar_turno(transferencia, cuenta, mensajes,
+                                               analizar_senales(texto), memoria)
         tiempos_turno.append(int((time.perf_counter() - inicio) * 1000))
         if resultado.tiempo_ia_ms is not None:
             tiempos_ia.append(resultado.tiempo_ia_ms)
@@ -89,11 +107,14 @@ async def simular(caso: dict) -> dict:
         if resultado.decision != "preguntar":
             break
 
-    decision = resultado.decision if resultado else "sin_decision"
+    if resultado:
+        decision = resultado.decision
+    else:
+        decision = "sin_verificacion" if evaluacion.get("destino_habitual_verificado") else "sin_decision"
     if caso["tipo"] == "estafa":
         acierto = decision in RETENIDA
     else:
-        acierto = decision == "seguro"
+        acierto = decision in ("seguro", "sin_verificacion")
     return {
         "id": caso["id"], "tipo": caso["tipo"], "descripcion": caso["descripcion"],
         "categoria_esperada": caso["categoria"],
@@ -107,10 +128,100 @@ async def simular(caso: dict) -> dict:
         "turnos": sum(1 for m in mensajes if m["rol"] == "cliente"),
         "tiempos_turno_ms": tiempos_turno, "tiempos_ia_ms": tiempos_ia,
         "tokens_entrada": tokens_entrada, "tokens_salida": tokens_salida,
+        "llamadas_ia": len(tiempos_ia),
+        "recordar": resultado.recordar if resultado else [],
         # Todo lo que dice SilverShield (saludo incluido) se convierte en voz una vez.
         "caracteres_voz": sum(len(m["texto"]) for m in mensajes if m["rol"] == "asistente"),
         "conversacion": mensajes,
     }
+
+
+async def simular_memoria(caso: dict, usar_memoria: bool) -> dict:
+    """Dos (o más) transferencias seguidas, guardando entre medias lo mismo que la app:
+    historial verificado con cada destinatario y los hechos que recuerda Claude."""
+    conocidos = {iban for _, _, iban in DATOS_DEMO["beneficiarios"]}
+    historial: dict[str, dict] = {}
+    hechos: list[dict] = []
+    pasos = []
+    for n, paso in enumerate(caso["pasos"], 1):
+        iban = paso["iban"]
+        h = historial.setdefault(iban, {"envios": 0, "verificados": 0, "max": None, "alerta": False})
+        perfil = {"envios": h["envios"], "verificado": h["verificados"] > 0,
+                  "envios_verificados": h["verificados"], "importe_max_verificado": h["max"],
+                  "alerta": h["alerta"]}
+        memoria = {"perfil": perfil, "hechos": list(hechos)} if usar_memoria else None
+        r = await simular({**paso, "id": f"{caso['id']}.{n}", "descripcion": caso["descripcion"],
+                           "categoria": "-"},
+                          perfil=perfil if usar_memoria else None, memoria=memoria,
+                          conocido=iban in conocidos or h["envios"] > 0)
+        fecha = f"2026-11-{n:02d}"
+        if r["decision"] in ("seguro", "sin_verificacion"):
+            h["envios"] += 1
+            if r["decision"] == "seguro":
+                h["verificados"] += 1
+                h["max"] = max(h["max"] or 0, paso["importe"])
+                hechos += [{"fecha": fecha, "tipo": "contexto", "iban": iban, "texto": t}
+                           for t in r["recordar"]]
+        elif r["decision"] == "riesgo":
+            h["alerta"] = True
+            hechos += [{"fecha": fecha, "tipo": "alerta", "iban": iban, "texto": t}
+                       for t in (r["recordar"] or [f"Intento de estafa al enviar {paso['importe']} euros."])]
+        pasos.append(r)
+    return {"id": caso["id"], "descripcion": caso["descripcion"], "pasos": pasos,
+            "acierto": all(p["acierto"] for p in pasos)}
+
+
+def resumir_memoria(resultados: list[dict]) -> dict:
+    ultimos = [r["pasos"][-1] for r in resultados]
+    todos = [p for r in resultados for p in r["pasos"]]
+    return {
+        "casos": len(resultados),
+        "aciertos": sum(r["acierto"] for r in resultados),
+        "pasos_correctos": sum(p["acierto"] for p in todos), "pasos": len(todos),
+        "segundos_sin_verificacion": sum(p["decision"] == "sin_verificacion" for p in ultimos),
+        "preguntas_segundo_paso": round(statistics.mean(p["turnos"] for p in ultimos), 2),
+        "llamadas_ia_segundo_paso": round(statistics.mean(p["llamadas_ia"] for p in ultimos), 2),
+        "llamadas_ia_totales": sum(p["llamadas_ia"] for p in todos),
+    }
+
+
+def informe_memoria(resumen: dict, resultados: list[dict], usar_memoria: bool) -> str:
+    s = resumen
+    lineas = [
+        f"# Evaluación de la memoria por cliente · {'CON' if usar_memoria else 'SIN'} memoria",
+        "",
+        f"Fecha: {datetime.now():%d/%m/%Y %H:%M} · Modelo: {config.CLAUDE_MODEL if config.ia_disponible() else 'evaluador local'}",
+        "",
+        "| Métrica | Resultado |",
+        "|---|---|",
+        f"| Casos resueltos bien (todos sus pasos) | **{s['aciertos']} de {s['casos']}** |",
+        f"| Pasos correctos | {s['pasos_correctos']} de {s['pasos']} |",
+        f"| Segundas transferencias sin necesidad de verificar | {s['segundos_sin_verificacion']} de {s['casos']} |",
+        f"| Preguntas medias en la segunda transferencia | {str(s['preguntas_segundo_paso']).replace('.', ',')} |",
+        f"| Llamadas a Claude en total | {s['llamadas_ia_totales']} |",
+        "",
+        "## Detalle",
+        "",
+        "| Caso | Paso | Importe | Esperado | Decisión | Preguntas | ¿Acierto? |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in resultados:
+        for n, p in enumerate(r["pasos"], 1):
+            lineas.append(f"| {r['id']} · {r['descripcion']} | {n} | — | {p['tipo']} | {p['decision']} | "
+                          f"{p['turnos']} | {'✅' if p['acierto'] else '❌'} |")
+    lineas += ["", "## Conversaciones", ""]
+    for r in resultados:
+        for n, p in enumerate(r["pasos"], 1):
+            lineas += [f"### {r['id']}.{n} · {p['decision']}", ""]
+            for m in p["conversacion"]:
+                quien = "SilverShield" if m["rol"] == "asistente" else "Cliente"
+                lineas.append(f"- **{quien}:** {m['texto']}")
+            if not p["conversacion"]:
+                lineas.append("- *(Sin verificación: destino habitual ya verificado e importe dentro de lo normal.)*")
+            if p["recordar"]:
+                lineas.append(f"- *Recuerda:* {'; '.join(p['recordar'])}")
+            lineas.append("")
+    return "\n".join(lineas) + "\n"
 
 
 def percentil(valores: list[int], p: float) -> int:
@@ -144,6 +255,7 @@ def resumir(resultados: list[dict]) -> dict:
         "falsos_positivos": fp,
         "no_verificadas_por_fallo_ia": sum(r["decision"] == "no_verificada" for r in resultados),
         "turnos_medios": round(statistics.mean(r["turnos"] for r in resultados), 2) if resultados else 0,
+        "llamadas_ia_medias": round(statistics.mean(r["llamadas_ia"] for r in resultados), 2) if resultados else 0,
         "tiempo_turno_medio_ms": int(statistics.mean(turnos)) if turnos else 0,
         "tiempo_turno_p95_ms": percentil(turnos, 0.95),
         "tiempo_ia_medio_ms": int(statistics.mean(ia)) if ia else None,
@@ -177,6 +289,7 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
         f"| Falsos positivos (legítima retenida) | {s['falsos_positivos']} |",
         f"| Retenidas por fallo técnico de la IA | {s['no_verificadas_por_fallo_ia']} |",
         f"| Preguntas medias por conversación | {str(s['turnos_medios']).replace('.', ',')} |",
+        f"| Llamadas a Claude por conversación | {str(s['llamadas_ia_medias']).replace('.', ',')} |",
         f"| Tiempo medio de respuesta por turno | {seg(s['tiempo_turno_medio_ms'])} (p95: {seg(s['tiempo_turno_p95_ms'])}) |",
     ]
     if s["tiempo_ia_medio_ms"] is not None:
@@ -234,6 +347,40 @@ def informe_markdown(motor: str, resumen: dict, resultados: list[dict]) -> str:
     return "\n".join(lineas) + "\n"
 
 
+async def evaluar_memoria(motor: str, usar_memoria: bool, paralelo: int) -> None:
+    clave_original = config.ANTHROPIC_API_KEY
+    if motor == "local":
+        config.ANTHROPIC_API_KEY = None
+    elif not config.ia_disponible():
+        raise SystemExit("Falta ANTHROPIC_API_KEY en .env para evaluar con Claude.")
+    semaforo = asyncio.Semaphore(paralelo)
+
+    async def uno(caso):
+        async with semaforo:
+            r = await simular_memoria(caso, usar_memoria)
+        print(f"  {r['id']} " + " -> ".join(p["decision"] for p in r["pasos"])
+              + ("  ok" if r["acierto"] else "  FALLO"), flush=True)
+        return r
+
+    print(f"\n== Memoria ({'con' if usar_memoria else 'sin'} memoria) · motor «{motor}» ==")
+    try:
+        resultados = await asyncio.gather(*(uno(c) for c in MEMORIA))
+        resumen = resumir_memoria(resultados)
+        modelo = config.CLAUDE_MODEL if motor == "claude" else "local"
+    finally:
+        config.ANTHROPIC_API_KEY = clave_original
+    nombre = f"resultados_{modelo}_memoria_{'con' if usar_memoria else 'sin'}"
+    (CARPETA_RESULTADOS / f"{nombre}.md").write_text(
+        informe_memoria(resumen, resultados, usar_memoria), encoding="utf-8")
+    (CARPETA_RESULTADOS / f"{nombre}.json").write_text(
+        json.dumps({"resumen": resumen, "casos": resultados}, ensure_ascii=False, indent=2),
+        encoding="utf-8")
+    print(f"Casos bien: {resumen['aciertos']}/{resumen['casos']} · segundas sin verificar: "
+          f"{resumen['segundos_sin_verificacion']} · preguntas en el 2º paso: "
+          f"{resumen['preguntas_segundo_paso']} · llamadas a Claude: {resumen['llamadas_ia_totales']}")
+    print(f"Informe: evaluacion/resultados/{nombre}.md")
+
+
 async def evaluar(motor: str, casos: list[dict], paralelo: int) -> tuple[dict, list[dict]]:
     clave_original = config.ANTHROPIC_API_KEY
     if motor == "local":
@@ -262,22 +409,33 @@ async def evaluar(motor: str, casos: list[dict], paralelo: int) -> tuple[dict, l
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--motor", choices=["claude", "local", "ambos"], default="claude")
+    parser.add_argument("--conjunto", choices=["base", "extremos", "memoria"], default="base",
+                        help="base: 40 casos; extremos: 20 más difíciles; memoria: 5 casos en dos pasos")
+    parser.add_argument("--sin-memoria", action="store_true",
+                        help="(conjunto memoria) desactiva la memoria para comparar")
     parser.add_argument("--solo", help="IDs de casos separados por comas (por ejemplo E01,L05)")
     parser.add_argument("--paralelo", type=int, default=4,
                         help="conversaciones a la vez (1 = tiempos más fieles, más lento)")
     args = parser.parse_args()
 
-    casos = CASOS
+    casos = CASOS if args.conjunto == "base" else EXTREMOS
     if args.solo:
         ids = {i.strip().upper() for i in args.solo.split(",")}
-        casos = [c for c in CASOS if c["id"] in ids]
+        casos = [c for c in CASOS + EXTREMOS if c["id"] in ids]
     motores = ["local", "claude"] if args.motor == "ambos" else [args.motor]
     CARPETA_RESULTADOS.mkdir(exist_ok=True)
+
+    if args.conjunto == "memoria":
+        for motor in motores:
+            asyncio.run(evaluar_memoria(motor, not args.sin_memoria, args.paralelo))
+        return
 
     for motor in motores:
         print(f"\n== Evaluando {len(casos)} casos con el motor «{motor}» ==")
         resumen, resultados = asyncio.run(evaluar(motor, casos, args.paralelo))
         nombre = f"resultados_{config.CLAUDE_MODEL}" if motor == "claude" else "resultados_local"
+        if args.conjunto != "base":
+            nombre += f"_{args.conjunto}"
         (CARPETA_RESULTADOS / f"{nombre}.md").write_text(
             informe_markdown(motor, resumen, resultados), encoding="utf-8")
         (CARPETA_RESULTADOS / f"{nombre}.json").write_text(

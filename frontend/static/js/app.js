@@ -714,7 +714,10 @@
       "ok",
       "Transferencia enviada",
       `Ha enviado ${euros(transferencia.importe)} a ${transferencia.beneficiario_nombre}. ` +
-      `Le quedan ${euros(saldo)} en su cuenta.`,
+      `Le quedan ${euros(saldo)} en su cuenta.` +
+      (transferencia.via === "habitual_verificado"
+        ? " SilverShield ya conoce este envío habitual, así que no ha hecho falta comprobarlo."
+        : ""),
     );
   }
 
