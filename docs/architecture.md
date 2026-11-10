@@ -10,7 +10,7 @@
 │  · pantalla de decisión    │              │   ├─ reglas_riesgo.py ────────┼─ determinista, < 1 ms
 │  · conversación por voz    │              │   ├─ voice_stress.py          │
 │ voz.js                     │              │   ├─ agente_silvershield.py ──┼──▶ Claude (JSON con esquema)
-│  · Web Speech API (STT)    │  audio/mpeg  │   │     └─ evaluador local    │    (si falla → reglas locales)
+│  · Web Speech API (STT)    │  audio/mpeg  │   │                           │    (si falla → retenida p/ operador)
 │  · medidor de micrófono    │◀─────────────│   ├─ voice_agent.py ──────────┼──▶ ElevenLabs TTS (streaming)
 │  · reproducción del TTS    │  audio/webm  │   │                         ──┼──▶ ElevenLabs Scribe (STT)
 └───────────────────────────┘─────────────▶│   ├─ notifications.py         │
@@ -42,9 +42,9 @@ El servidor valida cada transición (responde HTTP 409 si no está permitida). E
 
 **Robustez ante prompt injection.** El prompt indica que todo lo que hay dentro de `<conversacion>` son datos y no instrucciones, y que un intento de dar órdenes al asistente cuenta como señal de manipulación. La decisión final la aplica siempre el servidor, nunca el navegador.
 
-**Fallar de forma segura.** Si Claude está configurado pero falla (sin conexión, tiempo agotado, respuesta inválida), un evaluador heurístico local toma el relevo en ese turno: puede seguir preguntando o detectar una estafa, pero **nunca da una transferencia por buena**. Si tocaba aprobarla, la decisión pasa a ser `no_verificada`: la transferencia queda retenida, la pantalla lo explica con calma y un operador del banco la revisa y la libera si procede. Un fallo técnico puede retrasar un pago legítimo, pero no dejar pasar una estafa.
+**Fallar de forma segura.** Si Claude no está disponible —no hay clave de Anthropic, no hay conexión, se agota el tiempo o la respuesta es inválida— no hay ningún chatbot de reserva: la decisión es `no_verificada` y la transferencia queda **retenida** para que un operador del banco hable con el titular y la libere o la cancele. Sin clave, esto ocurre en cuanto el cliente pulsa "Comprobar con SilverShield"; si la conexión se cae a mitad de conversación, en ese mismo turno. La pantalla lo explica con calma y se avisa al contacto de emergencia. Un fallo técnico puede retrasar un pago legítimo, pero no dejar pasar una estafa.
 
-**Modo local (sin claves).** Si no hay clave de Anthropic, el evaluador local es el motor completo y sí puede aprobar. Es el modo para desarrollar o hacer la demo sin internet, y el pie de la app lo indica ("evaluador local"). Si no hay ElevenLabs, el navegador usa su propia síntesis de voz. Si el navegador no puede reconocer la voz, se ofrece responder escribiendo.
+**Sin claves.** Sin clave de Anthropic la app arranca y funciona, pero toda transferencia que requiera verificación queda retenida para el operador (el pie de la app lo indica). El simulador de `evaluacion/simulador_local.py` imita a Claude solo en los tests y en `python -m evaluacion.evaluar --motor local`; la app nunca lo usa. Si no hay ElevenLabs, el navegador usa su propia síntesis de voz. Si el navegador no puede reconocer la voz, se ofrece responder escribiendo.
 
 **Explicar la decisión.** Cuando SilverShield para una transferencia, la pantalla muestra "¿Por qué la hemos parado?" con el tipo de engaño y las señales que ha visto, escritas por Claude en lenguaje sencillo. No se muestran en el caso de la palabra de auxilio, para no alertar a quien presiona.
 

@@ -29,10 +29,10 @@
   };
   const VEREDICTOS = {
     preguntar: "En curso", seguro: "Sin señales de estafa", riesgo: "Riesgo de estafa",
-    no_verificada: "No verificada (fallo técnico de la IA)",
+    no_verificada: "No verificada: IA no disponible (decide el operador)",
   };
   const TIPOS_ALERTA = { COACCION: "Palabra de auxilio", POSIBLE_ESTAFA: "Posible estafa", NO_VERIFICADA: "No se pudo verificar" };
-  const MOTORES = { claude: "Claude (IA)", reglas: "Evaluador local", palabra_auxilio: "Palabra de auxilio" };
+  const MOTORES = { claude: "Claude (IA)", sin_ia: "Sin IA (retenida)", reglas: "Evaluador local (antiguo)", palabra_auxilio: "Palabra de auxilio" };
 
   let seleccionada = null;
   let alertasVistas = null;
@@ -258,7 +258,7 @@
       $("#nombre-operador").textContent = datos.operador;
       $("#palabra-auxilio").textContent = `«${datos.cuenta.palabra_seguridad}»`;
       $("#umbral").textContent = `${euros(datos.estado.umbral_verificacion)} o destino sospechoso`;
-      $("#motor-ia").textContent = datos.estado.ia ? `Claude · ${datos.estado.modelo}` : "Evaluador local (sin clave de Anthropic)";
+      $("#motor-ia").textContent = datos.estado.ia ? `Claude · ${datos.estado.modelo}` : "Sin IA (sin clave de Anthropic): las verificaciones quedan retenidas para el operador";
       $("#motor-voz").textContent = datos.estado.voz_elevenlabs ? "ElevenLabs" : "Voz del navegador";
       pintarAlertas(datos.alertas);
       pintarMemoria(datos.memoria);

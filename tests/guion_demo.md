@@ -33,5 +33,5 @@ Pulse **Letra: Muy grande** y **Alto contraste**, y enseñe los botones **Repeti
 
 ## Plan B
 - Si falla el micrófono: **Prefiero escribir** y pegue la frase.
-- Si se cae internet o la API de Claude a mitad de demo: SilverShield **sigue detectando las estafas claras** con el evaluador local, pero por seguridad **no aprueba ninguna transferencia**; las legítimas quedan "No hemos podido terminar la comprobación" y retenidas. Aprovéchelo: *"si falla la IA, el sistema falla de forma segura"*.
-- Si no hay internet desde el principio: quite `ANTHROPIC_API_KEY` y `ELEVENLABS_API_KEY` del `.env` y reinicie. La app funciona en modo local completo (evaluador local + voz del navegador; sale indicado en el pie).
+- Si se cae internet o la API de Claude a mitad de demo: la transferencia queda **retenida** ("No hemos podido terminar la comprobación") y aparece en el panel para que el operador la libere o la cancele. Aprovéchelo: *"si falla la IA, el sistema falla de forma segura: decide una persona del banco"*.
+- Si no hay internet desde el principio: sin `ANTHROPIC_API_KEY` no hay conversación con SilverShield; cada transferencia a verificar queda retenida al instante para el operador (sale indicado en el pie). Las transferencias que no requieren verificación y el panel del operador funcionan igual.

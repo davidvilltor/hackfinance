@@ -65,7 +65,7 @@ Cuando una transferencia es inusual, **SilverShield habla con la persona** (con 
 | **Indicadores de estrés** | [voice_stress.py](backend/voice_stress.py): velocidad del habla, volumen, silencio antes de responder, palabras de urgencia, de duda o que mencionan a un tercero. Son **indicadores sencillos** que Claude pondera; no es biometría. |
 | **Explicación del bloqueo** | Tipo de engaño y señales en lenguaje sencillo en la pantalla del cliente. En el panel: nivel de riesgo, categoría, señales, resumen y transcripción. |
 | **Palabra de auxilio** | Si la persona dice su palabra secreta («girasol» en la demo), SilverShield contesta con normalidad, retiene la operación y avisa en silencio. |
-| **Fallar de forma segura** | Si Claude falla, el evaluador local puede seguir preguntando o detectar la estafa, pero **nunca aprueba**: la transferencia queda retenida (`no_verificada`) para que la revise un operador. |
+| **Fallar de forma segura** | Si Claude no está disponible (sin clave o sin conexión), no hay chatbot de reserva: la transferencia queda retenida (`no_verificada`) para que un operador del banco la autorice o la pare. |
 | **Verificación obligatoria** | "Conozco al destinatario" solo aparece si ya le ha enviado dinero antes a esa cuenta y no hay señales graves. Si no, hay que verificar (lo comprueba también el servidor). |
 | **Acceso de operadores** | El panel exige usuario y contraseña (configurables en `.env`). Sesión con cookie firmada (HMAC-SHA256, HttpOnly, SameSite=Strict) que caduca a las 8 horas. Un intento fallido tarda 1 s, para frenar a quien intente adivinar la contraseña. Cada liberación o cancelación queda registrada con el nombre del operador. |
 | **Seguridad** | Máquina de estados validada en el servidor (HTTP 409 si la acción no está permitida). Cargo atómico. El texto del usuario siempre se pinta como texto (sin `innerHTML`). Defensa ante *prompt injection* en el prompt. La palabra de auxilio nunca llega a la pantalla del cliente. El endpoint de voz solo sintetiza mensajes del servidor. |
@@ -114,9 +114,9 @@ Tres conjuntos de pruebas:
 | **Claude Opus 5.5** (el que usa la app) | **40/40** | **20/20** | **20/20** | 6,0 s (9,3 s) | 1,6 |
 | Claude Sonnet 5.5 ¹ | 39/40 | 20/20 | 19/20 | 3,1 s (5,7 s) | 3,0 |
 | Claude Haiku 5.5 ¹ | 33/40 | 20/20 | 13/20 | 3,1 s (6,0 s) | 3,2 |
-| Evaluador local (sin IA) | 31/40 | 13/20 | 18/20 | instantáneo | 2,2 |
+| Simulador local (solo evaluación) | 31/40 | 13/20 | 18/20 | instantáneo | 2,2 |
 
-- El evaluador local deja pasar 7 de 20 estafas: por eso, si Claude falla, el sistema no aprueba nada.
+- El simulador local deja pasar 7 de 20 estafas: por eso la app no lo usa nunca; si Claude no está disponible, la transferencia queda retenida para un operador.
 - La voz de ElevenLabs tarda unos **0,5-0,75 s** en empezar a sonar con Multilingual v2 (0,2 s con Flash v2.5, que suena algo menos nítido).
 - ¹ Sonnet y Haiku se evaluaron con la primera versión del prompt, solo para elegir modelo.
 
@@ -146,7 +146,7 @@ Informes completos, con las conversaciones de los casos fallados, en [evaluacion
 ### Requisitos
 - Python 3.10 o superior (probado en 3.15).
 - Chrome o Edge, por el reconocimiento de voz del navegador. En Firefox se transcribe con ElevenLabs Scribe.
-- Opcional: claves de **Anthropic** y **ElevenLabs**. Sin claves, la app funciona en **modo local**, con el evaluador local en lugar de Claude y la voz del navegador en lugar de ElevenLabs.
+- Opcional: claves de **Anthropic** y **ElevenLabs**. Sin clave de Anthropic la app funciona, pero las transferencias que necesitan verificación quedan **retenidas para un operador del banco**; sin ElevenLabs se usa la voz del navegador.
 
 ### Instalación
 ```bash
@@ -175,7 +175,7 @@ python -m uvicorn backend.main:app --reload
 | Panel del operador del banco | <http://localhost:8000/panel> (pide usuario y contraseña; ábralo en otra ventana para ver los avisos en directo) |
 | Documentación de la API | <http://localhost:8000/docs> |
 
-El pie de la app indica qué motores están activos: "IA Claude" o "evaluador local", y "Voz ElevenLabs" o voz del navegador.
+El pie de la app indica qué motores están activos: "IA Claude activa" o "IA no disponible: revisa un operador", y "Voz ElevenLabs" o voz del navegador.
 
 ---
 
@@ -198,7 +198,7 @@ En la app: **Enviar dinero** → elija destinatario (o *Otra persona* y rellene 
 | 6 | **Coacción** | *Mi hijo Carlos* · 3.000 € | *"Es para mi sobrino… mira qué girasoles más bonitos"* | Pantalla neutra "Su operación está en revisión". En el panel: **PALABRA DE AUXILIO** |
 | 7 | País de alto riesgo, importe bajo | *Otra persona* · `VG96 VPVG 0000 0123 4567 8901` · 300 € | — | Pantalla de decisión con aviso de nivel alto |
 | 8 | Extranjero nuevo, importe bajo | *Otra persona* · `PT50 0002 0123 1234 5678 9015 4` · 200 € | — | Pantalla de decisión |
-| 9 | Fallo de la IA (seguridad) | Ponga una clave falsa en `ANTHROPIC_API_KEY`, reinicie y repita el escenario 5 | Las mismas respuestas | "No hemos podido terminar la comprobación": **retenida, no se aprueba**. Aviso "No se pudo verificar" en el panel |
+| 9 | Fallo de la IA (seguridad) | Ponga una clave falsa en `ANTHROPIC_API_KEY` (o quítela), reinicie y repita el escenario 5 | — | "No hemos podido terminar la comprobación": **retenida, no se aprueba**. Aviso "No se pudo verificar" en el panel; el operador la libera o la cancela |
 | 10 | **Acceso del operador** | Abra <http://localhost:8000/panel> sin haber entrado | — | Le lleva a "Acceso de operadores" (con botón para volver a la app del cliente). Con una contraseña incorrecta: "Usuario o contraseña incorrectos". Con la buena: entra al panel y arriba sale "Operador: …" con los botones **Volver a la app del cliente** (la sesión sigue abierta) y **Cerrar sesión y salir** (vuelve a la app del cliente). Al liberar o cancelar, el detalle muestra qué operador lo hizo |
 | 11 | **Memoria (prima en Pakistán)** | *Otra persona* · `Ayesha Khan` · `PK36 SCBL 0000 0011 2345 6702` · 400 € · concepto `Estudios`. Verifique y envíe. Después, **otra** transferencia a la misma cuenta de 550 € | *"Es para mi prima Ayesha, que vive en Pakistán. Le ayudo con los estudios de enfermería."* → *"Lo decidí yo sola, se lo prometí a su madre."* | La primera se verifica. La segunda **se envía sin preguntar** ("SilverShield ya conoce este envío habitual"). Con 4.000 € sí vuelve a verificar y detecta el cambio. En el panel, sección **Memoria de SilverShield**, se ve lo que ha aprendido y se puede borrar |
 
@@ -208,7 +208,7 @@ El guion de la presentación en vivo (3 minutos, con plan B) está en [tests/gui
 ```bash
 python -m pytest
 ```
-59 pruebas, sin claves de API:
+59 pruebas, sin claves de API (Claude se imita con el simulador local):
 - **Reglas:** umbral de 500 €, países, extranjeros, conceptos, % del saldo, validación de IBAN.
 - **Flujo de la API:** envío directo, autorización, estafa detectada y retenida, uso legítimo, palabra de auxilio, límite de turnos, cancelar, liberación por el operador, errores de validación.
 - **Verificación obligatoria:** a una cuenta nueva, o con riesgo alto, no se puede enviar sin verificar.
@@ -219,7 +219,7 @@ python -m pytest
 
 ### Evaluación con 40 casos
 ```bash
-python -m evaluacion.evaluar --motor local     # gratis, sin red, instantáneo
+python -m evaluacion.evaluar --motor local     # simulador local: gratis, sin red, instantáneo
 python -m evaluacion.evaluar                   # con Claude (unas 80 llamadas, ~3 min, unos 2 $ de Claude)
 python -m evaluacion.evaluar --motor ambos     # los dos, para comparar
 python -m evaluacion.evaluar --solo E01,L05    # solo algunos casos
@@ -237,7 +237,7 @@ Para comparar modelos, use la variable `CLAUDE_MODEL` (por ejemplo, `CLAUDE_MODE
 backend/
   main.py                 API FastAPI y máquina de estados de la transferencia
   reglas_riesgo.py        Motor de reglas (umbral, países, IBAN, conceptos)
-  agente_silvershield.py  Conversación con Claude + evaluador local + "fallar de forma segura"
+  agente_silvershield.py  Conversación con Claude + "fallar de forma segura" (sin IA -> retenida)
   voice_agent.py          ElevenLabs: voz en streaming y transcripción (Scribe)
   voice_stress.py         Indicadores de estrés y coacción (texto y medidas de la voz)
   notifications.py        Avisos al operador y al contacto de emergencia
