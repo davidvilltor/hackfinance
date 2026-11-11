@@ -18,32 +18,7 @@ Cuando una transferencia resulta inusual, SilverShield mantiene una breve conver
 
 ## 3. Funcionamiento
 
-```
- Transferencia ──► 1. Motor de reglas ──► ¿Operación inusual? ── No ──► Se ejecuta
-                                                   │ Sí
-                                                   ▼
-                          2. Pantalla de decisión (motivos explicados)
-                        ┌──────────────────────────┴──────────────────────────┐
-          "Conozco al destinatario"                         "Comprobar con SilverShield"
-          (solo destinatarios habituales                                     │
-           y sin señales graves)                                             ▼
-                        │                              ¿IA disponible? ── No ──► Retenida
-                        ▼                                         │ Sí
-                    Ejecutada                                     ▼
-                                                3. Conversación por voz con Claude
-                                                         (2-4 preguntas)
-                                                                  │
-                    ┌───────────────────┬─────────────────────────┼─────────────────────┐
-                    ▼                   ▼                         ▼                     ▼
-                "Seguro"            "Riesgo"               "No verificada"      Palabra de auxilio
-           El cliente confirma      Retenida,              (fallo de la IA)      Retenida y aviso
-           y se ejecuta             con explicación         Retenida             urgente silencioso
-                                        │                         │                     │
-                                        └─────────────────────────┴─────────────────────┘
-                                                                  ▼
-                           Aviso al operador del banco y al contacto de emergencia.
-                           Solo el operador puede liberarla o cancelarla.
-```
+![Diagrama de funcionamiento de SilverShield](docs/funcionamiento.png)
 
 1. **Motor de reglas** ([reglas_riesgo.py](backend/reglas_riesgo.py)). Determina cuándo es necesario verificar: importes de 500 € o superiores y, por debajo de ese umbral, cuentas en países de alto riesgo, cuentas extranjeras nuevas, conceptos asociados a estafas o envíos de más de la mitad del saldo. Es determinista, inmediato y explicable.
 2. **Pantalla de decisión.** Expone los motivos en lenguaje claro, con opción de escucharlos. La autorización directa ("Conozco al destinatario") solo se ofrece para destinatarios habituales y sin señales graves; en cuentas nuevas o de riesgo alto la verificación es obligatoria, y el servidor lo valida. De este modo, un estafador al teléfono no puede indicar a la víctima que omita la comprobación.
